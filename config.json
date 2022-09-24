@@ -1,0 +1,203 @@
+{
+    "run_parameters": {
+      "headless": false,
+      "threadeddisplay": false,
+      "record": false,
+      "clearlog": true,
+      "video": "",
+      "remoteControl": false
+    },
+    "logging_options": {
+      "logSystemInfo": false,
+      "logParameters": false,
+      "logVideoInputInfo": false,
+      "logFrameInfo": false,
+      "logIterationStarts": true,
+      "logThreadedCaptureSetup": true,
+      "logCameraRectification": true
+    },
+    "iteration_constants": {
+      "errorTolerance": 2,
+      "iterationsToAverage": 9
+    },
+    "camera_ports": {
+      "useCapDShow": true,
+      "setExposure": false,
+      "leftPort" : 0,
+      "rightPort" : 1,
+      "frame_size":  [640, 480]
+    },
+    "orb_params": {
+      "nfeatures": 500,
+      "scaleFactor": 1.2,
+      "nlevels": 8,
+      "edgeThreshold": 31,
+      "firstLevel": 0,
+      "patchSize": 31
+    },
+    "feature_params": {
+      "startingRatio": 1.2,
+      "featureRatio": 0.1,
+      "stepSize": 0.05,
+      "timeout": 20
+    },
+    "object_detection_params": {
+      "binSize": 10.0,
+      "featuresPerPixel": 0.005,
+      "percentAreaThreshold": 0.02,
+      "connFeaturesThresh": 10
+    },
+    "sgbm_params": {
+      "minDisparity": 0,
+      "numDisparities": 80,
+      "blockSize": 1,
+      "P1": 0,
+      "P2": 135,
+      "disp12MaxDiff": 2,
+      "preFilterCap": 0,
+      "uniquenessRatio": 0,
+      "speckleWindowSize": 50,
+      "speckleRange": 2
+    },
+    "odometer_params": {
+        "nfeatures": 500,
+        "match_threshold": 0.9,
+        "rigidity_threshold": 0.06,
+        "outlier_threshold": 0.02,
+        "preprocessed_frames": true
+    },
+    "wls_filter_params": {
+      "lambda": 8000.0,
+      "sigma": 1.75
+    },
+    "file_paths": {
+      "videoPath": "Data/Cameras/RawOutput/"
+    },
+    "servo_trim": {
+      "front_left_wheel": 0.0,
+      "front_left_suspension": 0.0,
+      "front_right_wheel": 0.0,
+      "front_right_suspension": 0.0,
+      "back_left_wheel": 0.0,
+      "back_left_suspension": 0.0,
+      "back_right_wheel": 0.0,
+      "back_right_suspension": 0.0
+    },
+    "electronics": {
+      "motors": {
+        "front_left": {
+          "registers": [15, 14, 17, 16],
+          "enc_pins": [0, 5],
+          "dir_pins": [6, 13]
+        },
+        "front_right": {
+          "registers": [11, 10, 13, 12],
+          "enc_pins": [17, 27],
+          "dir_pins": [10, 9]
+        },
+        "back_left": {
+          "registers": [19, 18, 21, 20],
+          "enc_pins": [16, 20],
+          "dir_pins": [25, 8]
+        },
+        "back_right": {
+          "registers": [7, 6, 9, 8],
+          "enc_pins": [23, 24],
+          "dir_pins": [14, 15]
+        },
+        "dir_setpoints":  [1, 0, 1, 0]
+      },
+      "servos": {
+        "front_left_wheel": {
+          "registers": [43, 42, 45, 44],
+          "pin": 19
+        },
+        "front_left_suspension": {
+          "registers": [51, 50, 53, 52],
+          "pin": 26
+        },
+        "front_right_wheel": {
+          "registers": [31, 30, 33, 32],
+          "pin": 22
+        },
+        "front_right_suspension": {
+          "registers": [27, 26, 29, 28],
+          "pin": 4
+        },
+        "back_left_wheel": {
+          "registers": [39, 38, 41, 40],
+          "pin": 7
+        },
+        "back_left_suspension": {
+          "registers": [47, 46, 49, 48],
+          "pin": 1
+        },
+        "back_right_wheel": {
+          "registers": [35, 34, 37, 36],
+          "pin": 11
+        },
+        "back_right_suspension": {
+          "registers": [23, 22, 25, 24],
+          "pin": 18
+        }
+      },
+      "leds": {
+        "one": [55, 54, 57, 56],
+        "two": [59, 58, 61, 60],
+        "three": [63, 62, 65, 64],
+        "four": [67, 66, 69, 68]
+      },
+      "sensors": {
+        "accelerometer": {
+          "address": 104,
+          "register": 59,
+          "accel_data": [0, 0, 0],
+          "gyro_data": [0, 0, 0]
+        },
+        "xbee": {
+          "com_port": "COM3",
+          "baudrate": 9600,
+          "data": []
+        }
+      },
+      "pwm_board": {
+        "address": 64,
+        "hz": 50
+      },
+      "poll_rates": {
+        "accelerometer": 240.0,
+        "xbee": 240.0,
+        "motors": 240.0,
+        "servos": 240.0,
+        "writes": 240.0
+      },
+      "utility": {
+        "clicks_per_rev": 48.0,
+        "max_pwm": 65534,
+        "max_vel": 2.0,
+        "max_rad": 1.5708,
+        "min_servo_pwm": 205,
+        "max_servo_pwm": 410
+      }
+    },
+    "dimensions": {
+      "wheel" : {
+        "radius": 75.0,
+        "thickness": 45.0,
+        "minTheta": -15.0,
+        "maxTheta": 15.0,
+        "offset": 10.0
+      },
+      "suspension" : {
+        "length": 160.0,
+        "height": 50.0,
+        "minTheta": -50.0,
+        "maxTheta": 50.0
+      },
+      "chassis": {
+        "width": 250.0,
+        "length": 350.0,
+        "height": 100.0
+      }
+    }
+  }

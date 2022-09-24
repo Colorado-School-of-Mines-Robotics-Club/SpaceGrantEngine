@@ -5,5 +5,5 @@ setup(name='spacegrantengine',
       author='Justin Davis',
       author_email='jcdavis@mines.edu',
       packages=['engine'
-                ],
+                'engine/configuration'],
      )
