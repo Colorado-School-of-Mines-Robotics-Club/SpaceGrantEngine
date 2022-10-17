@@ -1,8 +1,7 @@
 import sys
 import logging
-import time
 from threading import Thread
-from typing import Optional, Any, List
+from typing import Optional, Any
 
 import glfw
 import OpenGL.GL as gl
@@ -13,26 +12,17 @@ from configuration import Config
 
 
 class Engine(object):
-    def __init__(
-        self,
-        config_files: Optional[List] = None,
-        headless: bool = False,
-        log_file: Optional[str] = None,
-        refresh_rate: float = 30.0,
-    ):
+    def __init__(self, config_file, headless=False, log_file: Optional[str] = None):
         """
         Highest level object for the SpaceGrantEngine library. Controls all submodules
         and provides interfaces. Handles concurrency and automatic parallelism.
         """
         super().__init__()
         # config instance to edit from imgui (if available)
-        self._config: Config = (
-            Config(*config_files) if config_files is not None else Config()
-        )
+        self._config: Config = Config(config_file=config_file)
         log_file = "space.log" if log_file is None else log_file
         self._logger: logging.Logger
         self._setup_logger(log_file)
-        self._time_per_frame: float = 1.0 / refresh_rate
         # flag for rendering
         self._headless: bool = headless
 
@@ -46,13 +36,6 @@ class Engine(object):
         if not self._headless:
             self._render_thread = Thread(name="render", target=self._render, args=())
             self._render_thread.start()
-
-        # acquire all _generate_ methods
-        self._generate_methods = [
-            getattr(self, func)
-            for func in dir(self)
-            if callable(getattr(self, func)) and func.startswith("_generate_")
-        ]
 
     # setup the logger
     def _setup_logger(self, log_file_name: str) -> None:
@@ -96,8 +79,6 @@ class Engine(object):
         return window
 
     def _render_frame(self):
-        s_time = time.perf_counter()
-
         glfw.poll_events()
         self._impl.process_inputs()
         imgui.new_frame()
@@ -108,17 +89,12 @@ class Engine(object):
         if self._font is not None:
             imgui.push_font(self._font)
         self._frame_commands()
-        self._render_all()
         if self._font is not None:
             imgui.pop_font()
 
         imgui.render()
         self._impl.render(imgui.get_draw_data())
         glfw.swap_buffers(self._window)
-
-        e_time = time.perf_counter() - s_time
-        if e_time < self._time_per_frame:
-            time.sleep(self._time_per_frame - e_time)
 
     def _render(self):
         imgui.create_context()
@@ -140,33 +116,33 @@ class Engine(object):
         self._impl.shutdown()
         glfw.terminate()
 
-    def _render_all(self):
-        for render in self._generate_methods:
-            render()
-
     def _frame_commands(self):
         io = imgui.get_io()
 
         if io.key_ctrl and io.keys_down[glfw.KEY_Q]:
             sys.exit(0)
 
-    def _file_menu(self):
-        if imgui.begin_menu("File", True):
-            clicked_quit, selected_quit = imgui.menu_item("Quit", "Ctrl+Q", False, True)
-
-            if clicked_quit:
-                sys.exit(0)
-
-            imgui.end_menu()
+        self._generate_menu_bar()
 
     def _generate_menu_bar(self):
         if imgui.begin_main_menu_bar():
+            if imgui.begin_menu("File", True):
+                clicked_quit, selected_quit = imgui.menu_item(
+                    "Quit", "Ctrl+Q", False, True
+                )
 
-            self._file_menu()
-            self._config.menu_bar()
+                if clicked_quit:
+                    sys.exit(0)
 
+                imgui.end_menu()
+
+            if imgui.begin_menu("Config", True):
+                # do something here
+
+                imgui.end_menu()
             imgui.end_main_menu_bar()
 
 
 if __name__ == "__main__":
-    engine = Engine(config_files=["config.json"])
+    engine = Engine("test.json")
+    
