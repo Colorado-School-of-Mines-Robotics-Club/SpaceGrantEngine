@@ -6,9 +6,6 @@ RUN apt-get update
 # Python setup:
 RUN apt-get install python3-pip -y
 
-# Install static-checking tools
-RUN pip3 install black flake8 mypy pylint
-
 # Add ros user (with sudo)
 RUN adduser --disabled-password --gecos '' ros
 RUN adduser ros sudo

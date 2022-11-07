@@ -6,9 +6,10 @@ class PathfindingNode(AbstractNode):
 
     def __init__(self, name: str, *args, **kwargs) -> None:
         super().__init__(name, *args, **kwargs)
-        # TODO
+
+        # TODO: define attributes needed for pathfinding
         pass
 
     def _main(self):
-        # TODO
+        # TODO: define pubs and subs for pathfinding
         pass

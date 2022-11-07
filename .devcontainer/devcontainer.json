@@ -13,7 +13,7 @@
     ],
 
     // Install python packages from requirements.txt
-    "postCreateCommand": "pip3 install -r requirements.txt",
+    "postCreateCommand": "pip3 install -r requirements.txt && pip3 install -r requirements-ci.txt",
 
     // This will launch the container as a non-root user
     "remoteUser" : "ros"
