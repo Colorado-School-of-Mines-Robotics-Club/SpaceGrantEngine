@@ -4,7 +4,6 @@ all: clean install source
 
 clean:
 	rm -rf build
-	rm -rf install
 	rm -rf log
 
 install: 

@@ -6,7 +6,6 @@ check: ci test
 
 clean:
 	rm -rf build
-	rm -rf install
 	rm -rf log
 
 install: 
@@ -23,10 +22,7 @@ test:
 	colcon test --packages-select sgengine sgengine_messages --event-handlers console_direct+
 
 source:
-	cd ~/ros2_humble/install/ \
-	source setup.bash 2> /dev/null | echo 
-	cd /opt/ros/humble/ \
-	source setup.bash 2> /dev/null | echo
+	$(./source.sh)
 
 messages:
 	$(MAKE) -C sgengine_messages
