@@ -155,7 +155,7 @@ class OakD_S2(ABC):
                 )
 
             imu_queue = None
-            base_transforms = None
+            base_timestamp = None
             if self._nodes["imu"] is not None:
                 imu_queue = device.getOutputQueue(
                     name="imu", maxSize=50, blocking=False
@@ -185,9 +185,9 @@ class OakD_S2(ABC):
                     for packet in imu_packets:
                         rv_values = packet.rotationVector
                         rv_timestamp = rv_values.getTimestampDevice()
-                        if base_transforms is None:
-                            base_transforms = rv_values
-                        rv_values = rv_values - base_transforms
+                        if base_timestamp is None:
+                            base_timestamp = rv_timestamp
+                        rv_timestamp = rv_timestamp - base_timestamp
 
                         # do something with the imu data
                         self._tasks.append(
