@@ -16,7 +16,12 @@ class OakDS2Node(AbstractNode, OakD_S2):
         """Handles the IMU data"""
         self.publish("imu", (rv_values, rv_timestamp))
 
+    def _handle_depth_frame(self, frame: np.ndarray) -> None:
+        """Handles the depth frame"""
+        self.publish("depth_camera", frame)
+
     def _main(self):
         super().create_cam_rgb()
         super().create_imu()
+        super().create_stereo()
         super().run()
