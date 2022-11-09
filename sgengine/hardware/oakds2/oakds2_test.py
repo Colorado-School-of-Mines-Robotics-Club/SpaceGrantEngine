@@ -33,7 +33,7 @@ class OakDS2Test(OakD_S2):
         super().create_imu()
         super().create_stereo()
 
-        async_thread = Thread(target=self._loop.run_forver())
+        async_thread = Thread(target=self._loop.run_forever())
         async_thread.start()
 
         super().run()
