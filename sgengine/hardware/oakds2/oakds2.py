@@ -184,7 +184,7 @@ class OakD_S2(ABC):
                     imu_packets = imu_data.packets
                     for packet in imu_packets:
                         rv_values = packet.rotationVector
-                        rv_timestamp = rVvalues.getTimestampDevice()
+                        rv_timestamp = rv_values.getTimestampDevice()
                         if base_transforms is None:
                             base_transforms = rv_values
                         rv_values = rv_values - base_transforms
