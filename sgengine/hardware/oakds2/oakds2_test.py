@@ -32,8 +32,13 @@ class OakDS2Test(OakD_S2):
         super().create_cam_rgb()
         super().create_imu()
         super().create_stereo()
-        t = Thread(target=super().run)
-        t.start()
+
+        async_thread = Thread(target=self._loop.run_forver())
+        async_thread.start()
+
+        super().run()
+        self._loop.stop()
+        async_thread.join()
 
 if __name__ == "__main__":
     oakds2 = OakDS2Test()
