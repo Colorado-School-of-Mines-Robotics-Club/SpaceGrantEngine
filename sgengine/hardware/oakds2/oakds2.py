@@ -136,7 +136,7 @@ class OakD_S2(ABC):
         self._nodes["mono_left"] = (mono_left, None)
         self._nodes["mono_right"] = (mono_right, None)
 
-    async def _handle_depth_frame(self, frame: np.ndarray) -> None:
+    async def _async_handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
         self._handle_depth_frame(frame)
     
