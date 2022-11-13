@@ -89,8 +89,10 @@ class OakD_S2(ABC):
     def _handle_imu_data(self, rv_values: np.ndarray, rv_timestamp: float) -> None:
         """Handles the IMU data"""
         pass
-    
-    def create_stereo(self, extended_disparity=False, subpixel=False, lr_check=True) -> None:
+
+    def create_stereo(
+        self, extended_disparity=False, subpixel=False, lr_check=True
+    ) -> None:
         """Creates the stereo node"""
 
         # Define sources and outputs
@@ -131,7 +133,7 @@ class OakD_S2(ABC):
         mono_left.out.link(depth.left)
         mono_right.out.link(depth.right)
         depth.disparity.link(xout_depth.input)
-        
+
         self._nodes["stereo"] = (depth, xout_depth)
         self._nodes["mono_left"] = (mono_left, None)
         self._nodes["mono_right"] = (mono_right, None)
@@ -139,7 +141,7 @@ class OakD_S2(ABC):
     async def _async_handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
         self._handle_depth_frame(frame)
-    
+
     @abstractmethod
     def _handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
@@ -169,6 +171,7 @@ class OakD_S2(ABC):
 
             while not self._stopped:
                 if video_queue is not None:
+                    print("video is enabled")
                     video_frame = video_queue.get()
                     video_frame = video_frame.getCvFrame()
 
@@ -180,6 +183,7 @@ class OakD_S2(ABC):
                     )
 
                 if imu_queue is not None:
+                    print("imu is enabled")
                     imu_data = imu_queue.get()
                     imu_packets = imu_data.packets
                     for packet in imu_packets:
@@ -197,8 +201,9 @@ class OakD_S2(ABC):
                                 )
                             )
                         )
-                
+
                 if depth_queue is not None:
+                    print("depth is enabled")
                     depth_frame = depth_queue.get()
                     depth_frame = depth_frame.getFrame()
 

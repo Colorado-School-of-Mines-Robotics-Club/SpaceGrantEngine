@@ -29,16 +29,11 @@ class OakDS2Test(OakD_S2):
             self.stop()
 
     def main(self):
-        super().create_cam_rgb()
-        super().create_imu()
-        super().create_stereo()
+        self.create_cam_rgb()
+        self.create_imu()
+        self.create_stereo()
+        self.run()
 
-        async_thread = Thread(target=self._loop.run_forever())
-        async_thread.start()
-
-        super().run()
-        self._loop.stop()
-        async_thread.join()
 
 if __name__ == "__main__":
     oakds2 = OakDS2Test()
