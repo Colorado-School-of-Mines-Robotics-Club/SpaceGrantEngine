@@ -86,7 +86,7 @@ class OakD_S2(ABC):
         self._handle_imu_data(rv_values, rv_timestamp)
 
     @abstractmethod
-    def _handle_imu_data(self, List[Tuple[np.ndarray, float]]) -> None:
+    def _handle_imu_data(self, imu_data: List[Tuple[np.ndarray, float]]) -> None:
         """Handles the IMU data"""
         pass
 
