@@ -11,12 +11,10 @@ from std_msgs.msg import String
 class AbstractNode(ABC, Node):
     """Abstract class for nodes of the sub modules to implement."""
 
-    def __init__(self, name: str, *args, **kwargs) -> None:
-        self._name: str = name
-        self._args = args
-        self._kwargs = kwargs
-        # setup ROS2 node
-        super().__init__(self._name, *self._args, **self._kwargs)
+    def __init__(self, name: str) -> None:
+        ABC.__init__(self)
+        Node.__init__(self, name)
+        self._name = name
 
         # dummy allocations
         self._publishers: Optional[Dict[str, Publisher]] = None

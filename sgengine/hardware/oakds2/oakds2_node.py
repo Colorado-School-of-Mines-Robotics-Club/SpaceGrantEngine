@@ -1,18 +1,21 @@
-from ....abstract_node import AbstractNode
-from .oakds2 import OakD_S2
+import numpy as np
+
+from ...abstract_node import AbstractNode
+from .oakds2 import OakDS2
 
 
-class OakDS2Node(AbstractNode, OakD_S2):
+class OakDS2Node(AbstractNode, OakDS2):
     """Node for handling the OAKD-S2 camera"""
 
-    def __init__(self, name: str, *args, **kwargs) -> None:
-        super().__init__(name, *args, **kwargs)
+    def __init__(self) -> None:
+        AbstractNode.__init__(self, "oakd_s2")
+        OakDS2.__init__(self)
 
     def _handle_color_video_frame(self, frame: np.ndarray) -> None:
         """Handles the color video frame"""
         self.publish("color_camera", frame)
 
-    def _handle_imu_data(self, rv_values: np.ndarray, rv_timestamp: float) -> None:
+    def _handle_imu_data(self, imu_data: List[Tuple[np.ndarray, float]]) -> None:
         """Handles the IMU data"""
         self.publish("imu", (rv_values, rv_timestamp))
 

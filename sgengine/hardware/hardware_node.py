@@ -1,7 +1,7 @@
 from ..abstract_node import AbstractNode
 
 
-class Hardwarenode(AbstractNode):
+class HardwareNode(AbstractNode):
     """Node for communicating with hardware"""
 
     def __init__(self, name: str, *args, **kwargs) -> None:

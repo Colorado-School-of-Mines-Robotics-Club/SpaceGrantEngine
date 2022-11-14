@@ -1,13 +1,12 @@
-from threading import Thread
 from typing import List, Tuple
 
 import cv2
 import numpy as np
 
-from oakds2 import OakD_S2
+from .oakds2 import OakDS2
 
 
-class OakDS2Test(OakD_S2):
+class OakDS2Test(OakDS2):
     """Node for handling the OAKD-S2 camera"""
 
     def __init__(self) -> None:
@@ -30,10 +29,16 @@ class OakDS2Test(OakD_S2):
             self.stop()
 
     def main(self):
+        """Main method"""
         self.create_cam_rgb()
         self.create_imu()
         self.create_stereo()
         self.run()
+
+    def stop(self):
+        """Stops the run loop"""
+        super().stop()
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

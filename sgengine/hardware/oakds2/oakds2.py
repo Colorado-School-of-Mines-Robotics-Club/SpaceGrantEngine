@@ -1,19 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, List, Optional, Union, Any
-
-try:
-    import uvloop
-
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-except ImportError:
-    pass
+from typing import Tuple, Dict, List
 
 import depthai as dai
 import numpy as np
-import cv2
 
 
-class OakD_S2(ABC):
+class OakDS2(ABC):
     """Class for the DepthAI OAK-D Stereo Camera"""
 
     def __init__(self):
