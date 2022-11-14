@@ -171,7 +171,6 @@ class OakD_S2(ABC):
 
             while not self._stopped:
                 if video_queue is not None:
-                    print("video is enabled")
                     video_frame = video_queue.get()
                     video_frame = video_frame.getCvFrame()
 
@@ -183,7 +182,6 @@ class OakD_S2(ABC):
                     )
 
                 if imu_queue is not None:
-                    print("imu is enabled")
                     imu_data = imu_queue.get()
                     imu_packets = imu_data.packets
                     for packet in imu_packets:
@@ -203,7 +201,6 @@ class OakD_S2(ABC):
                         )
 
                 if depth_queue is not None:
-                    print("depth is enabled")
                     depth_frame = depth_queue.get()
                     depth_frame = depth_frame.getFrame()
 
