@@ -1,6 +1,16 @@
-.PHONY: all clean install check ci test source messages
+.PHONY: all help clean install check ci test source messages
 
 all: clean install source
+
+help:
+	@echo "all - Cleans, installs, and re-sources all files for ROS. Default"
+	@echo "check - Checks the continous integration and tests"
+	@echo "clean - Clears old build files and logs"
+	@echo "install - Runs the ROS2 build system to install the project"
+	@echo "ci - Runs the continous integration locally, outputs errors"
+	@echo "test - Runs the ROS2 test suite with pytest"
+	@echo "source - Sources all ROS2 files and packages"
+	@echo "messages - Builds the sgengine_messages package which defines custom message types"
 
 check: ci test
 
