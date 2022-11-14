@@ -86,7 +86,7 @@ class OakD_S2(ABC):
         self._handle_imu_data(rv_values, rv_timestamp)
 
     @abstractmethod
-    def _handle_imu_data(self, rv_values: np.ndarray, rv_timestamp: float) -> None:
+    def _handle_imu_data(self, List[Tuple[np.ndarray, float]]) -> None:
         """Handles the IMU data"""
         pass
 
@@ -184,21 +184,23 @@ class OakD_S2(ABC):
                 if imu_queue is not None:
                     imu_data = imu_queue.get()
                     imu_packets = imu_data.packets
+                    imu_async_data: List[Tuple] = []
                     for packet in imu_packets:
                         rv_values = packet.rotationVector
                         rv_timestamp = rv_values.getTimestampDevice()
                         if base_timestamp is None:
                             base_timestamp = rv_timestamp
                         rv_timestamp = rv_timestamp - base_timestamp
+                        imu_async_data.append((rv_values, rv_timestamp.total_seconds()*1000.0))
 
-                        # do something with the imu data
-                        self._tasks.append(
-                            asyncio.ensure_future(
-                                self._async_handle_imu_data(
-                                    rv_values, rv_timestamp.total_seconds() * 1000.0
-                                )
+                    # do something with the imu data
+                    self._tasks.append(
+                        asyncio.ensure_future(
+                            self._async_handle_imu_data(
+                                rv_values, rv_timestamp.total_seconds() * 1000.0
                             )
                         )
+                    )
 
                 if depth_queue is not None:
                     depth_frame = depth_queue.get()

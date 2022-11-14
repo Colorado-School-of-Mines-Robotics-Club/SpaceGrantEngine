@@ -1,4 +1,5 @@
 from threading import Thread
+from typing import List, Tuple
 
 import cv2
 import numpy as np
@@ -18,9 +19,9 @@ class OakDS2Test(OakD_S2):
         if cv2.waitKey(1) == ord("q"):
             self.stop()
 
-    def _handle_imu_data(self, rv_values: np.ndarray, rv_timestamp: float) -> None:
+    def _handle_imu_data(self, imu_data: List[Tuple[np.ndarray, float]]) -> None:
         """Handles the IMU data"""
-        print(f"imu: rv_values:{rv_values}, rv_timestamp:{rv_timestamp}")
+        print(f"imu: {imu_data}")
 
     def _handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
