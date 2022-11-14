@@ -15,16 +15,17 @@ MyPy would enhance the static type checking further, but it is not done yet. Cou
 for someone to work on. (See the other workflow files in the .github folder)
 
 ## Using the Makefile
-`make help`
-Displays all possible commands for utilizing the Makefile.
+`make help` Displays all possible commands for utilizing the Makefile.
 
 The most used commands for typical work will be 
+
 `make` or `make all` (they are equivalent)
-`make ci`
 
-`make` or `make all` both build the package and allow importing "sgengine" in Python.
+`make ci` or `make check` (check also runs the ROS tests which are known to fail, for now)
 
-`make ci` will run the continous integration and let you know if there are any linting errors.
+`make` or `make all` Both build the package and allow importing "sgengine" in Python.
+
+`make ci` Will run the continous integration and let you know if there are any linting errors.
 These errors should be fixed before a pull request is opened to main, but are fine for the 
 testing and development phase.
 
