@@ -26,7 +26,6 @@ class OakDS2(ABC):
     def stop(self) -> None:
         """Stops the run loop and event loop"""
         self._stopped = True
-        self._loop.stop()
 
     def create_cam_rgb(self) -> None:
         """Creates the RGB camera node"""
