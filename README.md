@@ -36,6 +36,17 @@ testing and development phase.
 6. Add the functionality to an existing node OR create a new node
 7. Open a pull request :)
 
+## Resposibility of Modules
+1. configuration: Reads some config file and either generates a dictionary or uses ROS param services. TBD
+2. gui: Launches a basic web app for starting and stopping the robots autonomous functions, as well as allowing remote control. If progress makes it far enough this will also allow "on-the-fly" adjustments of the Raspberry Pi's GPIO pins. 
+3. hardware: This will contain code for handling all physical elements we will interact with. This includes RPi.GPIO, OAK-D cameras, RPi Picos, etc..
+4. map: This will handle aggregating data into a 2D map for pathfinding and/or planning to operate on.
+5. object_detection: The most open ended module, find objects from sensor data! Possible pathways include computer vision, machine learning, inferring on 3D maps, etc...
+6. odometry: This computes the robots current position in space.
+7. pathfinding: This module revolves around pathfinding algorithms. Classic examples are A* and Breadth-First-Search. These will all operate on some 2D plane.
+8. planning: This module contains tools for deciding how to move a robot given all other information. This could simply be algorithms for adjusting a map form object detections or something much more complex.
+9. utils: These contain generic utilities which are not explicity tied to a single module.
+
 ## Common Github Commands
 `git branch {branchname}` Creates a new local branch for development
 `git checkout {branchname}` Switches your current branch to the given branch
