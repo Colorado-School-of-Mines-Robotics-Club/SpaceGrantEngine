@@ -6,6 +6,7 @@ Python code should follow snake case, with proper public/private seperation in c
 Public/private in Python is done with an underscore at the front of an attribute. For example,
 
 `self._example: str = "example"` is private
+
 `self.example: str = "example"` is public
 
 All Python code should also be type hinted. Type hints allow static checkers to analyze the 
@@ -49,9 +50,15 @@ testing and development phase.
 
 ## Common Github Commands
 `git branch {branchname}` Creates a new local branch for development
+
 `git checkout {branchname}` Switches your current branch to the given branch
+
 `git add {files}` Adds files to git for tracking or adds updates
+
 `git commit -m {message}` Makes a commit with the given files added with a given message
+
 `git push` Pushes any local commits to the remote repository (Github) on your working branch
+
 `git push --set-upstream origin {branchname}` Pushes changes to the given branchname remotely, if the branch was created locally
+
 `git reset {--hard}` Resets back to the latest pushed changes in the remote repository (Github), DO NOT use if you have uncommited work.
