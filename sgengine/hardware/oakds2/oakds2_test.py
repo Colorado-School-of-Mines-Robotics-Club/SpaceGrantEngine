@@ -3,7 +3,10 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 
-from .oakds2 import OakDS2
+try:
+    from oakds2 import OakDS2  # type: ignore
+except ImportError:
+    from sgengine.hardware.oakds2 import OakDS2
 
 
 class OakDS2Test(OakDS2):
