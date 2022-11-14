@@ -31,7 +31,7 @@ testing and development phase.
 ## Typical Development Workflow
 1. Create a new branch
 2. Switch to using the new branch as the active one
-3. Create a subfolder with an "__init__.py" file 
+3. Create a subfolder with an init file
 4. Develop a class to add the given functionality OR a set of functions for the funcationality
 5. Create a test file which uses fake input to test the code
 6. Add the functionality to an existing node OR create a new node
