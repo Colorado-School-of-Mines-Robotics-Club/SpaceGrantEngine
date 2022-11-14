@@ -34,7 +34,7 @@ testing and development phase.
 4. Develop a class to add the given functionality OR a set of functions for the funcationality
 5. Create a test file which uses fake input to test the code
 6. Add the functionality to an existing node OR create a new node
-7. 
+7. Open a pull request :)
 
 ## Common Github Commands
 `git branch {branchname}` Creates a new local branch for development
