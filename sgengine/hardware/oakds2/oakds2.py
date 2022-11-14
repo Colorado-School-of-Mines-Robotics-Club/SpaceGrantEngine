@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Dict, List, Optional, Union, Any
-import asyncio
-from collections import deque
 
 try:
     import uvloop
@@ -21,10 +19,6 @@ class OakD_S2(ABC):
     def __init__(self):
         # pipeline
         self._pipeline: dai.Pipeline = dai.Pipeline()
-
-        # event loop
-        self._loop = asyncio.new_event_loop()
-        self._tasks: deque[asyncio.Task] = deque(maxlen=100)
 
         # storage for the nodes
         self._nodes: Dict[str, Tuple[dai.Node, dai.XLinkOut]] = {}
@@ -57,10 +51,6 @@ class OakD_S2(ABC):
 
         self._nodes["color_camera"] = (cam_rgb, xout_video)
 
-    async def _async_handle_color_video_frame(self, frame: np.ndarray) -> None:
-        """Handles the color video frame"""
-        self._handle_color_video_frame(frame)
-
     @abstractmethod
     def _handle_color_video_frame(self, frame: np.ndarray) -> None:
         """Handles the color video frame"""
@@ -78,12 +68,6 @@ class OakD_S2(ABC):
         imu.out.link(xout_imu.input)
 
         self._nodes["imu"] = (imu, xout_imu)
-
-    async def _async_handle_imu_data(
-        self, rv_values: np.ndarray, rv_timestamp: float
-    ) -> None:
-        """Handles the IMU data"""
-        self._handle_imu_data(rv_values, rv_timestamp)
 
     @abstractmethod
     def _handle_imu_data(self, imu_data: List[Tuple[np.ndarray, float]]) -> None:
@@ -138,16 +122,12 @@ class OakD_S2(ABC):
         self._nodes["mono_left"] = (mono_left, None)
         self._nodes["mono_right"] = (mono_right, None)
 
-    async def _async_handle_depth_frame(self, frame: np.ndarray) -> None:
-        """Handles the depth frame"""
-        self._handle_depth_frame(frame)
-
     @abstractmethod
     def _handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
         pass
 
-    async def _run(self) -> None:
+    def _run(self) -> None:
         with dai.Device(self._pipeline) as device:
 
             video_queue = None
@@ -175,44 +155,32 @@ class OakD_S2(ABC):
                     video_frame = video_frame.getCvFrame()
 
                     # do something with the video frame
-                    self._tasks.append(
-                        asyncio.ensure_future(
-                            self._async_handle_color_video_frame(video_frame)
-                        )
-                    )
+                    self._handle_color_video_frame(video_frame)
 
                 if imu_queue is not None:
                     imu_data = imu_queue.get()
                     imu_packets = imu_data.packets
-                    imu_async_data: List[Tuple] = []
+                    imu_list_data: List[Tuple] = []
                     for packet in imu_packets:
                         rv_values = packet.rotationVector
                         rv_timestamp = rv_values.getTimestampDevice()
                         if base_timestamp is None:
                             base_timestamp = rv_timestamp
                         rv_timestamp = rv_timestamp - base_timestamp
-                        imu_async_data.append((rv_values, rv_timestamp.total_seconds()*1000.0))
+                        imu_list_data.append(
+                            (rv_values, rv_timestamp.total_seconds() * 1000.0)
+                        )
 
                     # do something with the imu data
-                    self._tasks.append(
-                        asyncio.ensure_future(
-                            self._async_handle_imu_data(
-                                rv_values, rv_timestamp.total_seconds() * 1000.0
-                            )
-                        )
-                    )
+                    self._handle_imu_data(imu_list_data)
 
                 if depth_queue is not None:
                     depth_frame = depth_queue.get()
                     depth_frame = depth_frame.getFrame()
 
                     # do something with the depth frame
-                    self._tasks.append(
-                        asyncio.ensure_future(
-                            self._async_handle_depth_frame(depth_frame)
-                        )
-                    )
+                    self._handle_depth_frame(depth_frame)
 
     def run(self) -> None:
         """Runs the pipeline"""
-        self._loop.run_until_complete(self._run())
+        self._run()
