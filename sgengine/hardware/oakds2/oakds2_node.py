@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import numpy as np
 
 from ...abstract_node import AbstractNode
@@ -17,7 +19,7 @@ class OakDS2Node(AbstractNode, OakDS2):
 
     def _handle_imu_data(self, imu_data: List[Tuple[np.ndarray, float]]) -> None:
         """Handles the IMU data"""
-        self.publish("imu", (rv_values, rv_timestamp))
+        self.publish("imu", imu_data)
 
     def _handle_depth_frame(self, frame: np.ndarray) -> None:
         """Handles the depth frame"""
