@@ -34,6 +34,9 @@ class OakDS2Node(AbstractNode, OakDS2):
 
 
 def main(args=None):
+    """
+    Main function which exclusively launches the Oak node
+    """
     rclpy.init(args=args)
     oak = OakDS2Node()
     rclpy.spin(oak)
