@@ -1,4 +1,4 @@
-.PHONY: all help clean install check ci test source messages
+.PHONY: all help clean install check ci test source messages launch
 
 all: clean install source
 
@@ -36,3 +36,6 @@ source:
 
 messages:
 	$(MAKE) -C sgengine_messages
+
+launch:
+	ros2 launch sgengine launch.xml
