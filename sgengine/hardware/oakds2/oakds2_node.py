@@ -1,5 +1,6 @@
 from typing import List, Tuple
 
+import rclpy
 import numpy as np
 
 from ...abstract_node import AbstractNode
@@ -30,3 +31,13 @@ class OakDS2Node(AbstractNode, OakDS2):
         super().create_imu()
         super().create_stereo()
         super().run()
+
+def main(args=None):
+    rclpy.init(args=args)
+    oak = OakDS2Node()
+    rclpy.spin(oak)
+    oak.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
