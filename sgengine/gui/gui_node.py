@@ -25,5 +25,7 @@ class GUINode(AbstractNode):
         self.app.run()
         pass
 
+
 def main():
+    """Run test gui node"""
     print("test")
