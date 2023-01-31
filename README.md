@@ -63,3 +63,15 @@ testing and development phase.
 `git push --set-upstream origin {branchname}` Pushes changes to the given branchname remotely, if the branch was created locally
 
 `git reset {--hard}` Resets back to the latest pushed changes in the remote repository (Github), DO NOT use if you have uncommited work.
+
+
+## Building and Sourcing Package
+
+`make`
+
+`source install/setup.bash`
+
+Then you can call anything defined in the package
+
+`ros run sgengine test`
+
