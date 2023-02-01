@@ -1,6 +1,5 @@
 from flask import Flask
 import rclpy
-from rclpy.node import Node
 
 from ..abstract_node import AbstractNode
 

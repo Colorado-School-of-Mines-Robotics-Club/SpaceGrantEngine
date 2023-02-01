@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from functools import cached_property
 from typing import List, Any, Callable, Dict, Optional
 
