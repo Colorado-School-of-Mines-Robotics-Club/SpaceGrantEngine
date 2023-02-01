@@ -31,8 +31,8 @@ class AbstractNode(ABC, Node):
         If this is not called, this node acts as a normal ROS2 node
         """
         # setup local tracking
-        self._publishers: Dict[str, Publisher] = defaultdict(lambda: None)
-        self._subscribers: Dict[str, List[Subscription]] = defaultdict(lambda: [])
+        self._publishers: Dict[str, Publisher] = [lambda: None]
+        self._subscribers: Dict[str, List[Subscription]] = [lambda: []]
 
         # setup stuff for heartbeat
         self._heartbeat_publisher = self.create_publisher(String, "heartbeat", 10)
@@ -87,7 +87,6 @@ class AbstractNode(ABC, Node):
 
     def main(self) -> None:
         """Run the main function (or entry point) into the given Node."""
-        rclpy.init(args=None)
         self.init()
 
         # execute the end behavior of the AbstractNode implementations

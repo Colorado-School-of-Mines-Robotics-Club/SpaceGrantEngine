@@ -6,7 +6,7 @@
         {
             "label": "run gui",
             "type": "shell",
-            "command": "source ./install/setup.bash && ros2 run sgengine gui",
+            "command": "make && source ./install/setup.bash && ros2 run sgengine gui",
             "problemMatcher": []
         }
     ]

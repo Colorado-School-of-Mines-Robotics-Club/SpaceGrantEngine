@@ -1,4 +1,6 @@
 from flask import Flask
+import rclpy
+from rclpy.node import Node
 
 from ..abstract_node import AbstractNode
 
@@ -16,16 +18,15 @@ class GUINode(AbstractNode):
     def __init__(self, name: str, *args, **kwargs) -> None:
         super().__init__(name, *args, **kwargs)
         # TODO: define web server stuff and whatevers
-        print("Init")
-        pass
 
     def _main(self):
         # TODO: handle opening a web server and publishing stuff to it
-        print("Run")
         self.app.run()
-        pass
 
 
-def main():
+def main(args=None):
     """Run test gui node"""
-    print("test")
+    rclpy.init(args=args)
+    node = GUINode("GUI_Node")
+    node.main()
+    node.destroy_node()
