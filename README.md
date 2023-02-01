@@ -73,5 +73,13 @@ testing and development phase.
 
 Then you can call anything defined in the package
 
-`ros run sgengine test`
+`ros2 run sgengine test`
 
+## Creating a new node
+
+In the "setup.py" file at the bottom within the "setup" function there is an argument called entry_points. 
+
+Inside of entry_points there is a dictionary with a key entry called console_scripts. 
+
+Add an entry to console_scripts for each node you want to add. This allows you to directly call the node 
+from the CLI or via a launch file. 
