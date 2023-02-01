@@ -36,6 +36,7 @@ source:
 
 messages:
 	$(MAKE) -C sgengine_messages
+	source ./sgengine_messages/install/setup.bash
 
 launch:
-	ros2 launch sgengine launch.xml
+	ros2 launch launch.xml
