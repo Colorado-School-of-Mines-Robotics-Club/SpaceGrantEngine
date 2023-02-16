@@ -83,3 +83,19 @@ Inside of entry_points there is a dictionary with a key entry called console_scr
 
 Add an entry to console_scripts for each node you want to add. This allows you to directly call the node 
 from the CLI or via a launch file. 
+
+
+## Running the OAK-D S2 camera
+
+Ensure the camera is plugged in
+
+Navigate to the depthai-ws directory
+
+If there is no dpethai-ros folder in src, then run `git submodule init`, and then `git submodule clone` (or equivalent command)
+
+Execute the `./install_depthai_ros.sh` script
+
+Whenever you open a new terminal make sure to source the setup.bash file
+`source depthai-ws/install/setup.bash`
+
+Execute: `ros2 launch depthai_examples stereo_intertial_node.launch.py extended:=True monoResolution:=400p`
