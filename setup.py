@@ -35,7 +35,6 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "oak = sgengine.hardware.oakds2.oakds2_node:main",
             "test = sgengine.test_node:main",
         ],
     },
