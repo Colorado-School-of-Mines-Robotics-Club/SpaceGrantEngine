@@ -6,6 +6,9 @@ RUN apt-get update
 # Python setup:
 RUN apt-get install python3-pip -y
 
+# Dev environment setup:
+RUN apt-get install nano -y
+
 # Add ros user (with sudo)
 RUN adduser --disabled-password --gecos '' ros
 RUN adduser ros sudo
@@ -17,6 +20,9 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Switch to user ros
 USER ros
+
+# Add python alias
+RUN echo 'alias python="python3"' >> ~/.bashrc
 
 # source ros2
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc

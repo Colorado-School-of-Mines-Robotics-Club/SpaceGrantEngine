@@ -1,6 +1,8 @@
-.PHONY: all help clean install check ci test messages launch source
+.PHONY: all main help clean install check ci test source messages fast launch
 
-all: clean install source
+main: clean install source
+
+all: main messages fast
 
 help:
 	@echo "all - Cleans, installs, and re-sources all files for ROS. Default"
@@ -36,6 +38,9 @@ source:
 
 messages:
 	$(MAKE) -C sgengine_messages
+
+fast: 
+	$(MAKE) -C sgengine_fast
 
 launch:
 	ros2 launch launch.xml
