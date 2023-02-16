@@ -120,7 +120,6 @@ class OakDS2(ABC):
 
     def _run(self) -> None:
         with dai.Device(self._pipeline) as device:
-
             video_queue = None
             if self._nodes["color_camera"] is not None:
                 video_queue = device.getOutputQueue(
