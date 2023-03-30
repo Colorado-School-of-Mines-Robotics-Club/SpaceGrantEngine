@@ -5,22 +5,22 @@ from motors import Motor, Drivetrain
 # # Back Left
 # BLA = Pin(28, machine.Pin.IN, machine.Pin.PULL_UP)
 # BLB = Pin(22, machine.Pin.IN, machine.Pin.PULL_UP)
-# BLADIR = Pin(6, machine.Pin.OUT, machine.Pin.PULL_UP)
-# BLBDIR = Pin(7, machine.Pin.OUT, machine.Pin.PULL_UP)
-# BLpwm = Pin(8, machine.Pin.OUT, machine.Pin.PULL_UP)
+# BLADIR = Pin(13, machine.Pin.OUT, machine.Pin.PULL_UP)
+# BLBDIR = Pin(12, machine.Pin.OUT, machine.Pin.PULL_UP)
+# BLpwm = Pin(11, machine.Pin.OUT, machine.Pin.PULL_UP)
 # BLPWM = machine.PWM(BLpwm)
 # BLPWM.freq(5000)
-motorB = Motor(pwm=8, la=28, lb=22, adir=6, bdir=7, pwm_freq=5000)
+motorB = Motor(pwm=11, la=28, lb=22, adir=12, bdir=13, pwm_freq=5000)
 
 # #Front Left
 # FLA = Pin(0, machine.Pin.IN, machine.Pin.PULL_UP)
 # FLB = Pin(1, machine.Pin.IN, machine.Pin.PULL_UP)
-# FLADIR = Pin(4, machine.Pin.OUT, machine.Pin.PULL_UP)
-# FLBDIR = Pin(3, machine.Pin.OUT, machine.Pin.PULL_UP)
-# FLpwm = Pin(2, machine.Pin.OUT, machine.Pin.PULL_UP)
+# FLADIR = Pin(20, machine.Pin.OUT, machine.Pin.PULL_UP)
+# FLBDIR = Pin(19, machine.Pin.OUT, machine.Pin.PULL_UP)
+# FLpwm = Pin(18, machine.Pin.OUT, machine.Pin.PULL_UP)
 # FLPWM = machine.PWM(FLpwm)
 # FLPWM.freq(5000)
-motorA = Motor(pwm=2, la=0, lb=1, adir=4, bdir=3, pwm_freq=5000)
+motorA = Motor(pwm=18, la=0, lb=1, adir=19, bdir=20, pwm_freq=5000)
 
 drivetrain = Drivetrain([motorA, motorB])
 
