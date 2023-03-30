@@ -16,12 +16,12 @@ class ArucoFinder:
         :param camera_matrix: The camera matrix to use for finding the transformation matrix
         :param dist_coeffs: The distortion coefficients to use for finding the transformation matrix
         """
-        self._adict = cv2.arcuo.getPredefinedDictionary(aruco_dict)
+        self._adict = cv2.aruco.getPredefinedDictionary(aruco_dict)
         self._marker_size = marker_size
         self._camera_matrix = np.zeros((3, 3), dtype=np.float32) if camera_matrix is None else camera_matrix
         self._dist_coeffs = np.zeros((5, 1), dtype=np.float32) if dist_coeffs is None else dist_coeffs
 
-    def get_transform(self, image: np.ndarray) -> Optional[Tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    def get_transform(self, image: np.ndarray, draw=False) -> Optional[Tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
         Gets the transformation matrix to the aruco marker (assumes only one is in view)
         :param image: The image to find the marker in
@@ -39,6 +39,14 @@ class ArucoFinder:
         R, _ = cv2.Rodrigues(rvec)  # Get equivalent 3x3 rotation matrix
         t = tvec.T  # Get translation as a 3x1 vector
         H = np.block([[R, t], [np.zeros((1, 3)), 1]])
+
+        if draw:
+            cv2.aruco.drawDetectedMarkers(image, corners)
+            cv2.aruco.drawAxes(image, self._camera_matrix, self._dist_coeffs, rvec, tvec, 0.01)
+
+            cv2.imshow("ArUco Markers")
+            cv2.waitKey(1)
+
         return H, rvec, tvec
 
     @staticmethod
