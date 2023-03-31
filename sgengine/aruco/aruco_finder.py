@@ -2,6 +2,9 @@ from typing import Tuple, Optional
 
 import cv2
 import numpy as np
+import time
+from pathlib import Path
+import depthai as dai
 
 
 class ArucoFinder:
@@ -16,7 +19,7 @@ class ArucoFinder:
         :param camera_matrix: The camera matrix to use for finding the transformation matrix
         :param dist_coeffs: The distortion coefficients to use for finding the transformation matrix
         """
-        self._adict = cv2.arcuo.getPredefinedDictionary(aruco_dict)
+        self._adict = cv2.aruco.getPredefinedDictionary(aruco_dict)
         self._marker_size = marker_size
         self._camera_matrix = np.zeros((3, 3), dtype=np.float32) if camera_matrix is None else camera_matrix
         self._dist_coeffs = np.zeros((5, 1), dtype=np.float32) if dist_coeffs is None else dist_coeffs
@@ -93,3 +96,14 @@ class ArucoFinder:
             return H, rvec, tvec, self._get_distance(tvec), self._get_angle(tvec)
         except TypeError:
             return None
+
+
+def main():
+
+    aruco = ArucoFinder()
+
+
+    cap = cv2.VideoCapture(0) 
+
+if __name__ == "__main__":
+    main()
