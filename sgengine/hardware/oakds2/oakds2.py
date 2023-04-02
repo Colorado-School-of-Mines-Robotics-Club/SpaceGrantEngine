@@ -84,6 +84,7 @@ class OakDS2(ABC):
         mono_right.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
         mono_right.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 
+
         # Create a node that will produce the depth map (using disparity output as it's easier to visualize depth this way)
         depth.setDefaultProfilePreset(dai.node.StereoDepth.PresetMode.HIGH_DENSITY)
         # Options: MEDIAN_OFF, KERNEL_3x3, KERNEL_5x5, KERNEL_7x7 (default)
