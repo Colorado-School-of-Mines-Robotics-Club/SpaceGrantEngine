@@ -10,7 +10,7 @@ from motors import Motor, Drivetrain
 # BLpwm = Pin(11, machine.Pin.OUT, machine.Pin.PULL_UP)
 # BLPWM = machine.PWM(BLpwm)
 # BLPWM.freq(5000)
-motorB = Motor(pwm=11, la=28, lb=22, adir=12, bdir=13, pwm_freq=5000)
+motorB = Motor(pwm=8, la=28, lb=22, adir=7, bdir=6, pwm_freq=5000)
 
 # #Front Left
 # FLA = Pin(0, machine.Pin.IN, machine.Pin.PULL_UP)
@@ -20,7 +20,7 @@ motorB = Motor(pwm=11, la=28, lb=22, adir=12, bdir=13, pwm_freq=5000)
 # FLpwm = Pin(18, machine.Pin.OUT, machine.Pin.PULL_UP)
 # FLPWM = machine.PWM(FLpwm)
 # FLPWM.freq(5000)
-motorA = Motor(pwm=18, la=0, lb=1, adir=19, bdir=20, pwm_freq=5000)
+motorA = Motor(pwm=2, la=0, lb=1, adir=3, bdir=4, pwm_freq=5000)
 
 drivetrain = Drivetrain([motorA, motorB])
 
@@ -36,11 +36,16 @@ while True:
         # drive the drivetrain for the speed value as pwm and direction parsed to multiple
         pwms = []
         for i in range(drivetrain.num_motors()):
-            pwms.append(data[0])
+            pwm_val = data[0]
+            if data[1] == "backward":
+                pwm_val = -1 * pwm_val
+            pwms.append(pwm_val)
 
-        if data[1] == "backward":
-            for pwm in pwms:
-                pwm = -1 * pwm
+        # if data[1] == "backward":
+        #     for pwm in pwms:
+        #         pwm = -1 * pwm
+        
+        print(pwms)
         
         drivetrain.drive(pwms)
         

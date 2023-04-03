@@ -5,10 +5,11 @@ GPIO.setmode(GPIO.BCM)
 
 class Pico:
 
-    def __init__(self, interruptPin=5, baud=9600):
+    def __init__(self, interruptPin=5, baud=9600, port="/dev/ttyS0"):
         '''Creates a cummunication line to send instructions to the pi pico. The interrupt pin is the pin that will be used to tell the pico that it has received an instruction'''
         # UART
-        self.__serialLine = serial.Serial(port='/dev/ttyS0',
+        self.__port = port
+        self.__serialLine = serial.Serial(port=port,
                                             baudrate = baud,
                                             parity=serial.PARITY_NONE,
                                             stopbits=serial.STOPBITS_ONE,
