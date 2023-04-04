@@ -5,7 +5,8 @@ import numpy as np
 import time
 from pathlib import Path
 import depthai as dai
-
+import pyvirtualcam
+import math
 
 class ArucoFinder:
     """
@@ -96,14 +97,91 @@ class ArucoFinder:
             return H, rvec, tvec, self._get_distance(tvec), self._get_angle(tvec)
         except TypeError:
             return None
+        
 
+    def get_distance_vector(self, image: np.ndarray):
+        """
+        Returns the x,y,z away from the marker
+        """
+        arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_100)
+        arucoParams = cv2.aruco.DetectorParameters_create()
+        (corners, ids, rejected) = cv2.aruco.detectMarkers(image, arucoDict,
+            parameters=arucoParams)
+        color = (255, 255, 255)
+
+
+        K = np.array([
+            [3060.68701171875, 0.0, 1997.737548828125],
+            [0.0, 3060.68701171875, 860.2412109375],
+            [0.0, 0.0, 1.0]
+        ])
+
+        markerSizeInCM = .05
+
+        rvec , tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners, markerSizeInCM, K, None)
+
+        return tvec
+
+
+def getMonoCamera(pipeline, isLeft):
+    # Configure mono camera
+    mono = pipeline.createMonoCamera()
+ 
+    # Set Camera Resolution
+    mono.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
+    if isLeft:
+          # Get left camera
+        mono.setBoardSocket(dai.CameraBoardSocket.LEFT)
+    else :
+      # Get right camera
+        mono.setBoardSocket(dai.CameraBoardSocket.RIGHT)
+    return mono
+
+def getFrame(queue):
+  # Get frame from queue
+    frame = queue.get()
+  # Convert frame to OpenCV format and return
+    return frame.getCvFrame()
 
 def main():
 
-    aruco = ArucoFinder()
+    # Code to test the aruco detection class
+    markerSizeInCM = .05
+
+    arucoFinder = ArucoFinder()
+
+    pipeline = dai.Pipeline()
+    	
+    mono = pipeline.createMonoCamera()
+
+    xout = pipeline.createXLinkOut()
+    xout.setStreamName("left")
+    mono.out.link(xout.input)
 
 
-    cap = cv2.VideoCapture(0) 
+
+    with dai.Device(pipeline) as device:
+        queue = device.getOutputQueue(name="left")
+        frame = queue.get()
+        imOut = frame.getCvFrame()  
+    
+
+        while(True):
+
+            frame = queue.get()
+            imOut = frame.getCvFrame()
+
+            print(arucoFinder.get_distance_vector(imOut))
+
+            # Check for keyboard input
+            key = cv2.waitKey(1)
+            if key == ord('q'):
+                # Quit when q is pressed
+                break
+            elif key == ord('t'):
+                # Toggle display when t is pressed
+                sideBySide = not sideBySide
+
 
 if __name__ == "__main__":
     main()
