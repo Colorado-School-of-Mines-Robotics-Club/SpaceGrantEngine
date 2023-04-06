@@ -7,8 +7,9 @@ from steamcontroller import SteamController
 
 PICO = Pico()
 MAX = 32767
-LAST_PACKET=-1
-DELAY=0.25
+LAST_PACKET = -1
+DELAY = 0.25
+
 
 def joystick(_, sci):
     global LAST_PACKET
@@ -30,6 +31,7 @@ def joystick(_, sci):
 
     PICO.send_instruction(x, y)
 
+
 def main():
     try:
         sc = SteamController(callback=joystick)
@@ -40,6 +42,6 @@ def main():
         sys.stderr.write(str(e) + "\n")
         sys.exit(-1)
 
+
 if __name__ == "__main__":
     main()
-

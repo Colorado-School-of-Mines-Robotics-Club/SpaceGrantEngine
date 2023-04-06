@@ -14,9 +14,10 @@ class PicoNode(AbstractNode, PicoComms):
 
     def _main(self) -> None:
         def move_callback(msg: String) -> None:
-            PicoComms.send_direct(self, msg.data)
+            tokens = msg.data.split(" ")
+            PicoComms.send_move_command(self, tokens[0], tokens[1])
 
-        self.subscribe("pico/direct_command", move_callback)
+        self.subscribe("pico/move_command", move_callback)
         pass
 
 

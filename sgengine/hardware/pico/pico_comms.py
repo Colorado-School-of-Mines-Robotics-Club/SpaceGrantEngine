@@ -34,7 +34,22 @@ class PicoComms:
         GPIO.setup(interruptPin, GPIO.OUT)
         GPIO.output(interruptPin, 0)
 
-    def send_direct(self, msg: str) -> None:
+    def send_move_command(self, angular: float, linear: float):
+        """sends an instruction consisting of speed and direction to the pi pico"""
+        # format
+        instruction = str(angular) + "," + str(linear)
+        encoded = instruction.encode()
+        if "serial" not in sys.modules:
+            print(f"PicoComms sends {encoded}")
+            return
+        # send
+        self.__serialLine.write()
+        # raise IRQ
+        GPIO.output(self.__interruptPin, 1)
+        time.sleep(0.001)
+        GPIO.output(self.__interruptPin, 0)
+
+    def send_str_direct(self, msg: str) -> None:
         """directly sends string message to pico"""
         encoded = msg.encode()
         if "serial" not in sys.modules:

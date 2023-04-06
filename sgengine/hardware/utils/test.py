@@ -1,26 +1,32 @@
-from pi_comms import Pico
-from RPi import GPIO
-import time
+# pylint: skip-file
 
-BOTH=False
+from ..pico.pico_comms import PicoComms
 
 try:
-    pico1 = Pico(interruptPin=5, baud=9600, port="/dev/ttyS0")
+    from RPi import GPIO
+except ModuleNotFoundError:
+    print("ERROR: Could not load RPi library!")
+import time
+
+BOTH = False
+
+try:
+    pico1 = PicoComms(interruptPin=5, baud=9600, port="/dev/ttyS0")
     if BOTH:
-        ico2 = Pico(interruptPin=6, baud=9600, port="/dev/ttyAMA0")
+        pico2 = PicoComms(interruptPin=6, baud=9600, port="/dev/ttyAMA0")
 
     while True:
-        pico1.send_instruction(65000, "forward")
+        pico1.send_move_command(65000, "forward")
         print("Pico1 sent, forward")
         if BOTH:
-            pico2.send_instruction(65000, "forward")
+            pico2.send_move_command(65000, "forward")
             print("Pico2 sent, forward")
         time.sleep(2)
 
-        pico1.send_instruction(65000, "backward")
+        pico1.send_move_command(65000, "backward")
         print("Pico1 sent, backward")
         if BOTH:
-            pico2.send_instruction(65000, "backward")
+            pico2.send_move_command(65000, "backward")
             print("Pico2 sent, backward")
         time.sleep(2)
 except KeyboardInterrupt:

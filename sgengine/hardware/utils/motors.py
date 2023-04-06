@@ -1,5 +1,5 @@
 import machine
-from machine import Pin, PWM
+from machine import Pin
 import time
 import math
 
@@ -22,7 +22,7 @@ class Motor:
             self._ladir.value(0)
             self._lbdir.value(1)
         self._pwm.duty_u16(int(math.fabs(pwm_val)))
-        
+
 
 class Drivetrain:
     def __init__(self, motors):
@@ -31,7 +31,7 @@ class Drivetrain:
     def drive(self, pwm_vals):
         for pwm, motor in zip(pwm_vals, self._motors):
             motor.drive(pwm)
-    
+
     def stop(self):
         for motor in self._motors:
             motor.drive(0)
