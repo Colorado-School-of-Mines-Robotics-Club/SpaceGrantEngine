@@ -1,10 +1,15 @@
 # pylint: skip-file
 
+import sys
 import time
-import serial
-from RPi import GPIO
 
-GPIO.setmode(GPIO.BCM)
+try:
+    import serial
+    from RPi import GPIO
+
+    GPIO.setmode(GPIO.BCM)
+except ModuleNotFoundError:
+    print("WARNING: Could not load serial or RPi library, commands will not be sent")
 
 
 class PicoComms:
@@ -12,6 +17,9 @@ class PicoComms:
         """Creates a cummunication line to send instructions to the pi pico.
         The interrupt pin is the pin that will be used to tell the pico that it has received an instruction
         """
+        if "serial" not in sys.modules:
+            print("WARNING: PicoComms running in dummy mode")
+            return
         # UART
         self.__serialLine = serial.Serial(
             port=serialPort,
@@ -30,8 +38,12 @@ class PicoComms:
         """sends an instruction consisting of speed and direction to the pi pico"""
         # format
         instruction = str(speed) + "," + str(direction)
+        encoded = instruction.encode()
+        if "serial" not in sys.modules:
+            print(f"PicoComms sends {encoded}")
+            return
         # send
-        self.__serialLine.write(instruction.encode())
+        self.__serialLine.write(encoded)
         # raise IRQ
         GPIO.output(self.__interruptPin, 1)
         time.sleep(0.001)
