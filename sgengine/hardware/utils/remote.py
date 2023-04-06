@@ -1,11 +1,11 @@
 import time
 import sys
 
-from pi_comms import Pico
+from ..pico.pico_comms import PicoComms
 from steamcontroller import SteamController
 
 
-PICO = Pico()
+PICO = PicoComms()
 MAX = 32767
 LAST_PACKET = -1
 DELAY = 0.25
@@ -29,7 +29,7 @@ def joystick(_, sci):
 
     print(f"{x},{y}")
 
-    PICO.send_instruction(x, y)
+    PICO.send_move_command(x, y)
 
 
 def main():
