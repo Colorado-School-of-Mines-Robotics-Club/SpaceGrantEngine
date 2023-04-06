@@ -26,30 +26,26 @@ drivetrain = Drivetrain([motorA, motorB])
 
 pi_reader = PiReader()
 
+MAX_PWM = 65500
+
 while True:
-    
     if pi_reader.any():
         print("Received data")
         data = pi_reader.read()
         print(data)
 
         # drive the drivetrain for the speed value as pwm and direction parsed to multiple
-        pwms = []
-        for i in range(drivetrain.num_motors()):
-            pwm_val = data[0]
-            if data[1] == "backward":
-                pwm_val = -1 * pwm_val
-            pwms.append(pwm_val)
+        pwms = [int(data[0] * MAX_PWM), int(data[1] * MAX_PWM)]  
 
         # if data[1] == "backward":
         #     for pwm in pwms:
         #         pwm = -1 * pwm
         
         print(pwms)
-        
+        print()
+
         drivetrain.drive(pwms)
-        
-    time.sleep(0.5)
+    time.sleep(0.001)
 
 # LeftInst = [65536,-65536,-65536]
 # RightInst = [-65536,65536,-65536]

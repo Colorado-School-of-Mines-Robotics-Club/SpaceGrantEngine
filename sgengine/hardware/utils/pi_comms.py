@@ -20,10 +20,10 @@ class Pico:
         GPIO.setup(interruptPin, GPIO.OUT)
         GPIO.output(interruptPin, 0)
 
-    def send_instruction(self, speed=0, direction='forward'):
+    def send_instruction(self, angular: float, linear: float):
         '''sends an instruction consisting of speed and direction to the pi pico'''
         # format
-        instruction = str(speed) + ',' + str(direction)
+        instruction = str(angular) + ',' + str(linear)
         # send
         self.__serialLine.write(instruction.encode())
         # raise IRQ

@@ -9,8 +9,8 @@ class PiReader:
         if self.__comm.any():
             msg = self.__comm.read().decode('utf-8')
             msg = msg.split(',')
-            self.__speed = int(msg[0])
-            self.__direction = msg[1]
+            self.__angular = float(msg[0])
+            self.__linear = float(msg[1])
             self.__readable = True         
 
     def __init__(self, IRQ_Pin=19, tx_pin=20, rx_pin=21, uart_bus=1):
@@ -25,17 +25,17 @@ class PiReader:
         self.__InstructionRequest = pin(IRQ_Pin, pin.IN)
         self.__InstructionRequest.irq(handler=self.__receiveInstruction, trigger=pin.IRQ_FALLING)
         # data
-        self.__speed = 0
-        self.__direction = 'forward'
+        self.__angular = 0.0
+        self.__linear = 0.0
         self.__readable = False
 
-    def speed(self):
-        '''get the current speed instruction'''
-        return self.__speed
+    def angular(self):
+        '''get the current angular instruction'''
+        return self.__angular
     
-    def direction(self):
-        '''get the current direction instruction'''
-        return self.__direction
+    def linear(self):
+        '''get the current linear instruction'''
+        return self.__linear
     
     def any(self):
         '''returns true if there is a new readable instruction issued'''
@@ -45,6 +45,6 @@ class PiReader:
         '''If a new instruction has been issued, returns a tuple with the speed and direction'''
         if self.__readable:
             self.__readable = False
-            return self.__speed, self.__direction
+            return self.__angular, self.__linear
         else:
             return None
