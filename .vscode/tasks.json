@@ -8,6 +8,12 @@
             "type": "shell",
             "command": "make && source ./install/setup.bash && ros2 run sgengine gui",
             "problemMatcher": []
+        },
+        {
+            "label": "run pico node",
+            "type": "shell",
+            "command": "make && source ./install/setup.bash && ros2 run sgengine pico",
+            "problemMatcher": []
         }
     ]
 }
