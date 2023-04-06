@@ -30,8 +30,8 @@ class AbstractNode(ABC, Node):
         If this is not called, this node acts as a normal ROS2 node
         """
         # setup local tracking
-        self._publishers: Dict[str, Publisher] = dict()
-        self._subscribers: Dict[str, List[Subscription]] = dict()
+        self._publishers: Dict[str, Publisher] = {}
+        self._subscribers: Dict[str, List[Subscription]] = {}
 
         # setup stuff for heartbeat
         # self._heartbeat_publisher = self.create_publisher(String, "heartbeat", 10)
@@ -60,7 +60,9 @@ class AbstractNode(ABC, Node):
         """Return the ROS logger instances."""
         return self.get_logger()
 
-    def _create_publisher(self, topic: str, data: Any, msg_datatype: Any = String, queue_size=10) -> None:
+    def _create_publisher(
+        self, topic: str, data: Any, msg_datatype: Any = String, queue_size=10
+    ) -> None:
         assert data is not None
         self._publishers[topic] = self.create_publisher(msg_datatype, topic, queue_size)
 
@@ -68,14 +70,16 @@ class AbstractNode(ABC, Node):
         """Publish a given data packet to a given topic."""
         assert self._initialized
         if self._publishers.get(topic) is None:
-            self._create_publisher(topic, data)
+            self._create_publisher(topic, data, msg_datatype)
         self._publishers[topic].publish(data)
 
     def _create_subscriber(
         self, topic: str, callback: Callable, msg_datatype: Any = String, queue_size=10
     ) -> None:
         assert msg_datatype is not None
-        self._subscribers[topic] = self.create_subscription(String, topic, callback, queue_size)
+        self._subscribers[topic] = self.create_subscription(
+            String, topic, callback, queue_size
+        )
 
     def subscribe(
         self, topic: str, callback: Callable, msg_datatype: Any = String, queue_size=10

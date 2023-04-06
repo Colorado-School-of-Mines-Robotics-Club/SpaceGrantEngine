@@ -1,9 +1,9 @@
 import rclpy
 
+from std_msgs.msg import String
 from ...abstract_node import AbstractNode
 from .pico_comms import PicoComms
 
-from std_msgs.msg import String
 
 class PicoNode(AbstractNode, PicoComms):
     """Node for handling Raspberry Pi Pico"""
@@ -14,13 +14,9 @@ class PicoNode(AbstractNode, PicoComms):
 
     def _main(self) -> None:
         def move_callback(msg: String) -> None:
-            """
-            Message must be in format 'speed direction'
-            """
-            tokens = msg.data.split(" ")
-            PicoComms.send_instruction(self, tokens[0], tokens[1])
+            PicoComms.send_direct(self, msg.data)
 
-        self.subscribe("pico_move", move_callback)
+        self.subscribe("pico/direct_command", move_callback)
         pass
 
 
