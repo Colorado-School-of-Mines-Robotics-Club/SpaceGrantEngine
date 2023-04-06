@@ -3,11 +3,13 @@ from aruco_finder import ArucoFinder
 import numpy as np
 
 
-K = np.array([
-                [3060.68701171875, 0.0, 1997.737548828125],
-                [0.0, 3060.68701171875, 860.2412109375],
-                [0.0, 0.0, 1.0]
-            ])
+K = np.array(
+    [
+        [3060.68701171875, 0.0, 1997.737548828125],
+        [0.0, 3060.68701171875, 860.2412109375],
+        [0.0, 0.0, 1.0],
+    ]
+)
 
 af = ArucoFinder(marker_size=0.2, camera_matrix=K)
 
@@ -45,8 +47,10 @@ class Camera:
         # create the directory for this data
         self.data_dir = os.path.join(os.getcwd(), f"data/{int(time.time())}")
         # os.mkdir(self.data_dir)
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        self.writer = cv2.VideoWriter(os.path.join(self.data_dir, 'output.avi'), fourcc, 30.0, (1920, 1080))
+        fourcc = cv2.VideoWriter_fourcc(*"XVID")
+        self.writer = cv2.VideoWriter(
+            os.path.join(self.data_dir, "output.avi"), fourcc, 30.0, (1920, 1080)
+        )
 
         # Define sources and outputs
         self.imu = self.pipeline.create(dai.node.IMU)
@@ -75,7 +79,7 @@ class Camera:
             video = device.getOutputQueue(name="video", maxSize=1, blocking=False)
 
             def timeDeltaToMilliS(delta) -> float:
-                return delta.total_seconds()*1000
+                return delta.total_seconds() * 1000
 
             # Output queue for imu bulk packets
             imuQueue = device.getOutputQueue(name="imu", maxSize=50, blocking=False)
@@ -88,7 +92,9 @@ class Camera:
                 # write frame
                 # self.writer.write(frame)
 
-                imuData = imuQueue.get()  # blocking call, will wait until a new data has arrived
+                imuData = (
+                    imuQueue.get()
+                )  # blocking call, will wait until a new data has arrived
 
                 imuPackets = imuData.packets
                 for imuPacket in imuPackets:
@@ -100,14 +106,16 @@ class Camera:
                     rvTs = rvTs - baseTs
 
                     imuF = "{:.06f}"
-                    tsF  = "{:.03f}"
+                    tsF = "{:.03f}"
 
                     data_line = f"ts: {tsF.format(timeDeltaToMilliS(rvTs))}, "
                     data_line += f"i: {imuF.format(rVvalues.i)}, "
                     data_line += f"j: {imuF.format(rVvalues.j)}, "
                     data_line += f"k: {imuF.format(rVvalues.k)}, "
                     data_line += f"real: {imuF.format(rVvalues.real)}, "
-                    data_line += f"acc: {imuF.format(rVvalues.rotationVectorAccuracy)}\n"
+                    data_line += (
+                        f"acc: {imuF.format(rVvalues.rotationVectorAccuracy)}\n"
+                    )
 
                     # f.write(data_line)
 
@@ -117,6 +125,7 @@ class Camera:
                 _ = af.get_transform(frame, draw=True)
 
         # self.writer.release()
+
 
 if __name__ == "__main__":
     cam = Camera()

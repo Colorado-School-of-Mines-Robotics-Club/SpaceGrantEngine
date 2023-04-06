@@ -35,12 +35,12 @@ while True:
         print(data)
 
         # drive the drivetrain for the speed value as pwm and direction parsed to multiple
-        pwms = [int(data[0] * MAX_PWM), int(data[1] * MAX_PWM)]  
+        pwms = [int(data[0] * MAX_PWM), int(data[1] * MAX_PWM)]
 
         # if data[1] == "backward":
         #     for pwm in pwms:
         #         pwm = -1 * pwm
-        
+
         print(pwms)
         print()
 
