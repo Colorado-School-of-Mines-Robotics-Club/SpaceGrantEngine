@@ -12,7 +12,6 @@ REVERSE_MOTOR_1 = False
 REVERSE_MOTOR_2 = False
 
 def parse_data_to_pwm(data):
-    global drivetrain
     angular, linear = data
     # have a binary decision about whether we should oppose the wheels
     # this is where we have the opposing movement
@@ -34,7 +33,7 @@ def parse_data_to_pwm(data):
     # ------    ------
     # """
     if math.fabs(angular) > TURN_CUTOFF:
-        pwm = MAX_PWM * linear
+        pwm = MAX_PWM * angular
         if angular > 0 and IS_LEFT:
             pwms = [pwm, pwm]
         elif angular > 0 and not IS_LEFT:
@@ -61,7 +60,7 @@ def parse_data_to_pwm(data):
     # ------    ------
     # """
     elif math.fabs(angular) > TURN_NOISE:
-        pwm = MAX_PWM * linear
+        pwm = MAX_PWM * ((linear + angular) / 2)
         if angular > 0 and IS_LEFT:
             pwms = [pwm, pwm]
         elif angular > 0 and not IS_LEFT:
