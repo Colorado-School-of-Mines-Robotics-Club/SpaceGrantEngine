@@ -14,6 +14,12 @@
             "type": "shell",
             "command": "make && source ./install/setup.bash && ros2 run sgengine pico",
             "problemMatcher": []
+        },
+        {
+            "label": "run steamcontroller node",
+            "type": "shell",
+            "command": "make && source ./install/setup.bash && ros2 run sgengine steamcontroller",
+            "problemMatcher": []
         }
     ]
 }

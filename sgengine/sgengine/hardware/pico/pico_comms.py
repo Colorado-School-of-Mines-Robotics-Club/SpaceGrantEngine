@@ -43,7 +43,7 @@ class PicoComms:
             print(f"PicoComms sends {encoded}")
             return
         # send
-        self.__serialLine.write()
+        self.__serialLine.write(encoded)
         # raise IRQ
         GPIO.output(self.__interruptPin, 1)
         time.sleep(0.001)
