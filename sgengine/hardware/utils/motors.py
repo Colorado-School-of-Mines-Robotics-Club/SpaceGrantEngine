@@ -1,4 +1,5 @@
-from machine import Pin, PWM
+import machine
+from machine import Pin
 import time
 import math
 
@@ -44,7 +45,7 @@ class Drivetrain:
             else:
                 pwm = min(pwm, self._max_pwm)
             motor.drive(pwm)
-    
+
     def stop(self):
         for motor in self._motors:
             motor.drive(0)

@@ -36,7 +36,8 @@ setup(
     entry_points={
         "console_scripts": [
             "test = sgengine.test_node:main",
-            "gui  = sgengine.gui.gui_node:main"
+            "gui  = sgengine.gui.gui_node:main",
+            "pico = sgengine.hardware.pico.pico_node:main"
         ],
     },
 )
