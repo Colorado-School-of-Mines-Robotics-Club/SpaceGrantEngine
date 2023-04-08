@@ -13,7 +13,7 @@ jobs:
     - name: Install Python
       run: |
         apt-get update
-        apt-get install python3-pip -y
+        apt-get install python3-pip python3-colcon-clean -y
     - name: Install dependencies
       run: |
         export PATH="/opt/hostedtoolcache/Python/3.9.15/x64/lib/sgengine:$PATH"
@@ -42,5 +42,5 @@ jobs:
         # Logging fstring interpolation
         # Useless parent or super() delegation 
 
-        python3 -m pylint ./sgengine --ignore-paths=sgengine/hardware/utils --ignore-paths=sgengine/aruco --disable=C0303,C0114,W0401,R0902,R0904,C0305,W0703,C0200,R0913,R0914,W0107,W1203,W0246,W0511
+        python3 -m pylint ./sgengine/sgengine --ignore-paths=sgengine/sgengine/hardware/utils --ignore-paths=sgengine/sgengine/aruco --disable=C0303,C0114,W0401,R0902,R0904,C0305,W0703,C0200,R0913,R0914,W0107,W1203,W0246,W0511
         

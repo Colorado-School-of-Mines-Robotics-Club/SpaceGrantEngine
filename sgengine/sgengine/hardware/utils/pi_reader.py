@@ -1,4 +1,3 @@
-import machine
 from machine import UART
 from machine import Pin as pin
 
