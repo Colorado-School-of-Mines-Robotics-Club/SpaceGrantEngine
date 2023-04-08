@@ -1,20 +1,14 @@
 from setuptools import setup
+from setuptools.command.easy_install import EasyInstallDeprecationWarning
+from setuptools._deprecation_warning import SetuptoolsDeprecationWarning
 import os
 from glob import glob
+import warnings
+warnings.filterwarnings("ignore", category=EasyInstallDeprecationWarning)
+warnings.filterwarnings("ignore", category=SetuptoolsDeprecationWarning)
 
 
 package_name = "sgengine"
-
-package_dirs = [package_name]
-for root, dirs, files in os.walk(package_name):
-    for directory in dirs:
-        if directory == "__pycache__":
-            continue
-        package_dirs.append(os.path.join(root, directory))
-package_dirs = [pack.replace("//", ".") for pack in package_dirs if "__pycache__ not in pack"]
-package_dirs = [pack.replace("/", ".") for pack in package_dirs if "__pycache__ not in pack"]
-package_dirs = [pack.replace("\\", ".") for pack in package_dirs if "__pycache__ not in pack"]
-packages = [*package_dirs]
 
 setup(
     name=package_name,
