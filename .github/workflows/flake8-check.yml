@@ -36,7 +36,7 @@ jobs:
         # Too many blank lines
         # Whitespace before :, Line break occurred before a binary operator (Black breaks this)
 
-        python3 -m flake8 --exclude=sgengine/hardware/utils --exclude=sgengine/aruco ./sgengine --count --select=E9,F63,F7,F82,F401,W292,E275,F403 --extend-ignore=W293,W291,E303,E203,W503 --show-source --statistics
+        python3 -m flake8 --exclude=sgengine/sgengine/hardware/utils --exclude=sgengine/sgengine/aruco ./sgengine/sgengine --count --select=E9,F63,F7,F82,F401,W292,E275,F403 --extend-ignore=W293,W291,E303,E203,W503 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        python3 -m flake8 --exclude=sgengine/hardware/utils --exclude=sgengine/aruco ./sgengine --count --exit-zero --max-complexity=10 --max-line-length=140 --statistics
+        python3 -m flake8 --exclude=sgengine/sgengine/hardware/utils --exclude=sgengine/sgengine/aruco ./sgengine/sgengine --count --exit-zero --max-complexity=10 --max-line-length=140 --statistics
         
