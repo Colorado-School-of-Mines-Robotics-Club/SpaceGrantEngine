@@ -1,16 +1,22 @@
 {
     "context": "../",
     "dockerFile": "Dockerfile",
-    "extensions": [
-        "ms-azuretools.vscode-docker",
-        "ms-python.python",
-        "ms-vscode.cpptools",
-        "twxs.cmake",
-        "ms-vscode.cmake-tools",
-        "ms-iot.vscode-ros",
-        "smilerobotics.urdf",
-        "yzhang.markdown-all-in-one"
-    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "twxs.cmake",
+                "ms-vscode.cmake-tools",
+                "ms-iot.vscode-ros",
+                "smilerobotics.urdf",
+                "yzhang.markdown-all-in-one"
+            ]
+        }
+    },
+    // Allow USB in container
+    "runArgs": ["--device-cgroup-rule", "c 189:* rmw", "-v", "/dev/bus/usb:/dev/bus/usb"],
     
     // This will launch the container as a non-root user
     "remoteUser" : "ros"
