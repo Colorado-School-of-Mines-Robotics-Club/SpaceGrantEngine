@@ -1,12 +1,17 @@
 # pylint: skip-file
 
+import sys
 import time
 import rclpy
 
 # from std_msgs.msg import String
 from sgengine_messages.msg import TwoFloat
 from rclpy.node import Node
-from steamcontroller import SteamController
+
+try:
+    from steamcontroller import SteamController
+except ModuleNotFoundError:
+    print("ERROR: Could not load steamcontroller library, node will not launch")
 
 
 class SteamControllerNode(Node):
@@ -49,6 +54,8 @@ def main(args=None):
     """
     Main function which exclusively launches the SteamController node
     """
+    if "steamcontroller" not in sys.modules:
+        return
     rclpy.init(args=args)
     controller = SteamControllerNode()
     rclpy.spin(controller)

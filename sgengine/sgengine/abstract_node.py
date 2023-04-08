@@ -74,15 +74,15 @@ class AbstractNode(ABC, Node):
         self._publishers[topic].publish(data)
 
     def _create_subscriber(
-        self, topic: str, callback: Callable, msg_datatype: Any = String, queue_size=10
+        self, topic: str, callback: Callable, msg_datatype: Any, queue_size=10
     ) -> None:
         assert msg_datatype is not None
         self._subscribers[topic] = self.create_subscription(
-            String, topic, callback, queue_size
+            msg_datatype, topic, callback, queue_size
         )
 
     def subscribe(
-        self, topic: str, callback: Callable, msg_datatype: Any = String, queue_size=10
+        self, topic: str, callback: Callable, msg_datatype: Any, queue_size=10
     ) -> None:
         """Add a callback function as a subscriber to a given topic."""
         assert self._initialized
