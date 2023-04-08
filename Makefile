@@ -1,27 +1,18 @@
-.PHONY: all main help clean install check ci test source messages fast launch
+.PHONY: engine all check clean test ci help
 
-main: install source
+engine: 
+	colcon build --symlink-install --packages-select sgengine sgengine_messages
 
-all: main messages fast
+all:
+	colcon build --symlink-install
 
-help:
-	@echo "all - Cleans, installs, and re-sources all files for ROS. Default"
-	@echo "check - Checks the continous integration and tests"
-	@echo "clean - Clears old build files and logs"
-	@echo "install - Runs the ROS2 build system to install the project"
-	@echo "ci - Runs the continous integration locally, outputs errors"
-	@echo "test - Runs the ROS2 test suite with pytest"
-	@echo "source - Sources all ROS2 files and packages"
-	@echo "messages - Builds the sgengine_messages package which defines custom message types"
+clean:
+	colcon clean workspace -y
 
 check: ci test
 
-clean:
-	rm -rf build
-	rm -rf log
-
-install: 
-	colcon build --symlink-install
+test_engine:
+	colcon test --event-handlers console_direct+ --packages-select sgengine sgengine_messages
 
 ci:
 	python3 -m black ./sgengine/sgengine
@@ -30,17 +21,10 @@ ci:
 	python3 -m flake8 --exclude=sgengine/sgengine/hardware/utils --exclude=sgengine/sgengine/aruco ./sgengine/sgengine --count --exit-zero --max-complexity=10 --max-line-length=140 --statistics
 	@echo "DONE - CI PASSED"
 
-test:
-	colcon test --event-handlers console_direct+
-
-source:
-	$(./source.sh)
-
-messages:
-	$(MAKE) -C sgengine_messages
-
-fast: 
-	$(MAKE) -C sgengine_fast
-
-launch:
-	ros2 launch launch.xml
+help:
+	@echo "engine - Builds all sgengine packages (Default)"
+	@echo "all - Builds all packages (not just sgengine)"
+	@echo "clean - Clears the workspace (build, install, and log dirs)"
+	@echo "check - Runs test & ci"
+	@echo "test_engine - Runs the ROS2 test suite on sgengine packages"
+	@echo "ci - Runs the continous integration locally, outputs errors"

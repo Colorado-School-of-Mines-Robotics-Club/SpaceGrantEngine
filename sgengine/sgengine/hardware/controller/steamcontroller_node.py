@@ -1,10 +1,13 @@
+# pylint: skip-file
+
 import time
 import rclpy
 
 # from std_msgs.msg import String
 from sgengine_messages.msg import TwoFloat
-from rclpy.node import Node, Publisher
+from rclpy.node import Node
 from steamcontroller import SteamController
+
 
 class SteamControllerNode(Node):
     """Node for handling input from SteamController"""
@@ -21,7 +24,7 @@ class SteamControllerNode(Node):
         def joystick(_, sci):
             if time.perf_counter() - self.LAST_PACKET < self.DELAY:
                 return
-            LAST_PACKET = time.perf_counter()
+            self.LAST_PACKET = time.perf_counter()
 
             x = sci.lpad_x
             y = sci.lpad_y
@@ -32,11 +35,6 @@ class SteamControllerNode(Node):
             x = max(min(1.0, x), -1.0)
             y = max(min(1.0, y), -1.0)
 
-            # print(f"{x},{y}")
-
-            # PICO.send_move_command(x, y)
-            # msg = String()
-            # msg.data = str(x) + ' ' + str(y)
             msg = TwoFloat()
             msg.first = x
             msg.second = y

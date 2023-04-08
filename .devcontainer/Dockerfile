@@ -1,13 +1,13 @@
 FROM osrf/ros:humble-desktop
 
 # Update repositories
-RUN apt-get update
+RUN apt-get update && apt-get upgrade -y
 
 # Python setup:
 RUN apt-get install python3-pip -y
 
-# Dev environment setup:
-RUN apt-get install nano -y
+# Install extra tools:
+RUN apt-get install nano wget curl neofetch python3-colcon-clean -y
 
 # Add ros user (with sudo)
 RUN adduser --disabled-password --gecos '' ros
@@ -26,3 +26,10 @@ RUN echo 'alias python="python3"' >> ~/.bashrc
 
 # source ros2
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+# Install python packages from requirements files
+COPY ../requirements-ci.txt /home/ros/
+RUN pip3 install -r /home/ros/requirements-ci.txt
+COPY ../requirements.txt /home/ros/
+RUN pip3 install -r /home/ros/requirements.txt
+
