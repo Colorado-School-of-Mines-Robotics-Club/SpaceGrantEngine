@@ -1,6 +1,8 @@
 # SpaceGrantEngine
 'Engine' for handling concurrency and other 'low-level' tasks 
 
+See [ROS Humble](https://docs.ros.org/en/humble/index.html) documentation for details on how to use ros2.  
+
 ## Style Guide
 Python code should follow snake case, with proper public/private seperation in class development.
 Public/private in Python is done with an underscore at the front of an attribute. For example,
@@ -19,11 +21,11 @@ for someone to work on. (See the other workflow files in the .github folder)
 
 The most used commands for typical work will be 
 
-`make` or `make all` (they are equivalent)
+`make` or `make engine` builds sgengine packages (they are equivalent)
 
-`make ci` or `make check` (check also runs the ROS tests which are known to fail, for now)
+`make all` builds all packages, including depthai-ros (this uses a large amount of ram and may crash your computer)
 
-`make` or `make all` Both build the package and allow importing "sgengine" in Python.
+`make test_engine` runs the ROS tests for sgengine packages which are known to fail, for now
 
 `make ci` Will run the continous integration and let you know if there are any linting errors.
 These errors should be fixed before a pull request is opened to main, but are fine for the 
