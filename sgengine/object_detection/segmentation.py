@@ -24,8 +24,8 @@ def makeOdometer(args: Tuple) -> StereoOdometer:
     return StereoOdometer(StereoCamera(*cameraArgs), **odometerParams)
 
 
-def segmentImage(image3d=None, method='minibatchkmeans', K=3, iterations=3, downscale=True,
-                 downscaleRatio=0.4, downscaleMethod='linear', show=False, threadedDisplay=False)\
+def segmentImage(image3d=None, method='minibatchkmeans', K=15, iterations=3, downscale=True,
+                 downscaleRatio=0.4, downscaleMethod='linear')\
         -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     cluster_method_dict = {
         'minibatchkmeans': MiniBatchKMeans,
@@ -101,8 +101,8 @@ if __name__ == "__main__":
     cameraArgs = (leftK, leftDistC, rightK, rightDistC, rectParams, sgbm_params, frameSize)
     odometer = makeOdometer((cameraArgs, odometer_params))
 
-    video_left = cv2.VideoCapture("sgengine/object_detection/DefaultVideo/stereo_left.avi")
-    video_right = cv2.VideoCapture("sgengine/object_detection/DefaultVideo/stereo_right.avi")
+    video_left = cv2.VideoCapture("sgengine/object_detection/RocksTest/stereo_left.avi")
+    video_right = cv2.VideoCapture("sgengine/object_detection/RocksTest/stereo_right.avi")
 
     if video_left.isOpened() is False:
         print("Error opening video stream or file")
