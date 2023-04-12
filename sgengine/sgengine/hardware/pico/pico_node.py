@@ -22,6 +22,8 @@ class PicoNode(Node, PicoComms):
             TwoFloat, "pico/move_command", move_callback, 10
         )
 
+        print("Running PicoNode")
+
 
 def main(args=None):
     """

@@ -1,0 +1,10 @@
+[Unit]
+Description=Launch sgengine start script
+After=multi-user.target
+
+[Service]
+ExecStart=/bin/bash /home/pi/SpaceGrantEngine/ctlScript.sh
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

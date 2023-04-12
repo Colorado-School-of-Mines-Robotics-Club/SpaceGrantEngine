@@ -19,7 +19,7 @@ class SteamControllerNode(Node):
 
     MAX = 32767
     LAST_PACKET = -1
-    DELAY = 0.25
+    DELAY = 0.05
 
     def __init__(self) -> None:
         Node.__init__(self, "steamcontroller")
@@ -46,7 +46,7 @@ class SteamControllerNode(Node):
             self._publisher.publish(msg)
 
         self._sc = SteamController(callback=joystick)
-        print("Running steamcontroller")
+        print("Running SteamControllerNode")
         self._sc.run()
 
 

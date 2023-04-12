@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 
 
 class PicoComms:
-    def __init__(self, serialPort="/dev/ttyS0", interruptPin=5, baud=9600):
+    def __init__(self, serialPort="/dev/ttyS0", interruptPin=5, baud=112500):
         """Creates a cummunication line to send instructions to the pi pico.
         The interrupt pin is the pin that will be used to tell the pico that it has received an instruction
         """
@@ -40,8 +40,9 @@ class PicoComms:
         instruction = str(angular) + "," + str(linear)
         encoded = instruction.encode()
         if "serial" not in sys.modules:
-            print(f"PicoComms sends {encoded}")
+            print(f"PicoComms could not send {encoded}")
             return
+        print(f"PicoComms sending {encoded}")
         # send
         self.__serialLine.write(encoded)
         # raise IRQ
