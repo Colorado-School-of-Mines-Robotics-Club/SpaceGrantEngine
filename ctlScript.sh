@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# NEED THE ENVIRONMENT VARIABLES TO GET THE RIGHT INFO
+# SEE THE TOP LINK IF YOU SEARCH: ros2 launch file run on boot linux
+# SAID SOMETHING ABOUT GREPPING STUFF
+
+export HOME=/home/pi
 alias python="python3"
 source /opt/ros/humble/setup.bash
 
