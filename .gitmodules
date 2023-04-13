@@ -1,3 +1,6 @@
 [submodule "depthai-ws/src/depthai-ros"]
 	path = depthai-ws/src/depthai-ros
 	url = https://github.com/luxonis/depthai-ros.git
+[submodule "extern/openVO"]
+	path = extern/openVO
+	url = https://github.com/justincdavis/openVO.git
