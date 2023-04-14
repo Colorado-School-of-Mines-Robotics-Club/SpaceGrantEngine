@@ -35,7 +35,9 @@ class SteamControllerNode(Node):
             if sci.buttons == 32768 and not self._launched_auton:
                 self._launched_auton = True
                 import subprocess
-                subprocess.run(["cd", "/home/pi/SpaceGrantEngine/", "&&", "ros2", "launch", "sgengine", "auton_control.launch.py"])
+                print("Launching auton_control")
+                subprocess.run(["ros2", "launch", "/home/pi/SpaceGrantEngine/launch/auton_control.launch.py"])
+                print("auton_control exited...")
 
             x = sci.lpad_x
             y = sci.lpad_y
