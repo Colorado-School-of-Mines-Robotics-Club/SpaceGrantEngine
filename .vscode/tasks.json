@@ -10,15 +10,9 @@
             "problemMatcher": []
         },
         {
-            "label": "run pico node",
+            "label": "launch manual control",
             "type": "shell",
-            "command": "make && source ./install/setup.bash && ros2 run sgengine pico",
-            "problemMatcher": []
-        },
-        {
-            "label": "run steamcontroller node",
-            "type": "shell",
-            "command": "make && source ./install/setup.bash && ros2 run sgengine steamcontroller",
+            "command": "make && source ./install/setup.bash && ros2 launch ./launch/manual_control.launch.py",
             "problemMatcher": []
         }
     ]
