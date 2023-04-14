@@ -4,14 +4,16 @@ import sys
 import time
 import rclpy
 
-# from std_msgs.msg import String
 from sgengine_messages.msg import TwoFloat
 from rclpy.node import Node
 
 try:
     from steamcontroller import SteamController
 except ModuleNotFoundError:
-    print("ERROR: Could not load steamcontroller library, node will not launch")
+    print(
+        "ERROR: Could not load steamcontroller library, node will not launch",
+        file=sys.stderr,
+    )
 
 
 class SteamControllerNode(Node):
@@ -35,8 +37,9 @@ class SteamControllerNode(Node):
             if sci.buttons == 32768 and not self._launched_auton:
                 self._launched_auton = True
                 import subprocess
+
                 print("Launching auton_control")
-                subprocess.run(["ros2", "launch", "/home/pi/SpaceGrantEngine/launch/auton_control.launch.py"])
+                subprocess.run(["/home/pi/SpaceGrantEngine/scripts/launch_auton.sh"])
                 print("auton_control exited...")
 
             x = sci.lpad_x

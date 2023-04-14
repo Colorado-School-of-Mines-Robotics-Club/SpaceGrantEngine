@@ -5,7 +5,9 @@ import math
 
 
 class Motor:
-    def __init__(self, pwm, la, lb, adir, bdir, pwm_freq=5000, max_pwm=65535, reverse=False):
+    def __init__(
+        self, pwm, la, lb, adir, bdir, pwm_freq=5000, max_pwm=65535, reverse=False
+    ):
         self._la = Pin(la, machine.Pin.IN, machine.Pin.PULL_UP)
         self._lb = Pin(lb, machine.Pin.IN, machine.Pin.PULL_UP)
         self._ladir = Pin(adir, machine.Pin.OUT, machine.Pin.PULL_UP)
@@ -32,7 +34,7 @@ class Motor:
         pwm = min(int(math.fabs(pwm_val)), self._max_pwm)
         # print(pwm)
         self._pwm.duty_u16(pwm)
-        
+
 
 class Drivetrain:
     def __init__(self, motors, max_pwm=65535):

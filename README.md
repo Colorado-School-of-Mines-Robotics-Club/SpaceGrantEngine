@@ -100,4 +100,10 @@ Execute the `./install_depthai_ros.sh` script
 Whenever you open a new terminal make sure to source the setup.bash file
 `source depthai-ws/install/setup.bash`
 
-Execute: `ros2 launch depthai_examples stereo_intertial_node.launch.py extended:=True monoResolution:=400p`
+Execute: `ros2 launch depthai_examples stereo_intertial_node.launch.py extended:=True monoResolution:=400p`  
+
+## Launching the code automatically
+
+To copy launch service to proper directory run:  
+Run `cp /home/pi/SpaceGrantEngine/scripts/engine_launch.service /etc/systemd/system`  
+then `systemctl enable engine_launch.service` to enable the service on boot.  

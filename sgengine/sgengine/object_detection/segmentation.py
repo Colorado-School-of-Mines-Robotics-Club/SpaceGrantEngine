@@ -1,3 +1,6 @@
+# pylint: skip-file
+# Needs to be refactory according to pylint at some point
+
 from typing import Tuple
 
 import numpy as np
@@ -5,22 +8,28 @@ import cv2
 from sklearn.cluster import MiniBatchKMeans, KMeans, DBSCAN
 
 
-def segment_image(image3d, method='minibatchkmeans', K=15, iterations=3, downscale=True,
-                 downscaleRatio=0.4, downscaleMethod='linear')\
-        -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def segment_image(
+    image3d,
+    method="minibatchkmeans",
+    K=15,
+    iterations=3,
+    downscale=True,
+    downscaleRatio=0.4,
+    downscaleMethod="linear",
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     cluster_method_dict = {
-        'minibatchkmeans': MiniBatchKMeans,
-        'kmeans': KMeans,
-        'dbscan': DBSCAN
+        "minibatchkmeans": MiniBatchKMeans,
+        "kmeans": KMeans,
+        "dbscan": DBSCAN,
     }
     assert method in cluster_method_dict
     cluster_method = cluster_method_dict[method]
 
     resize_method_dict = {
-        'nearest': cv2.INTER_NEAREST,
-        'linear': cv2.INTER_LINEAR,
-        'area': cv2.INTER_AREA,
-        'cubic': cv2.INTER_CUBIC
+        "nearest": cv2.INTER_NEAREST,
+        "linear": cv2.INTER_LINEAR,
+        "area": cv2.INTER_AREA,
+        "cubic": cv2.INTER_CUBIC,
     }
     assert downscaleMethod in resize_method_dict
 
@@ -43,7 +52,9 @@ def segment_image(image3d, method='minibatchkmeans', K=15, iterations=3, downsca
     #         if np.isinf(vectorized[i][j]):
     #             vectorized[i][j] = 0
 
-    cluster = cluster_method(n_clusters=K, n_init=iterations, random_state=0).fit(vectorized)
+    cluster = cluster_method(n_clusters=K, n_init=iterations, random_state=0).fit(
+        vectorized
+    )
     centers, labels = cluster.cluster_centers_, cluster.labels_
     centers = np.uint8(centers)
     res = centers[labels.flatten()]

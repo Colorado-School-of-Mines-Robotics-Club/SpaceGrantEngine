@@ -7,7 +7,7 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install python3-pip -y
 
 # Install extra tools:
-RUN apt-get install nano wget curl neofetch python3-colcon-clean -y
+RUN apt-get install nano wget curl neofetch -y
 
 # Add ros user (with sudo)
 RUN adduser --disabled-password --gecos '' ros
