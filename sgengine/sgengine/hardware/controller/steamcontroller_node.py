@@ -25,11 +25,17 @@ class SteamControllerNode(Node):
         Node.__init__(self, "steamcontroller")
 
         self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
+        self._launched_auton = False
 
         def joystick(_, sci):
             if time.perf_counter() - self.LAST_PACKET < self.DELAY:
                 return
             self.LAST_PACKET = time.perf_counter()
+
+            if sci.buttons == 32768 and not self._launched_auton:
+                self._launched_auton = True
+                import subprocess
+                subprocess.run(["cd", "/home/pi/SpaceGrantEngine/", "&&", "ros2", "launch", "sgengine", "auton_control.launch.py"])
 
             x = sci.lpad_x
             y = sci.lpad_y
