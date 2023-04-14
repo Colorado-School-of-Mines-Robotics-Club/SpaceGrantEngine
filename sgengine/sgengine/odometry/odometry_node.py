@@ -3,11 +3,15 @@
 import sys
 import time
 import rclpy
+import atexit
 
 # from std_msgs.msg import String
-from sgengine_messages.msg import TwoFloat
+from sgengine_messages.msg import RPY_XYZ
 from rclpy.node import Node
-f
+from sensor_msgs.msg import Image
+from openVO import rot2RPY
+from openVO import OAK_Camera, OAK_Odometer
+import cv2
 
 
 class OdometryNode(Node):
@@ -16,11 +20,48 @@ class OdometryNode(Node):
     def __init__(self) -> None:
         Node.__init__(self, "odometer")
 
-        self._publisher = self.create_publisher(, "odometer/tvec", 10)
+        self._cam = OAK_Camera(
+            median_filter = 7,
+            stereo_threshold_filter_min_range = 200,
+            stereo_threshold_filter_max_range = 20000,
+        )
+        self._odom = OAK_Odometer(
+            self._cam,
+            nfeatures = 250,
+        )
+        self._cam.start(block=True)
 
-        # TODO: attributes
-        pass
+        self._pose_publisher = self.create_publisher(RPY_XYZ, "odom/rpy_xyz", 10)
+        self._depth_publisher = self.create_publisher(Image, "odom/depth", 10)
+        self._rgb_publisher = self.create_publisher(Image, "odom/rgb", 10)
 
-    def _main(self):
-        # TODO: pubs and subs, other nodes
-        pass
+        self._pose = None
+
+        self._stopped = False
+
+        atexit.register(self._stop)
+
+    def _stop(self) -> None:
+        self._stopped = True
+        self._cam.stop()
+
+    def _run(self) -> None:
+        while not self._stopped:
+            self._odom.update()
+            self._pose = self._odom.current_pose()
+
+            pose = RPY_XYZ()
+            r, p, y = rot2RPY(self._pose)
+            x, y, z = float(self._pose[0, 3]), float(self._pose[1, 3]), float(self._pose[2, 3])
+
+            pose.roll = r
+            pose.pitch = p
+            pose.yaw = y
+            pose.x = x
+            pose.y = y
+            pose.z = z
+
+            self._pose_publisher.publish(pose)
+            self._depth_publisher.publish(self._cam.depth)
+            self._rgb_publisher.publish(self._cam.rgb)
+        self._cam.stop()
