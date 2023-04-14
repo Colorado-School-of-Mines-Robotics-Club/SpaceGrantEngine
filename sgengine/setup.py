@@ -32,7 +32,8 @@ setup(
             "test            = sgengine.test_node:main",
             "gui             = sgengine.gui.gui_node:main",
             "pico            = sgengine.hardware.pico.pico_node:main",
-            "steamcontroller = sgengine.hardware.controller.steamcontroller_node:main"
+            "steamcontroller = sgengine.hardware.controller.steamcontroller_node:main",
+            "odometery       = sgengine.odometry.odometry_node:main",     
         ],
     },
 )

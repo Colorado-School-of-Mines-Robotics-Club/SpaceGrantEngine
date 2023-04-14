@@ -41,6 +41,8 @@ class OdometryNode(Node):
 
         atexit.register(self._stop)
 
+        self._run()
+
     def _stop(self) -> None:
         self._stopped = True
         self._cam.stop()
@@ -65,3 +67,18 @@ class OdometryNode(Node):
             self._depth_publisher.publish(self._cam.depth)
             self._rgb_publisher.publish(self._cam.rgb)
         self._cam.stop()
+
+def main(args=None):
+    """
+    Main function which exclusively launches the Odometer node
+    """
+    if "steamcontroller" not in sys.modules:
+        return
+    rclpy.init(args=args)
+    odometer = OdometryNode()
+    rclpy.spin(odometer)
+    odometer.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()

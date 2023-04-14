@@ -1,10 +1,10 @@
 .PHONY: engine all check clean test ci help
 
 engine: 
-	colcon build --symlink-install --packages-select sgengine sgengine_messages
+	colcon build --packages-select sgengine sgengine_messages
 
 all:
-	colcon build --symlink-install
+	colcon build
 
 clean:
 	colcon clean workspace -y
