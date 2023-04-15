@@ -1,15 +1,15 @@
 .PHONY: engine all check clean test ci help
 
 engine: 
-	colcon build --symlink-install --packages-select sgengine sgengine_messages
+	colcon build --symlink-install --packages-select sgengine sgengine_messages vision_opencv
 
 all:
 	colcon build --symlink-install
 
 clean:
-	rm -rf ./install
-	rm -rf ./build
-	rm -rf ./log
+	sudo rm -rf ./install
+	sudo rm -rf ./build
+	sudo rm -rf ./log
 
 check: ci test
 
