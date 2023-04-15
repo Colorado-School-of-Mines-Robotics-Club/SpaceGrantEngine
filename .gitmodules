@@ -1,9 +1,10 @@
-[submodule "depthai-ws/src/depthai-ros"]
-	path = depthai-ws/src/depthai-ros
-	url = https://github.com/luxonis/depthai-ros.git
 [submodule "extern/openVO"]
 	path = extern/openVO
 	url = https://github.com/justincdavis/openVO.git
 [submodule "extern/steamcontroller"]
 	path = extern/steamcontroller
 	url = https://github.com/ynsta/steamcontroller.git
+[submodule "extern/vision_opencv"]
+	path = extern/vision_opencv
+	url = https://github.com/ros-perception/vision_opencv
+	branch = humble
