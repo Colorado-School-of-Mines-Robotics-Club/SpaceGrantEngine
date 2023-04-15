@@ -1,8 +1,6 @@
 # pylint: skip-file
 
-import sys
 import rclpy
-import atexit
 
 from sgengine_messages.msg import RPYXYZ
 from rclpy.node import Node
@@ -61,7 +59,7 @@ class OdometryNode(Node):
                 float(self._pose[1, 3]),
                 float(self._pose[2, 3]),
             )
-            
+
             rep1, rep2 = [np.linalg.norm([roll[i], pitch[i], yaw[i]]) for i in [0, 1]]
             if rep1 > rep2:
                 r = roll[1]
@@ -86,6 +84,7 @@ class OdometryNode(Node):
             self._rgb_publisher.publish(rgb_img)
         self._cam.stop()
 
+
 def main(args=None):
     """
     Main function which exclusively launches the Odometer node
@@ -95,6 +94,7 @@ def main(args=None):
     rclpy.spin(odometer)
     odometer.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
