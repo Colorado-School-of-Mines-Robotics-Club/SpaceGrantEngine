@@ -13,13 +13,11 @@ jobs:
     - name: Install Python
       run: |
         apt-get update
-        apt-get install python3-pip python3-colcon-clean -y
     - name: Install dependencies
       run: |
         export PATH="/opt/hostedtoolcache/Python/3.9.15/x64/lib/sgengine:$PATH"
-        python3 -m pip install --upgrade pip
-        pip3 install -r requirements.txt
-        pip3 install -r requirements-ci.txt
+        git submodule update --init --recursive
+        ./scripts/installDeps.sh
 
     - name: Check Black Formatting
       run: |
