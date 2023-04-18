@@ -1,6 +1,0 @@
-uvloop>=0.17.0
-depthai>=2.21.2.0
-numpy>=1.23.4
-opencv-python>=4.6.0.66
-flask>=2.2.2
-scikit-learn>=1.2.2

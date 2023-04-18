@@ -1,11 +1,9 @@
-# pylint: skip-file
-
 import sys
 import time
+import subprocess
 import rclpy
-
-from sgengine_messages.msg import TwoFloat
 from rclpy.node import Node
+from sgengine_messages.msg import TwoFloat
 
 try:
     from steamcontroller import SteamController
@@ -19,9 +17,9 @@ except ModuleNotFoundError:
 class SteamControllerNode(Node):
     """Node for handling input from SteamController"""
 
-    MAX = 32767
-    LAST_PACKET = -1
-    DELAY = 0.05
+    move_max = 32767
+    last_input_delay = -1
+    input_delay = 0.05
 
     def __init__(self) -> None:
         Node.__init__(self, "steamcontroller")
@@ -30,23 +28,24 @@ class SteamControllerNode(Node):
         self._launched_auton = False
 
         def joystick(_, sci):
-            if time.perf_counter() - self.LAST_PACKET < self.DELAY:
+            if time.perf_counter() - self.last_input_delay < self.input_delay:
                 return
-            self.LAST_PACKET = time.perf_counter()
+            self.last_input_delay = time.perf_counter()
 
             if sci.buttons == 32768 and not self._launched_auton:
                 self._launched_auton = True
-                import subprocess
 
                 print("Launching auton_control")
-                subprocess.run(["/home/pi/SpaceGrantEngine/scripts/launch_auton.sh"])
+                subprocess.run(
+                    ["/home/pi/SpaceGrantEngine/scripts/launch_auton.sh"], check=False
+                )
                 print("auton_control exited...")
 
             x = sci.lpad_x
             y = sci.lpad_y
 
-            x = x / self.MAX
-            y = y / self.MAX
+            x = x / self.move_max
+            y = y / self.move_max
 
             x = max(min(1.0, x), -1.0)
             y = max(min(1.0, y), -1.0)
@@ -65,6 +64,7 @@ def main(args=None):
     """
     Main function which exclusively launches the SteamController node
     """
+    # If steamcontroller package not found, exit
     if "steamcontroller" not in sys.modules:
         return
     rclpy.init(args=args)

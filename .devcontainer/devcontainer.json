@@ -8,9 +8,7 @@
                 "ms-python.python",
                 "ms-vscode.cpptools",
                 "twxs.cmake",
-                "ms-vscode.cmake-tools",
-                "ms-iot.vscode-ros",
-                "smilerobotics.urdf",
+                "ms-vscode.makefile-tools",
                 "yzhang.markdown-all-in-one"
             ]
         }
