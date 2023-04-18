@@ -21,15 +21,17 @@ for someone to work on. (See the other workflow files in the .github folder)
 
 The most used commands for typical work will be 
 
-`make` or `make engine` builds sgengine packages (they are equivalent)
+`make` or `make all` builds all ros packages
 
-`make all` builds all packages, including depthai-ros (this uses a large amount of ram and may crash your computer)
+`make clean` removes build directories
+
+`make ci` Will run the continous integration and let you know if there are any linting errors.
+These errors should be fixed before a pull request is opened to main, but are usually ok for the 
+testing and development phase.
 
 `make test_engine` runs the ROS tests for sgengine packages which are known to fail, for now
 
-`make ci` Will run the continous integration and let you know if there are any linting errors.
-These errors should be fixed before a pull request is opened to main, but are fine for the 
-testing and development phase.
+`make check` runs `ci` & `test_engine` scripts
 
 ## Typical Development Workflow
 1. Create a new branch
@@ -40,7 +42,7 @@ testing and development phase.
 6. Add the functionality to an existing node OR create a new node
 7. Open a pull request :)
 
-## Resposibility of Modules
+## Resposibility of Modules (eventually)
 1. configuration: Reads some config file and either generates a dictionary or uses ROS param services. TBD
 2. gui: Launches a basic web app for starting and stopping the robots autonomous functions, as well as allowing remote control. If progress makes it far enough this will also allow "on-the-fly" adjustments of the Raspberry Pi's GPIO pins. 
 3. hardware: This will contain code for handling all physical elements we will interact with. This includes RPi.GPIO, OAK-D cameras, RPi Picos, etc..
@@ -73,37 +75,22 @@ testing and development phase.
 
 `source install/setup.bash`
 
-Then you can call anything defined in the package
+Then you can call anything defined in the package.
 
-`ros2 run sgengine test`
+For example: `ros2 run sgengine pico`  
 
-## Creating a new node
+## Submodules
 
-In the "setup.py" file at the bottom within the "setup" function there is an argument called entry_points. 
+This engine uses external dependencies that are located in the `extern` directory.
 
-Inside of entry_points there is a dictionary with a key entry called console_scripts. 
+To directly clone the repository with these submodules add the `--recursive` flag to your `git clone` command.
 
-Add an entry to console_scripts for each node you want to add. This allows you to directly call the node 
-from the CLI or via a launch file. 
-
-
-## Running the OAK-D S2 camera
-
-Ensure the camera is plugged in
-
-Navigate to the depthai-ws directory
-
-If there is no dpethai-ros folder in src, then run `git submodule init`, and then `git submodule clone` (or equivalent command)
-
-Execute the `./install_depthai_ros.sh` script
-
-Whenever you open a new terminal make sure to source the setup.bash file
-`source depthai-ws/install/setup.bash`
-
-Execute: `ros2 launch depthai_examples stereo_intertial_node.launch.py extended:=True monoResolution:=400p`  
+To clone the submodules after cloning the engine, run `git submodule update --init --recursive`
 
 ## Launching the code automatically
 
-To copy launch service to proper directory run:  
-Run `cp /home/pi/SpaceGrantEngine/scripts/engine_launch.service /etc/systemd/system`  
-then `systemctl enable engine_launch.service` to enable the service on boot.  
+To enable the launch service:
+
+Make sure that the `SpaceGrantEngine` repository is located at `/home/pi/SpaceGrantEngine`
+
+Run `systemctl enable /home/pi/SpaceGrantEngine/scripts/engine_launch.service` to enable the service on boot.  

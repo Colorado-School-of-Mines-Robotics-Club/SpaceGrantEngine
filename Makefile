@@ -21,8 +21,7 @@ ci:
 	@echo "DONE - CI PASSED"
 
 help:
-	@echo "engine - Builds all sgengine packages (Default)"
-	@echo "all - Builds all packages (not just sgengine)"
+	@echo "all - Builds all ros packages (Default)"
 	@echo "clean - Clears the workspace (build, install, and log dirs)"
 	@echo "check - Runs test & ci"
 	@echo "test_engine - Runs the ROS2 test suite on sgengine packages"

@@ -4,6 +4,7 @@ FROM osrf/ros:humble-desktop
 RUN apt-get update && apt-get upgrade -y
 
 # Install dependencies from installDeps.sh
+WORKDIR /root
 COPY ../scripts/installDeps.sh /root/
 COPY ../extern /root/extern
 RUN bash /root/installDeps.sh

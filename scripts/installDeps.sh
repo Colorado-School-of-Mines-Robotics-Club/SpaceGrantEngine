@@ -20,5 +20,5 @@ pip3 install depthai
 
 # Install deps from extern
 apt install -y python3-libusb1
-pip3 install /root/extern/openVO
-pip3 install /root/extern/steamcontroller
+pip3 install ./extern/openVO
+pip3 install ./extern/steamcontroller
