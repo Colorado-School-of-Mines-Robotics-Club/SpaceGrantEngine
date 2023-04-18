@@ -9,14 +9,19 @@ jobs:
     container: osrf/ros:humble-desktop
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Git Sumbodule Update
+      run: |
+        git pull --recurse-submodules
+        git submodule update --remote --recursive
     - name: Install Python
       run: |
         apt-get update
     - name: Install dependencies
       run: |
-        export PATH="/opt/hostedtoolcache/Python/3.9.15/x64/lib/sgengine:$PATH"
-        git submodule update --init --recursive
         ./scripts/installDeps.sh
 
     - name: Lint with pylint
