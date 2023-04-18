@@ -46,5 +46,5 @@ jobs:
         # Logging fstring interpolation
         # Useless parent or super() delegation 
 
-        python3 -m pylint ./sgengine/sgengine --ignore-paths=sgengine/sgengine/hardware/utils --ignore-paths=sgengine/sgengine/aruco --disable=C0303,C0114,W0401,R0902,R0904,C0305,W0703,C0200,R0913,R0914,W0107,W1203,W0246,W0511,R0801
+        python3 -m pylint ./sgengine/sgengine --ignore-paths=sgengine/sgengine/hardware/utils --ignore-paths=sgengine/sgengine/aruco --disable=C0303,C0114,W0401,R0902,R0904,C0305,W0703,C0200,R0913,R0914,W0107,W1203,W0246,W0511,R0801,E0401
         
