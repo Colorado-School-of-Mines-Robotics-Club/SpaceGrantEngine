@@ -13,7 +13,7 @@ class OakDS2Test(OakDS2):
     """Node for handling the OAKD-S2 camera"""
 
     def __init__(self) -> None:
-        super().__init__(self)
+        OakDS2.__init__(self)
 
     def _handle_color_video_frame(self, frame: np.ndarray) -> None:
         """Handles the color video frame"""

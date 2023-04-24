@@ -14,11 +14,9 @@ apt install -y python3-pylint-common python3-flake8 black
 
 # Engine deps
 # Prefer apt packages when possible
-apt install -y python3-numpy python3-opencv ros-humble-depthai python3-flask python3-scipy python3-cv-bridge python3-open3d
+apt install -y python3-numpy python3-opencv ros-humble-depthai python3-flask python3-scipy python3-cv-bridge python3-open3d python3-libusb1
+
 # Otherwise, use pip
 pip3 install depthai
-
-# Install deps from extern
-apt install -y python3-libusb1
 pip3 install ./extern/openVO
 pip3 install ./extern/steamcontroller
