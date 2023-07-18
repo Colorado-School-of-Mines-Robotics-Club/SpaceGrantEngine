@@ -1,4 +1,6 @@
-FROM osrf/ros:humble-desktop
+ARG ROS_VERSION="humble"
+FROM osrf/ros:$ROS_VERSION-desktop
+ARG ROS_VERSION="humble"
 
 # Update repositories
 RUN apt-get update && apt-get upgrade -y
@@ -21,4 +23,4 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER ros
 
 # Add python alias && source ros2
-RUN echo 'alias python="python3"\nsource /opt/ros/humble/setup.bash' >> ~/.bashrc
+RUN echo "alias python="python3"\nsource /opt/ros/$ROS_VERSION/setup.bash" >> ~/.bashrc
