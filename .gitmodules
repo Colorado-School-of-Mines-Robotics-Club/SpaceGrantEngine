@@ -4,3 +4,6 @@
 [submodule "extern/steamcontroller"]
 	path = extern/steamcontroller
 	url = https://github.com/ynsta/steamcontroller.git
+[submodule "extern/oakutils"]
+	path = extern/oakutils
+	url = https://github.com/justincdavis/oakutils.git
