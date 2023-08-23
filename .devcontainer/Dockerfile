@@ -1,15 +1,10 @@
-ARG ROS_VERSION="humble"
-FROM osrf/ros:$ROS_VERSION-desktop
-ARG ROS_VERSION="humble"
+FROM osrf/ros:humble-desktop
+ENV ROS_DISTRO=humble
 
-# Update repositories
-RUN apt-get update && apt-get upgrade -y
-
-# Install dependencies from installDeps.sh
-WORKDIR /root
-COPY ../scripts/installDeps.sh /root/
-COPY ../extern /root/extern
-RUN bash /root/installDeps.sh
+# Install tools
+RUN apt update \
+    && apt upgrade -y
+RUN apt install -y sudo htop net-tools wget curl git gcc g++ make perl python3 python3-pip
 
 # Add ros user (with sudo)
 RUN adduser --disabled-password --gecos '' ros && adduser ros sudo
@@ -21,6 +16,11 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Switch to user ros
 USER ros
+WORKDIR /home/ros
 
-# Add python alias && source ros2
-RUN echo "alias python="python3"\nsource /opt/ros/$ROS_VERSION/setup.bash" >> ~/.bashrc
+# Add source ros2 to .bashrc
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+
+COPY --chown=ros:ros ../extern ./extern
+COPY --chown=ros:ros ../scripts/install_deps.py ./
+RUN ROS_DISTRO=$ROS_DISTRO python3 ./install_deps.py
