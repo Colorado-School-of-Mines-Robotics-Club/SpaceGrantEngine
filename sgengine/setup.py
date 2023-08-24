@@ -29,11 +29,10 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "test            = sgengine.test_node:main",
-            "gui             = sgengine.gui.gui_node:main",
             "pico            = sgengine.hardware.pico.pico_node:main",
             "steamcontroller = sgengine.hardware.controller.steamcontroller_node:main",
-            "odometry        = sgengine.odometry.odometry_node:main",     
+            "odometry        = sgengine.odometry.odometry_node:main",    
+            "api             = sgengine.api.api_node:main", 
         ],
     },
 )

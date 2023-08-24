@@ -23,7 +23,7 @@ jobs:
         apt-get update
     - name: Install dependencies
       run: |
-        ./scripts/installDeps.sh
+        ./scripts/install_deps.py
 
     - name: Lint with pylint
       shell: bash

@@ -94,7 +94,3 @@ def main(args=None):
     rclpy.spin(odometer)
     odometer.destroy_node()
     rclpy.shutdown()
-
-
-if __name__ == "__main__":
-    main()
