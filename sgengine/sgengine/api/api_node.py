@@ -21,7 +21,7 @@ class APINode(Node):
 
         # TODO: spawn new thread to run server
         # self.app.run()
-        print("This node has not been implemented!")
+        raise SystemExit("This node has not been implemented!")
 
 
 def main(args=None):
