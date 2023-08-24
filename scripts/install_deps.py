@@ -51,8 +51,8 @@ subprocess.check_call(["sudo", "python3", "/root/get-pip.py"])
 
 pip_packages = [
     "depthai",
-    "openVO",
-    "oakutils",
-    "./extern/steamcontroller"
+    "./extern/openVO",
+    "./extern/steamcontroller",
+    "./extern/oakutils"
 ]
 install_pip_packages(pip_packages)
