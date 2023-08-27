@@ -37,7 +37,6 @@ install_apt_packages(ci_tools)
 
 engine_deps = [
     "python3-numpy",
-    "python3-opencv",
     f"ros-{ros_distro}-depthai",
     "python3-flask",
     "python3-scipy",
@@ -51,6 +50,7 @@ subprocess.check_call(["sudo", "python3", "/root/get-pip.py"])
 
 pip_packages = [
     "depthai",
+    "opencv-contrib-python==4.8.0.74",
     "./extern/openVO",
     "./extern/steamcontroller",
     "./extern/oakutils"
