@@ -24,4 +24,7 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 COPY --chown=ros:ros ../extern ./extern
 COPY --chown=ros:ros ../scripts/install_deps.py ./
 RUN ROS_DISTRO=$ROS_DISTRO python3 ./install_deps.py
-RUN rm -rf ./extern && rm ./install_deps.py
+
+USER root
+RUN rm -rf ./extern && rm -rf ./install_deps.py
+USER ros

@@ -34,37 +34,7 @@ jobs:
         # Source ROS
         source /opt/ros/humble/setup.bash
 
-        # Ignore...
-        # Wildcard import,
-        # Trailing whitespace
-        # Missing module docstring
-        # Too many instance attributes
-        # Too many public methods
-        # Multiple trailing newlines
-        # Too broad of an exception
-        # consider-using-enumerate
-        # Too many arguments
-        # Too many local variables
-        # Unnecessary pass statement
-        # Logging fstring interpolation
-        # Useless parent or super() delegation 
-
-        python3 -m pylint ./sgengine/sgengine --ignore-paths=sgengine/sgengine/hardware/utils --ignore-paths=sgengine/sgengine/aruco --disable=C0303,C0114,W0401,R0902,R0904,C0305,W0703,C0200,R0913,R0914,W0107,W1203,W0246,W0511,R0801,E0401
+        python3 -m pylint ./sgengine/sgengine --rcfile=.pylint
     - name: Lint with flake8
       run: |
-        # stop the build if there are...
-        # Python syntax errors or undefined names
-        # Unused imports
-        # No new line
-        # No whitespace after keyword
-
-
-        # Ignore...
-        # Whitespace in new line
-        # Trailing whitespace
-        # Too many blank lines
-        # Whitespace before :, Line break occurred before a binary operator (Black breaks this)
-
-        python3 -m flake8 --exclude=sgengine/sgengine/hardware/utils --exclude=sgengine/sgengine/aruco ./sgengine/sgengine --count --select=E9,F63,F7,F82,F401,W292,E275,F403 --extend-ignore=W293,W291,E303,E203,W503 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        python3 -m flake8 --exclude=sgengine/sgengine/hardware/utils --exclude=sgengine/sgengine/aruco ./sgengine/sgengine --count --exit-zero --max-complexity=10 --max-line-length=140 --extend-ignore=E203 --statistics
+        python3 -m flake8 ./sgengine/sgengine --config .flake8

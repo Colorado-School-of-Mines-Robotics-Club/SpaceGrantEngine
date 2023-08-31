@@ -1,4 +1,9 @@
 {
-    "cmake.configureOnOpen": false,
-    "cmake.sourceDirectory": "${workspaceFolder}/sgengine_messages"
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true
+    },
+    "black-formatter.args": ["./sgengine/sgengine"],
+    "pylint.args": ["./sgengine/sgengine", "--rcfile=.pylint"],
+    "flake8.args": ["./sgengine/sgengine", "--config", ".flake8"],
 }
