@@ -18,23 +18,18 @@ jobs:
         git config --global safe.directory '*'
         git pull --recurse-submodules
         git submodule update --remote --recursive
-    - name: Install Python
-      run: |
-        apt-get update
     - name: Install dependencies
       run: |
         ./scripts/install_deps.py
-
-    - name: Check Black Formatting
-      run: |
-        python3 -m black --check ./sgengine/sgengine
-    - name: Lint with pylint
+    - name: Build
       shell: bash
       run: |
-        # Source ROS
-        source /opt/ros/humble/setup.bash
+        source source /opt/ros/humble/setup.bash
+        make
 
-        python3 -m pylint ./sgengine/sgengine --rcfile=.pylint
-    - name: Lint with flake8
+    - name: Check CI
+      shell: bash
       run: |
-        python3 -m flake8 ./sgengine/sgengine --config .flake8
+        source source /opt/ros/humble/setup.bash
+        source ./install/setup.bash
+        make ci

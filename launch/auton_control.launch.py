@@ -12,6 +12,11 @@ def generate_launch_description():
             package='sgengine',
             executable='odometry',
             name='odometry'
+        ),
+        Node(
+            package='sgengine',
+            executable='pathfinding',
+            name='pathfinding'
         )
     ])
     
