@@ -14,9 +14,7 @@ test:
 	colcon test --event-handlers console_direct+ --packages-skip python-steamcontroller
 
 ci:
-	python3 -m black ./sgengine/sgengine
-	python3 -m pylint ./sgengine/sgengine --rcfile=.pylint
-	python3 -m flake8 ./sgengine/sgengine --config .flake8
+	bash -c "source ./install/setup.bash && python3 -m black ./sgengine/sgengine && python3 -m pylint ./sgengine/sgengine --rcfile=.pylint && python3 -m flake8 ./sgengine/sgengine --config .flake8"
 	@echo "DONE - CI PASSED"
 
 help:

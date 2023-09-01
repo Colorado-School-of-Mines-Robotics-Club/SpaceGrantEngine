@@ -3,7 +3,6 @@ import rclpy
 
 from rclpy.node import Node
 
-# pylint: disable-next=import-error
 from sgengine_messages.msg import TwoFloat
 from .pico_comms import PicoComms
 

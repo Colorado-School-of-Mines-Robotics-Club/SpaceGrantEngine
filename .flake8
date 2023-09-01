@@ -1,4 +1,14 @@
 [flake8]
+
+
+# E9   Runtime
+# F63
+# F7
+# F82
+# F401 Module imported but unused
+# W292 no newline at end of file
+# E275 missing whitespace after keyword
+# F403 'from module import *' used; unable to detect undefined names
 select        = E9,
                 F63,
                 F7,
@@ -7,6 +17,11 @@ select        = E9,
                 W292,
                 E275,
                 F403
+# W293 blank line contains whitespace
+# W291 trailing whitespace
+# E303 too many blank lines (3)
+# E203 whitespace before ‘,’, ‘;’, or ‘:’
+# W503 line break before binary operator
 extend-ignore = W293,
                 W291,
                 E303,

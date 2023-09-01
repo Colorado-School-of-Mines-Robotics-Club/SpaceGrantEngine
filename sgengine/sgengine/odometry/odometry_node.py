@@ -1,14 +1,13 @@
-# pylint: skip-file
-
 import rclpy
 
-from sgengine_messages.msg import RPYXYZ
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from openVO import rot2RPY
 from openVO.oakd import OAK_Camera, OAK_Odometer
 import numpy as np
 from cv_bridge import CvBridge
+
+from sgengine_messages.msg import RPYXYZ
 
 
 class OdometryNode(Node):

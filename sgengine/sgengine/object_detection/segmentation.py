@@ -1,6 +1,3 @@
-# pylint: skip-file
-# Needs to be refactory according to pylint at some point
-
 from typing import Tuple
 
 import numpy as np
@@ -11,12 +8,13 @@ from sklearn.cluster import MiniBatchKMeans, KMeans, DBSCAN
 def segment_image(
     image3d,
     method="minibatchkmeans",
-    K=15,
+    k=15,
     iterations=3,
     downscale=True,
-    downscaleRatio=0.4,
-    downscaleMethod="linear",
+    downscale_ratio=0.4,
+    downscale_method="linear",
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """TODO"""
     cluster_method_dict = {
         "minibatchkmeans": MiniBatchKMeans,
         "kmeans": KMeans,
@@ -31,14 +29,16 @@ def segment_image(
         "area": cv2.INTER_AREA,
         "cubic": cv2.INTER_CUBIC,
     }
-    assert downscaleMethod in resize_method_dict
+    assert downscale_method in resize_method_dict
 
     resized_image_3d = cv2.GaussianBlur(image3d, (3, 3), cv2.BORDER_DEFAULT)
     if downscale:
-        width = int(image3d.shape[1] * downscaleRatio)
-        height = int(image3d.shape[0] * downscaleRatio)
+        width = int(image3d.shape[1] * downscale_ratio)
+        height = int(image3d.shape[0] * downscale_ratio)
         dim = (width, height)
-        resized_image_3d = cv2.resize(image3d, dim, resize_method_dict[downscaleMethod])
+        resized_image_3d = cv2.resize(
+            image3d, dim, resize_method_dict[downscale_method]
+        )
 
     _, _, channels = resized_image_3d.shape
     vectorized = np.float32(resized_image_3d.reshape((-1, channels)))
@@ -52,7 +52,7 @@ def segment_image(
     #         if np.isinf(vectorized[i][j]):
     #             vectorized[i][j] = 0
 
-    cluster = cluster_method(n_clusters=K, n_init=iterations, random_state=0).fit(
+    cluster = cluster_method(n_clusters=k, n_init=iterations, random_state=0).fit(
         vectorized
     )
     centers, labels = cluster.cluster_centers_, cluster.labels_

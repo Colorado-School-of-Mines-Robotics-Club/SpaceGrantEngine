@@ -1,5 +1,3 @@
-# pylint: skip-file
-
 import sys
 import time
 
@@ -13,7 +11,9 @@ except ModuleNotFoundError:
 
 
 class PicoComms:
-    def __init__(self, serialPort="/dev/ttyS0", interruptPin=5, baud=112500):
+    """Class to manage serial communication with Picos"""
+
+    def __init__(self, serial_port="/dev/ttyS0", interrupt_pin=5, baud=112500):
         """Creates a cummunication line to send instructions to the pi pico.
         The interrupt pin is the pin that will be used to tell the pico that it has received an instruction
         """
@@ -21,8 +21,8 @@ class PicoComms:
             print("WARNING: PicoComms running in dummy mode")
             return
         # UART
-        self.__serialLine = serial.Serial(
-            port=serialPort,
+        self._serial_line = serial.Serial(
+            port=serial_port,
             baudrate=baud,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
@@ -30,9 +30,9 @@ class PicoComms:
             timeout=1,
         )
         # interrupt request pin
-        self.__interruptPin = interruptPin
-        GPIO.setup(interruptPin, GPIO.OUT)
-        GPIO.output(interruptPin, 0)
+        self._interrupt_pin = interrupt_pin
+        GPIO.setup(interrupt_pin, GPIO.OUT)
+        GPIO.output(interrupt_pin, 0)
 
     def send_move_command(self, angular: float, linear: float):
         """sends an instruction consisting of speed and direction to the pi pico"""
@@ -44,11 +44,11 @@ class PicoComms:
             return
         print(f"PicoComms sending {encoded}")
         # send
-        self.__serialLine.write(encoded)
+        self._serial_line.write(encoded)
         # raise IRQ
-        GPIO.output(self.__interruptPin, 1)
+        GPIO.output(self._interrupt_pin, 1)
         time.sleep(0.001)
-        GPIO.output(self.__interruptPin, 0)
+        GPIO.output(self._interrupt_pin, 0)
 
     def send_str_direct(self, msg: str) -> None:
         """directly sends string message to pico"""
@@ -57,8 +57,8 @@ class PicoComms:
             print(f"PicoComms sends {encoded}")
             return
         # send
-        self.__serialLine.write(encoded)
+        self._serial_line.write(encoded)
         # raise IRQ
-        GPIO.output(self.__interruptPin, 1)
+        GPIO.output(self._interrupt_pin, 1)
         time.sleep(0.001)
-        GPIO.output(self.__interruptPin, 0)
+        GPIO.output(self._interrupt_pin, 0)
