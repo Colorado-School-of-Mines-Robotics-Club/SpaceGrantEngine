@@ -1,9 +1,9 @@
-name: Black Format
+name: CI Check
 
 on: [push,pull_request]
 jobs:
-  black_check:
-    name: "Check Black Formatting"
+  ci_check:
+    name: "CI Check"
 
     runs-on: ubuntu-latest
     container: osrf/ros:humble-desktop
