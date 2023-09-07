@@ -1,6 +1,6 @@
 name: CI Check
 
-on: [push,pull_request]
+on: [push]
 jobs:
   ci_check:
     name: "CI Check"
