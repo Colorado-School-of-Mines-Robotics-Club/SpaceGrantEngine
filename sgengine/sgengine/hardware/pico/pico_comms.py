@@ -47,7 +47,7 @@ class PicoComms:
     def send_move_command(self, left: int, right: int):
         """sends an instruction consisting of a left and right motor speed to pico"""
         # format
-        self.send_str_direct(str(left) + "," + str(right) + '\0')
+        self.send_str_direct(str(left) + "," + str(right) + "\0")
 
     def send_str_direct(self, msg: str) -> None:
         """Directly sends string message to pico"""

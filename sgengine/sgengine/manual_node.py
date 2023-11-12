@@ -3,6 +3,7 @@ from rclpy.node import Node
 
 from sgengine_messages.msg import TwoFloat, XboxInput
 
+
 class ManualNode(Node):
     """Node for handling manual robot control"""
 

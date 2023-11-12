@@ -19,7 +19,9 @@ class XboxControllerNode(Node):
     def __init__(self) -> None:
         # ros stuff
         Node.__init__(self, "xboxcontroller")
-        self._publisher = self.create_publisher(XboxInput, "xbox_controller/all_inputs", 10)
+        self._publisher = self.create_publisher(
+            XboxInput, "xbox_controller/all_inputs", 10
+        )
         self._launched_auton = False
 
         self._publish_timer = self.create_timer(1.0 / 60.0, self.publish_inputs)
