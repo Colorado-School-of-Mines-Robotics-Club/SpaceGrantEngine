@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from ros2node.api import get_node_names
 
 from sgengine_messages.msg import TwoFloat
 
@@ -25,12 +26,22 @@ class PicoNode(Node, PicoComms):
 
 def main(args=None):
     """
-    Main function which exclusively launches the Pico node
+    Main function which exclusively launches the Pico node if one isn't running already
     """
     rclpy.init(args=args)
-    pico = PicoNode()
-    rclpy.spin(pico)
-    pico.destroy_node()
+    should_launch = True
+    list_node = rclpy.create_node("list_node")
+    available_nodes = get_node_names(node=list_node, include_hidden_nodes=False)
+    for name, _, _ in available_nodes:
+        if name == "pico":
+            should_launch = False
+    
+    if should_launch:
+        pico = PicoNode()
+        rclpy.spin(pico)
+        pico.destroy_node()
+
+    list_node.destroy_node()
     rclpy.shutdown()
 
 

@@ -4,6 +4,7 @@ import math
 import threading
 import time
 
+import subprocess
 import rclpy
 from linux_js import XBOX_CONSTANTS, AxisEvent, Joystick
 from rclpy.node import Node
@@ -38,11 +39,14 @@ class XboxControllerNode(Node):
 
     def publish_inputs(
         self,
-    ):  # publish the buttons/triggers that you care about in this methode
-        msg = TwoFloat()
-        msg.first = self._target_angular
-        msg.second = self._target_linear
-        self._publisher.publish(msg)
+    ):  # if autonomous mode is not running, send the message to move the robot
+        if self._launched_auton:
+            return
+        else:
+            msg = TwoFloat()
+            msg.first = self._target_angular
+            msg.second = self._target_linear
+            self._publisher.publish(msg)
 
     def _monitor_controller(self):
         js = None
@@ -72,6 +76,18 @@ class XboxControllerNode(Node):
                         self._target_linear = min(
                             max(event.value / XBOX_CONSTANTS.MAX_AXIS_VALUE, -1.0), 1.0
                         )
+                # button presses would prolly be an elif here
+                elif isinstance(event, ButtonEvent):
+                    if event.id == #buttton:
+                        if not self._launched_auton:
+                            #fill command list in later with real stuff
+                            command_list = ["echo"]
+                            self._auton_process = subprocess.Popen(command_list)
+                            self._launched_auton = True
+                    if event.id == #other button:
+                        if self._launched_auton:
+                            self._auton_process.terminate()
+                            self._launched_auton = False
 
 
 def main(args=None):
