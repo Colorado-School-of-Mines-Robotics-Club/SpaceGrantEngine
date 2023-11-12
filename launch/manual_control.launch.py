@@ -5,6 +5,10 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='sgengine',
+            executable='manual',
+        ),
+        Node(
+            package='sgengine',
             executable='pico',
         ),
         Node(
