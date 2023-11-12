@@ -25,9 +25,13 @@ install_apt_packages(
     [
         f"ros-{ros_distro}-depthai",
         "python3-cv-bridge",
-        "python3-pip"
+        "python3-pip",
+        "usbutils",
+        "udev"
     ]
 )
+
+subprocess.check_call(["bash", "-c", "echo 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"03e7\", MODE=\"0666\"' | sudo tee /etc/udev/rules.d/80-movidius.rules"])
 
 if "--apt_only" in sys.argv:
     exit()

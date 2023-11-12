@@ -17,6 +17,9 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER ros
 WORKDIR /home/ros
 
+# Add .local/bin to PATH (.bashrc)
+RUN echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> ~/.bashrc
+
 # Add source ros2 to .bashrc
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
