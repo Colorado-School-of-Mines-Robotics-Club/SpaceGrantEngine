@@ -5,7 +5,7 @@ import threading
 import time
 
 import rclpy
-from linux_js import XBOX_CONSTANTS, AxisEvent, Joystick
+from linux_joystick import XBOX_CONSTANTS, AxisEvent, Joystick
 from rclpy.node import Node
 
 from sgengine_messages.msg import XboxInput
@@ -66,10 +66,14 @@ class XboxControllerNode(Node):
                 except OSError:
                     break
                 if isinstance(event, AxisEvent):
-                    if event.id == XBOX_CONSTANTS.L_STICK_Y:
-                        self._left_stick_y = max(event.value / 32767, -1.0)
-                    elif event.id == 4:
-                        self._right_stick_y = max(event.value / 32767, -1.0)
+                    if event.id == XBOX_CONSTANTS.L_STICK_Y_ID:
+                        self._left_stick_y = max(
+                            event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
+                        )
+                    elif event.id == XBOX_CONSTANTS.R_STICK_Y_ID:
+                        self._right_stick_y = max(
+                            event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
+                        )
 
 
 def main(args=None):

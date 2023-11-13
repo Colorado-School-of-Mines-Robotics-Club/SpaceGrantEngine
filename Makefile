@@ -3,7 +3,7 @@
 SHELL=/bin/bash
 
 all:
-	source /opt/ros/humble/setup.bash
+	source /opt/ros/humble/setup.bash && \
 	colcon build --symlink-install
 
 clean:
@@ -14,23 +14,23 @@ clean:
 check: check_fmt test
 
 test:
-	source /opt/ros/humble/setup.bash
-	source ./install/setup.bash
+	source /opt/ros/humble/setup.bash && \
+	source ./install/setup.bash && \
 	colcon test --event-handlers console_direct+
 
 fmt:
-	source /opt/ros/humble/setup.bash
-	source install/setup.bash
-	python3 -m black ./sgengine/sgengine
-	python3 -m isort ./sgengine/sgengine
+	source /opt/ros/humble/setup.bash && \
+	source install/setup.bash && \
+	python3 -m black ./sgengine/sgengine && \
+	python3 -m isort ./sgengine/sgengine && \
 	python3 -m ruff --fix ./sgengine/sgengine
 	@echo "FORMATTING COMPLETE"
 
 check_fmt:
-	source /opt/ros/humble/setup.bash
-	source install/setup.bash
-	python3 -m black --check ./sgengine/sgengine
-	python3 -m isort --check ./sgengine/sgengine
+	source /opt/ros/humble/setup.bash && \
+	source install/setup.bash && \
+	python3 -m black --check ./sgengine/sgengine && \
+	python3 -m isort --check ./sgengine/sgengine && \
 	python3 -m ruff ./sgengine/sgengine
 	@echo "FORMATTING CHECK PASSED"
 
