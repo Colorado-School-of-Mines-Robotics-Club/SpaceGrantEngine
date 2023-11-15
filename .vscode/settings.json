@@ -4,5 +4,8 @@
     "editor.formatOnSave": true
   },
   "ruff.args": ["./sgengine/sgengine"],
-  "black-formatter.args": ["./sgengine/sgengine"],
+  "black-formatter.args": [
+    "./sgengine/sgengine"
+  ],
+  "cmake.configureOnOpen": false,
 }
