@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import subprocess
 import os
+import subprocess
 import sys
+
 
 def install_apt_packages(packages):
     if not isinstance(packages, list):
@@ -25,12 +26,23 @@ install_apt_packages(
     [
         f"ros-{ros_distro}-depthai",
         "python3-cv-bridge",
-        "python3-pip"
+        "python3-pip",
+        "usbutils",
+        "udev",
+    ]
+)
+
+subprocess.check_call(
+    [
+        "bash",
+        "-c",
+        'echo \'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"\' | sudo tee /etc/udev/rules.d/80-movidius.rules',
     ]
 )
 
 if "--apt_only" in sys.argv:
     exit()
+
 
 def install_pip_packages(packages, check_return_code=True):
     if not isinstance(packages, list):
@@ -40,6 +52,7 @@ def install_pip_packages(packages, check_return_code=True):
         subprocess.check_call(command)
     else:
         subprocess.run(command)
+
 
 subprocess.check_call(["pip3", "install", "pip", "--upgrade"])
 
@@ -54,8 +67,9 @@ install_pip_packages(
         "depthai",
         "opencv-contrib-python==4.8.0.74",
         "oakutils",
+        "linux-joystick-py",
     ]
 )
-install_pip_packages(["./extern/openVO", "./extern/linux-js"], check_return_code=False)
+install_pip_packages(["./extern/openVO"], check_return_code=False)
 
 install_pip_packages("RPi.GPIO", check_return_code=False)

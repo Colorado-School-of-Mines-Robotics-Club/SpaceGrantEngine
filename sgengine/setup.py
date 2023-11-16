@@ -29,6 +29,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
+            "manual          = sgengine.manual_node:main",
             "pico            = sgengine.hardware.pico.pico_node:main",
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
             "odometry        = sgengine.odometry.odometry_node:main",

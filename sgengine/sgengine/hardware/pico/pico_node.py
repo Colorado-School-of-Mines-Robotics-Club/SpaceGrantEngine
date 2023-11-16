@@ -15,7 +15,9 @@ class PicoNode(Node, PicoComms):
         PicoComms.__init__(self)
 
         def move_callback(msg: TwoFloat) -> None:
-            PicoComms.send_move_command(self, msg.first, msg.second)
+            PicoComms.send_move_command(
+                self, int(msg.first * 255), int(msg.second * 255)
+            )
 
         self.subscription = self.create_subscription(
             TwoFloat, "pico/move_command", move_callback, 10

@@ -6,10 +6,10 @@ import time
 
 import subprocess
 import rclpy
-from linux_js import XBOX_CONSTANTS, AxisEvent, Joystick
+from linux_joystick import XBOX_CONSTANTS, AxisEvent, Joystick
 from rclpy.node import Node
 
-from sgengine_messages.msg import TwoFloat
+from sgengine_messages.msg import XboxInput
 
 
 class XboxControllerNode(Node):
@@ -20,14 +20,16 @@ class XboxControllerNode(Node):
     def __init__(self) -> None:
         # ros stuff
         Node.__init__(self, "xboxcontroller")
-        self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
+        self._publisher = self.create_publisher(
+            XboxInput, "xbox_controller/all_inputs", 10
+        )
         self._launched_auton = False
 
         self._publish_timer = self.create_timer(1.0 / 60.0, self.publish_inputs)
 
         # controller setup
-        self._target_linear = 0.0
-        self._target_angular = 0.0
+        self._left_stick_y = 0.0
+        self._right_stick_y = 0.0
 
         self._monitor_thread = threading.Thread(
             target=self._monitor_controller, args=()
@@ -44,8 +46,8 @@ class XboxControllerNode(Node):
             return
         else:
             msg = TwoFloat()
-            msg.first = self._target_angular
-            msg.second = self._target_linear
+            msg.left_joystick_y = self._left_stick_y
+            msg.right_joystick_y = self._right_stick_y
             self._publisher.publish(msg)
 
     def _monitor_controller(self):
@@ -68,13 +70,13 @@ class XboxControllerNode(Node):
                 except OSError:
                     break
                 if isinstance(event, AxisEvent):
-                    if event.id == XBOX_CONSTANTS.L_STICK_X:
-                        self._target_angular = min(
-                            max(event.value / XBOX_CONSTANTS.MAX_AXIS_VALUE, -1.0), 1.0
+                    if event.id == XBOX_CONSTANTS.L_STICK_Y_ID:
+                        self._left_stick_y = max(
+                            event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
                         )
-                    elif event.id == XBOX_CONSTANTS.L_STICK_Y:
-                        self._target_linear = min(
-                            max(event.value / XBOX_CONSTANTS.MAX_AXIS_VALUE, -1.0), 1.0
+                    elif event.id == XBOX_CONSTANTS.R_STICK_Y_ID:
+                        self._right_stick_y = max(
+                            event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
                         )
                 # button presses would prolly be an elif here
                 elif isinstance(event, ButtonEvent):
