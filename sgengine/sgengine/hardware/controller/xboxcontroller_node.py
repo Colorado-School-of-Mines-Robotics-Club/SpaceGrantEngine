@@ -1,12 +1,12 @@
 # thanks stack overflow : https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python
 
 import math
+import subprocess
 import threading
 import time
 
-import subprocess
 import rclpy
-from linux_joystick import XBOX_CONSTANTS, AxisEvent, Joystick
+from linux_joystick import XBOX_CONSTANTS, AxisEvent, ButtonEvent, Joystick
 from rclpy.node import Node
 
 from sgengine_messages.msg import XboxInput
@@ -45,7 +45,7 @@ class XboxControllerNode(Node):
         if self._launched_auton:
             return
         else:
-            msg = TwoFloat()
+            msg = XboxInput()
             msg.left_joystick_y = self._left_stick_y
             msg.right_joystick_y = self._right_stick_y
             self._publisher.publish(msg)
@@ -80,13 +80,13 @@ class XboxControllerNode(Node):
                         )
                 # button presses would prolly be an elif here
                 elif isinstance(event, ButtonEvent):
-                    if event.id == #buttton:
+                    if event.id == XBOX_CONSTANTS.A_BUTTON_ID:
                         if not self._launched_auton:
-                            #fill command list in later with real stuff
+                            # fill command list in later with real stuff
                             command_list = ["echo"]
                             self._auton_process = subprocess.Popen(command_list)
                             self._launched_auton = True
-                    if event.id == #other button:
+                    if event.id == XBOX_CONSTANTS.BACK_BUTTON_ID:
                         if self._launched_auton:
                             self._auton_process.terminate()
                             self._launched_auton = False

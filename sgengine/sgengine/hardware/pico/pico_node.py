@@ -37,7 +37,7 @@ def main(args=None):
     for name, _, _ in available_nodes:
         if name == "pico":
             should_launch = False
-    
+
     if should_launch:
         pico = PicoNode()
         rclpy.spin(pico)
