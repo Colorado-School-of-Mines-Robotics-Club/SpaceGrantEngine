@@ -1,11 +1,12 @@
 # thanks stack overflow : https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python
 
 import math
+import subprocess
 import threading
 import time
 
 import rclpy
-from linux_joystick import XBOX_CONSTANTS, AxisEvent, Joystick
+from linux_joystick import XBOX_CONSTANTS, AxisEvent, ButtonEvent, Joystick
 from rclpy.node import Node
 
 from sgengine_messages.msg import XboxInput
@@ -40,11 +41,14 @@ class XboxControllerNode(Node):
 
     def publish_inputs(
         self,
-    ):  # publish the buttons/triggers that you care about in this methode
-        msg = XboxInput()
-        msg.left_joystick_y = self._left_stick_y
-        msg.right_joystick_y = self._right_stick_y
-        self._publisher.publish(msg)
+    ):  # if autonomous mode is not running, send the message to move the robot
+        if self._launched_auton:
+            return
+        else:
+            msg = XboxInput()
+            msg.left_joystick_y = self._left_stick_y
+            msg.right_joystick_y = self._right_stick_y
+            self._publisher.publish(msg)
 
     def _monitor_controller(self):
         js = None
@@ -74,6 +78,18 @@ class XboxControllerNode(Node):
                         self._right_stick_y = max(
                             event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
                         )
+                # button presses would prolly be an elif here
+                elif isinstance(event, ButtonEvent):
+                    if event.id == XBOX_CONSTANTS.A_BUTTON_ID:
+                        if not self._launched_auton:
+                            # fill command list in later with real stuff
+                            command_list = ["echo"]
+                            self._auton_process = subprocess.Popen(command_list)
+                            self._launched_auton = True
+                    if event.id == XBOX_CONSTANTS.BACK_BUTTON_ID:
+                        if self._launched_auton:
+                            self._auton_process.terminate()
+                            self._launched_auton = False
 
 
 def main(args=None):
