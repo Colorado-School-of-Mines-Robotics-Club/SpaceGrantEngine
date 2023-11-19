@@ -30,13 +30,9 @@ jobs:
     - name: Check Formatting
       shell: bash
       run: |
-        source /opt/ros/humble/setup.bash
-        source ./install/setup.bash
-        make fmt
+        make check_fmt
     
     - name: Run Tests
       shell: bash
       run: |
-        source /opt/ros/humble/setup.bash
-        source ./install/setup.bash
         make test

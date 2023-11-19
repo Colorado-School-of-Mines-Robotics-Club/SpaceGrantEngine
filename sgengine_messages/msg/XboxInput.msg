@@ -1,0 +1,8 @@
+float64 left_joystick_y
+float64 left_joystick_x
+float64 right_joystick_y
+float64 right_joystick_x
+float64 a_button
+float64 b_button
+float64 x_button
+float64 y_button
