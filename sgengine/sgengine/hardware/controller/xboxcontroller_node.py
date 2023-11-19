@@ -2,6 +2,7 @@
 
 import math
 import subprocess
+import sys
 import threading
 import time
 
@@ -78,18 +79,34 @@ class XboxControllerNode(Node):
                         self._right_stick_y = max(
                             event.value / AxisEvent.MAX_AXIS_VALUE, -1.0
                         )
-                # button presses would prolly be an elif here
-                elif isinstance(event, ButtonEvent):
-                    if event.id == XBOX_CONSTANTS.A_BUTTON_ID:
+                # Only handle button presses on press down
+                elif isinstance(event, ButtonEvent) and event.value is True:
+                    if event.id == XBOX_CONSTANTS.START_BUTTON_ID:
                         if not self._launched_auton:
+                            print("Auton start received")
                             # fill command list in later with real stuff
-                            command_list = ["echo"]
+                            command_list = [
+                                "bash",
+                                "-c",
+                                "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch launch/auton_control.launch.py",
+                            ]
                             self._auton_process = subprocess.Popen(command_list)
                             self._launched_auton = True
+                        else:
+                            print(
+                                "Auton start received, but auton already launched!",
+                                file=sys.stderr,
+                            )
                     if event.id == XBOX_CONSTANTS.BACK_BUTTON_ID:
                         if self._launched_auton:
+                            print("Auton stop received")
                             self._auton_process.terminate()
                             self._launched_auton = False
+                        else:
+                            print(
+                                "Auton stop received, but auton not launched!",
+                                file=sys.stderr,
+                            )
 
 
 def main(args=None):
