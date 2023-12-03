@@ -2,7 +2,8 @@ import numpy as np
 import rclpy
 from cv_bridge import CvBridge
 from openVO import rot2RPY
-from openVO.oakd import OAK_Camera, OAK_Odometer
+from openVO.oakd import OAK_Odometer
+from oakutils import LegacyCamera
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 
@@ -15,14 +16,10 @@ class OdometryNode(Node):
     def __init__(self) -> None:
         Node.__init__(self, "odometer")
 
-        self._cam = OAK_Camera(
-            median_filter=7,
-            stereo_threshold_filter_min_range=200,
-            stereo_threshold_filter_max_range=20000,
-        )
+        self._cam = LegacyCamera()
         self._odom = OAK_Odometer(
             self._cam,
-            nfeatures=250,
+            nfeatures=500,
         )
         self._cam.start(block=True)
 

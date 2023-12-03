@@ -66,8 +66,9 @@ install_pip_packages(
         "scipy",
         "depthai",
         "opencv-contrib-python==4.8.0.74",
-        "oakutils",
+        "oakutils>=1.3.*",
         "linux-joystick-py",
+        "setuptools==59.6.*",
     ]
 )
 install_pip_packages(["./extern/openVO"], check_return_code=False)
