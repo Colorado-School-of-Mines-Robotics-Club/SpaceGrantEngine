@@ -3,6 +3,8 @@ log/
 build/
 install/
 
+# extern/openVO
+
 # specific files
 imgui.ini
 space.log
