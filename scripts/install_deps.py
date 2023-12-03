@@ -66,11 +66,13 @@ install_pip_packages(
         "scipy",
         "depthai",
         "opencv-contrib-python==4.8.0.74",
-        "oakutils>=1.3.*",
+        "oakutils>=1.3.1",
         "linux-joystick-py",
         "setuptools==59.6.*",
     ]
 )
+
+subprocess.check_call(["bash","-c","mkdir -p ./extern/ && cd ./extern/ && git clone https://github.com/justincdavis/openVO"])
 install_pip_packages(["./extern/openVO"], check_return_code=False)
 
 install_pip_packages("RPi.GPIO", check_return_code=False)
