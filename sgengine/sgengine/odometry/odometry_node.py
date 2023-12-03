@@ -1,9 +1,9 @@
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
+from oakutils import LegacyCamera
 from openVO import rot2RPY
 from openVO.oakd import OAK_Odometer
-from oakutils import LegacyCamera
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 
