@@ -121,11 +121,11 @@ class PathfindingNode(Node):
             # Angular quantization
             thresh = 0.5
             if norm_heading < -thresh:
-                norm_heading = -1
+                norm_heading = -1.0
             elif norm_heading > thresh:
-                norm_heading = 1
+                norm_heading = 1.0
             else:
-                norm_heading = 0
+                norm_heading = 0.0
 
             move_cmd = TwoFloat()
             move_cmd.first = norm_heading  # angular
