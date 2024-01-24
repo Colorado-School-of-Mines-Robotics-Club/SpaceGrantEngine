@@ -37,13 +37,13 @@ def main(args=None):
     for name, _, _ in available_nodes:
         if name == "pico":
             should_launch = False
+    list_node.destroy_node()
 
     if should_launch:
         pico = PicoNode()
         rclpy.spin(pico)
         pico.destroy_node()
 
-    list_node.destroy_node()
     rclpy.shutdown()
 
 

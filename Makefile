@@ -5,18 +5,22 @@ SHELL=/bin/bash
 all:
 	source /opt/ros/humble/setup.bash && \
 	colcon build --symlink-install
+	@echo "BUILD COMPLETE"
 
 clean:
 	rm -rf ./install
 	rm -rf ./build
 	rm -rf ./log
+	@echo "CLEAN COMPLETE"
 
 check: check_fmt test
+	@echo "CHECK COMPLETE"
 
 test:
 	source /opt/ros/humble/setup.bash && \
 	source ./install/setup.bash && \
 	colcon test --event-handlers console_direct+
+	@echo "TESTING COMPLETE"
 
 fmt:
 	source /opt/ros/humble/setup.bash && \

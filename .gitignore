@@ -3,7 +3,7 @@ log/
 build/
 install/
 
-# extern/openVO
+extern/openVO
 
 # specific files
 imgui.ini
