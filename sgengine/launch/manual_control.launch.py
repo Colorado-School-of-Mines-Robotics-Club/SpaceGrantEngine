@@ -6,13 +6,16 @@ def generate_launch_description():
         Node(
             package='sgengine',
             executable='manual',
+            name='manual'
         ),
         Node(
             package='sgengine',
             executable='pico',
+            name='manual_pico'
         ),
         Node(
             package='sgengine',
             executable='xboxcontroller',
+            name='manual_xboxcontroller'
         )
     ])

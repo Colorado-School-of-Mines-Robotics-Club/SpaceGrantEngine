@@ -6,17 +6,18 @@ def generate_launch_description():
         Node(
             package='sgengine',
             executable='pico',
-            name='pico'
+            name='auton_pico',
+            arguments=["--no_duplicates"]
         ),
         Node(
             package='sgengine',
             executable='odometry',
-            name='odometry'
+            name='auton_odometry'
         ),
         Node(
             package='sgengine',
             executable='pathfinding',
-            name='pathfinding'
+            name='auton_pathfinding'
         )
     ])
     

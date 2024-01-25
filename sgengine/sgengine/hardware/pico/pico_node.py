@@ -1,3 +1,5 @@
+import sys
+
 import rclpy
 from rclpy.node import Node
 from ros2node.api import get_node_names
@@ -32,17 +34,23 @@ def main(args=None):
     """
     rclpy.init(args=args)
     should_launch = True
-    list_node = rclpy.create_node("list_node")
-    available_nodes = get_node_names(node=list_node, include_hidden_nodes=False)
-    for name, _, _ in available_nodes:
-        if name == "pico":
-            should_launch = False
-    list_node.destroy_node()
+    if sys.argv.count("--no_duplicates") > 0:
+        list_node = rclpy.create_node("list_node")
+        available_nodes = get_node_names(node=list_node, include_hidden_nodes=False)
+        for name, _, _ in available_nodes:
+            if name == "manual_pico":
+                should_launch = False
+        list_node.destroy_node()
 
     if should_launch:
         pico = PicoNode()
         rclpy.spin(pico)
         pico.destroy_node()
+    else:
+        print(
+            "Pico node is not launching because the manual_pico node is already running!",
+            file=sys.stderr,
+        )
 
     rclpy.shutdown()
 
