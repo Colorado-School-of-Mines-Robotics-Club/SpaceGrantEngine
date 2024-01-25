@@ -4,7 +4,6 @@
 		"charliermarsh.ruff",
 		"ms-vscode.cpptools",
 		"twxs.cmake",
-		"ms-vscode.makefile-tools",
 		"tamasfe.even-better-toml",
 		"GitHub.vscode-github-actions",
 		"ms-python.black-formatter",

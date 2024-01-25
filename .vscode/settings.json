@@ -3,7 +3,7 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
   },
-  "ruff.args": ["./sgengine/sgengine"],
+  "ruff.lint.args": ["./sgengine/sgengine"],
   "black-formatter.args": [
     "./sgengine/sgengine"
   ],
