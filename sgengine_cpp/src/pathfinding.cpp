@@ -17,6 +17,30 @@ PathfindingNode::PathfindingNode()
   RCLCPP_INFO(this->get_logger(), "Running Pathfinding");
 }
 
+template <typename T>
+cv::Mat where(cv::Mat& src, double condition, T x, std::optional<T> y = std::nullopt)
+{
+  cv::Mat modified;
+  src.copyTo(modified);
+
+  uint8_t* pixel_ptr  = (uint8_t*)modified.data;
+  int cn = modified.channels();
+  for (int r = 0; r < modified.rows; r++)
+  {
+    for (int c = 0; c < modified.cols; c++)
+    {
+      uint8_t pixel = pixel_ptr[r * modified.cols * cn + c * cn];
+      if (pixel < condition) {
+        pixel_ptr[r * modified.cols * cn + c * cn] = x;
+      } else if (y.has_value()) {
+        pixel_ptr[r * modified.cols * cn + c * cn] = y.value();
+      }
+    }
+  }
+
+  return modified;
+}
+
 void PathfindingNode::depth_image_callback(const sensor_msgs::msg::Image& depth_map) {
   cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(depth_map, depth_map.encoding);
   
@@ -51,20 +75,11 @@ void PathfindingNode::depth_image_callback(const sensor_msgs::msg::Image& depth_
   gausian -= min_depth;
   gausian /= (max_depth - min_depth);
 
-  laplacian = laplacian + (1 + gausian);
+  laplacian += 1 + gausian;
 
-  uint8_t* pixel_ptr  = (uint8_t*)laplacian.data;
-  int cn = laplacian.channels();
-  for (int r = 0; r < laplacian.rows; r++)
-  {
-    for (int c = 0; c < laplacian.cols; c++)
-    {
-      uint8_t pixel = pixel_ptr[r * laplacian.cols * cn + c * cn];
-      if (pixel < min_laplacian + 0.3 * (max_laplacian - min_laplacian)) {
-        pixel_ptr[r * laplacian.cols * cn + c * cn] = 0;
-      }
-    }
-  }
+  laplacian = where(laplacian, min_laplacian + 0.3 * (max_laplacian - min_laplacian), 0);
+
+  cv::Mat binary = where<uint8_t>(laplacian, 0.8, 0, 1);
 
 }
 
