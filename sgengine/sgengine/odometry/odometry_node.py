@@ -1,14 +1,96 @@
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
-from oakutils import LegacyCamera
+from oakutils import ApiCamera
+from oakutils.nodes import create_neural_network, get_nn_frame, create_stereo_depth, create_color_camera, create_xout
 from openVO import rot2RPY
 from openVO.oakd import OAK_Odometer
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+import cv2
 
 from sgengine_messages.msg import RPYXYZ
 
+
+class OdometryCam:
+    def __init__(self, publish_color, publish_depth):
+        self._cam = ApiCamera(
+            color_size=(1920, 1080), 
+            mono_size=(640, 400),
+            primary_mono_left=True,
+        )
+        self._calibration = self._cam.calibration
+        self._Q = self._calibration.stereo.Q_cv2
+
+        color = create_color_camera(self._cam.pipeline)
+        stereo, left, right = create_stereo_depth(self._cam.pipeline)
+        nn = create_neural_network(
+            self._cam.pipeline,
+            input_link=stereo.depth,
+            blob_path="custom.blob",
+        )
+
+        nn_xout = create_xout(self._cam.pipeline, nn.out, "nn_depth")
+        color_xout = create_xout(self._cam.pipeline, color.preview, "color")
+        disparity_xout = create_xout(self._cam.pipeline, stereo.disparity, "disparity")
+        left_xout = create_xout(self._cam.pipeline, stereo.rectifiedLeft, "left")
+
+        self._rgb = np.zeros((1080, 1920, 3))
+        self._cam.add_callback("color", _update_color)
+        self._depth = np.zeros((640, 400))
+        self._cam.add_callback("nn_depth", _update_depth)
+
+        self._disparity = np.zeros((640, 400))
+        self._im3d = np.zeros((640, 400, 3))
+        self._left = np.zeros((640, 400))
+        self._cam.add_callback("disparity", self._update_disparity)
+        self._cam.add_callback("left", self._update_left)
+    
+    def _update_left(self, frame):
+        self._left = frame.getCVFrame()
+
+    def _update_disparity(self, frame):
+        self._disparity = frame.getCVFrame()
+        self._im3d = cv2.reprojectImageTo3D(self._disparity, self._Q) 
+    
+    def _update_color(self, frame):
+        self._rgb = frame.getCVFrame()
+    
+    def _update_depth(self, frame):
+        self._depth = get_nn_frame(frame, channels=1, frame_size=(640, 400))
+
+    def _crop_to_valid_primary_region(self, img: np.ndarray) -> np.ndarray:
+        if self._calibration.primary is None:
+            err_msg = "Primary calibration is not available."
+            raise RuntimeError(err_msg)
+        if self._calibration.primary.valid_region is None:
+            err_msg = "Primary valid region is not available."
+            raise RuntimeError(err_msg)
+        return img[
+            self._calibration.primary.valid_region[
+                1
+            ] : self._calibration.primary.valid_region[3],
+            self._calibration.primary.valid_region[
+                0
+            ] : self._calibration.primary.valid_region[2],
+        ]
+
+    def compute_im3d(self):
+        return self._crop_to_valid_primary_region(self._im3d), self._crop_to_valid_primary_region(self._disparity), self._crop_to_valid_primary_region(self._left)
+
+    def start(self):
+        self._cam.start()
+
+    def stop(self):
+        self._cam.stop()
+
+    @property
+    def depth(self):
+        return self._depth
+    
+    @property
+    def rgb(self):
+        return self._rgb
 
 class OdometryNode(Node):
     """Node for running visual odometry"""
@@ -16,7 +98,7 @@ class OdometryNode(Node):
     def __init__(self) -> None:
         Node.__init__(self, "odometer")
 
-        self._cam = LegacyCamera()
+        self._cam = OdometryCam()
         self._odom = OAK_Odometer(
             self._cam,
             nfeatures=500,
