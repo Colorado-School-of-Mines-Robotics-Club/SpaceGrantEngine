@@ -1,21 +1,23 @@
+import cv2
 import numpy as np
 import rclpy
+import time
 from cv_bridge import CvBridge
-from oakutils import ApiCamera
-from oakutils.nodes import create_neural_network, get_nn_frame, create_stereo_depth, create_color_camera, create_xout
+from oakutils import ApiCamera, set_log_level
+from oakutils.nodes import (create_color_camera, create_neural_network,
+                            create_stereo_depth, create_xout, get_nn_frame)
 from openVO import rot2RPY
 from openVO.oakd import OAK_Odometer
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-import cv2
 
 from sgengine_messages.msg import RPYXYZ
 
 
 class OdometryCam:
-    def __init__(self, publish_color, publish_depth):
+    def __init__(self):
         self._cam = ApiCamera(
-            color_size=(1920, 1080), 
+            color_size=(1920, 1080),
             mono_size=(640, 400),
             primary_mono_left=True,
         )
@@ -27,7 +29,7 @@ class OdometryCam:
         nn = create_neural_network(
             self._cam.pipeline,
             input_link=stereo.depth,
-            blob_path="custom.blob",
+            blob_path="depth_proc.blob",
         )
 
         nn_xout = create_xout(self._cam.pipeline, nn.out, "nn_depth")
@@ -36,26 +38,37 @@ class OdometryCam:
         left_xout = create_xout(self._cam.pipeline, stereo.rectifiedLeft, "left")
 
         self._rgb = np.zeros((1080, 1920, 3))
-        self._cam.add_callback("color", _update_color)
-        self._depth = np.zeros((640, 400))
-        self._cam.add_callback("nn_depth", _update_depth)
+        self._cam.add_callback("color", self._update_color)
+        self._depth = np.zeros((400, 640, 1))
+        self._cam.add_callback("nn_depth", self._update_depth)
 
-        self._disparity = np.zeros((640, 400))
-        self._im3d = np.zeros((640, 400, 3))
-        self._left = np.zeros((640, 400))
+        self._disparity = np.zeros((400, 640, 1))
+        self._im3d = np.zeros((400, 640, 3))
+        self._left = np.zeros((400, 640, 1))
         self._cam.add_callback("disparity", self._update_disparity)
         self._cam.add_callback("left", self._update_left)
-    
+
+        self._nodes = [
+            color,
+            stereo,
+            left,
+            right,
+            nn_xout,
+            color_xout,
+            disparity_xout,
+            left_xout,
+        ]
+
     def _update_left(self, frame):
-        self._left = frame.getCVFrame()
+        self._left = frame.getCvFrame()
 
     def _update_disparity(self, frame):
-        self._disparity = frame.getCVFrame()
-        self._im3d = cv2.reprojectImageTo3D(self._disparity, self._Q) 
-    
+        self._disparity = frame.getCvFrame()
+        self._im3d = cv2.reprojectImageTo3D(self._disparity, self._Q)
+
     def _update_color(self, frame):
-        self._rgb = frame.getCVFrame()
-    
+        self._rgb = frame.getCvFrame()
+
     def _update_depth(self, frame):
         self._depth = get_nn_frame(frame, channels=1, frame_size=(640, 400))
 
@@ -76,10 +89,14 @@ class OdometryCam:
         ]
 
     def compute_im3d(self):
-        return self._crop_to_valid_primary_region(self._im3d), self._crop_to_valid_primary_region(self._disparity), self._crop_to_valid_primary_region(self._left)
+        im3d = self._crop_to_valid_primary_region(self._im3d)
+        disparity = self._crop_to_valid_primary_region(self._disparity)
+        left = self._crop_to_valid_primary_region(self._left)
+        print(im3d.shape, disparity.shape, left.shape)
+        return im3d, disparity, left.astype(np.uint8)
 
-    def start(self):
-        self._cam.start()
+    def start(self, block):
+        self._cam.start(blocking=False)
 
     def stop(self):
         self._cam.stop()
@@ -87,10 +104,11 @@ class OdometryCam:
     @property
     def depth(self):
         return self._depth
-    
+
     @property
     def rgb(self):
         return self._rgb
+
 
 class OdometryNode(Node):
     """Node for running visual odometry"""
@@ -154,11 +172,14 @@ class OdometryNode(Node):
             pose.y = float(y)
             pose.z = float(z)
 
+            print(f"Pose: r: {r}, p: {p}, y: {y}, x: {x}, y: {y}, z: {z}")
+
             depth_img = self._bridge.cv2_to_imgmsg(self._cam.depth)
             rgb_img = self._bridge.cv2_to_imgmsg(self._cam.rgb)
             self._pose_publisher.publish(pose)
             self._depth_publisher.publish(depth_img)
             self._rgb_publisher.publish(rgb_img)
+
         self._cam.stop()
 
 
@@ -166,6 +187,7 @@ def main(args=None):
     """
     Main function which exclusively launches the Odometer node
     """
+    set_log_level("DEBUG")
     rclpy.init(args=args)
     odometer = OdometryNode()
     rclpy.spin(odometer)
