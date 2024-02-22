@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
@@ -6,15 +7,17 @@ from openVO import rot2RPY
 from openVO.oakd import OAK_Odometer
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from ..sg_logger import SG_Logger
 
 from sgengine_messages.msg import RPYXYZ
 
 
-class OdometryNode(Node):
+class OdometryNode(Node, SG_Logger):
     """Node for running visual odometry"""
 
     def __init__(self) -> None:
         Node.__init__(self, "odometer")
+        SG_Logger.__init__(self)
 
         self._cam = LegacyCamera()
         self._odom = OAK_Odometer(
@@ -42,7 +45,7 @@ class OdometryNode(Node):
         self._cam.stop()
 
     def _run(self) -> None:
-        print("Running the odometry node")
+        logging.info('Running the odometry node')
         while not self._stopped:
             self._odom.update()
             self._pose = self._odom.current_pose()

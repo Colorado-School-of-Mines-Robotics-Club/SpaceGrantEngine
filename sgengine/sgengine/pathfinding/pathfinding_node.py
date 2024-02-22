@@ -2,10 +2,10 @@ import cv2
 import logging
 import numpy as np
 import rclpy
-from ..sg_logger import SG_Logger
 from cv_bridge import CvBridge
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from ..sg_logger import SG_Logger
 
 from sgengine_messages.msg import TwoFloat
 
