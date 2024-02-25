@@ -11,10 +11,8 @@ try:
 
     GPIO.setmode(GPIO.BCM)
 except RuntimeError as e:
-
-    # left as non logger print statements since logger is not fully setup at this point
-    print(f'Could not load RPi library with error "{e}"', file=sys.stderr)
-    print("Commands will not be sent!", file=sys.stderr)
+    logging.error(f'Could not load RPi library with error "{e}"')
+    logging.error("Commands will not be sent!")
 
 
 class PicoComms(SG_Logger):

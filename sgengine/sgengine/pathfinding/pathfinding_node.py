@@ -41,11 +41,11 @@ def detect_heading(depth_map):
     # laplacian = cv2.filter2D(laplacian, -1, np.ones((radius,radius),np.float32))
     ma = np.max(laplacian)
     mi = np.min(laplacian)
-    # print(f"max={ma}, min={mi}")
+    logging.debug(f"max={ma}, min={mi}")
 
     # Bias the laplacian
     depth_scale = ((depth_map - min_depth) / (max_depth - min_depth)).astype(np.float32)
-    # print(f"depthType={depthScale.dtype}, laplacianType={laplacian.dtype}")
+    # logging.debug(f"depthType={depth_scale.dtype}, laplacianType={laplacian.dtype}")
     laplacian = laplacian + (1 - depth_scale)
 
     laplacian = np.where(laplacian < (mi + 0.3 * (ma - mi)), 0, laplacian)
@@ -79,21 +79,21 @@ def detect_heading(depth_map):
     # Debug distances vector
     # maxDist = np.max(distances)
     # minDist = np.min(distances)
-    # print(f"MAXDIST={maxDist}, MINDIST={minDist}")
+    # logging.debug(f"MAXDIST={maxDist}, MINDIST={minDist}")
     # for i,d in enumerate(distances):
     #    scale = (d - minDist) / (maxDist - minDist)
-    #    #print(f"i={i}, scale={scale}")
+    #    #logging.debugf"i={i}, scale={scale}")
     #    laplacian = cv2.circle(laplacian, center=(int(i), int(c)), radius=1, color=(1.0-scale,scale,0), thickness=1)
     #    #laplacian = cv2.circle(laplacian, center=(int(i), int(c)), radius=1, color=(i / binary.shape[1],0,0), thickness=1)
 
     min_idx = np.argmax(distances)
-    # print(f"minIdx={minIdx}")
+    # logging.debugf"minIdx={minIdx}")
     # laplacian = cv2.circle(laplacian, center=(int(minIdx), int(c)), radius=8, color=(0,0,0.5), thickness=3)
 
     # Rolling average of headings
     # headings = np.append(headings, minIdx)
     # historyLen = 8
-    # print(f"h={headings}")
+    # logging.debug(f"h={headings}")
     # if len(headings) > historyLen:
     #    headings = headings[1 :]
 
