@@ -8,7 +8,11 @@ def main():
     """Test main function"""
 
     # logging setup
-    logging.basicConfig(filename="/home/pi/SpaceGrantEngine/log/important_logs.log", level=logging.INFO, format='%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s')
+    logging.basicConfig(
+        filename="/home/pi/SpaceGrantEngine/log/important_logs.log",
+        level=logging.INFO,
+        format="%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s",
+    )
     logging.getLogger().addHandler(logging.StreamHandler())
 
     # stopped = False

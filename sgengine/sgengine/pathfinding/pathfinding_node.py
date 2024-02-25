@@ -1,18 +1,21 @@
-import cv2
 import logging
+
+import cv2
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from ..sg_logger import SG_Logger
 
 from sgengine_messages.msg import TwoFloat
 
-#import numba
-#from numba import jit
+from ..sg_logger import SG_Logger
 
-#@jit(nopython=False)
+# import numba
+# from numba import jit
+
+
+# @jit(nopython=False)
 def detect_heading(depth_map):
     """Detects the heading"""
 
@@ -143,8 +146,7 @@ class PathfindingNode(Node, SG_Logger):
         )
         self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
 
-        logging.info('Running Pathfinding')
-        
+        logging.info("Running Pathfinding")
 
 
 def main(args=None):

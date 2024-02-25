@@ -4,10 +4,10 @@ import sys
 import rclpy
 from rclpy.node import Node
 from ros2node.api import get_node_names
-from ...sg_logger import SG_Logger
 
 from sgengine_messages.msg import TwoFloat
 
+from ...sg_logger import SG_Logger
 from .pico_comms import PicoComms
 
 
@@ -28,7 +28,7 @@ class PicoNode(Node, PicoComms, SG_Logger):
             TwoFloat, "pico/move_command", move_callback, 10
         )
 
-        logging.info('Running PicoNode')
+        logging.info("Running PicoNode")
 
 
 def main(args=None):
@@ -50,7 +50,9 @@ def main(args=None):
         rclpy.spin(pico)
         pico.destroy_node()
     else:
-        logging.warning('Pico node is not launching because the manual_pico node is already running!')
+        logging.warning(
+            "Pico node is not launching because the manual_pico node is already running!"
+        )
 
     rclpy.shutdown()
 

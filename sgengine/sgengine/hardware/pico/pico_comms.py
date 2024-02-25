@@ -30,7 +30,7 @@ class PicoComms(SG_Logger):
         self._no_comms = False
         if "serial" not in sys.modules:
             self._no_comms = True
-            logging.info('PicoComms running in dummy mode')
+            logging.info("PicoComms running in dummy mode")
             return
         # UART
         try:
@@ -45,7 +45,7 @@ class PicoComms(SG_Logger):
         except serial.serialutil.SerialException as e:
             self._no_comms = True
             logging.error(f'Unable to open serial device with error "{e}"')
-            logging.error('Commands will not be sent!')
+            logging.error("Commands will not be sent!")
             return
         # interrupt request pin
         self._interrupt_pin = interrupt_pin

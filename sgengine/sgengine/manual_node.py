@@ -1,4 +1,5 @@
 import logging
+
 import rclpy
 from rclpy.node import Node
 from sg_logger import SG_Logger
@@ -24,8 +25,8 @@ class ManualNode(Node, SG_Logger):
         self.subscription = self.create_subscription(
             XboxInput, "xbox_controller/all_inputs", input_callback, 10
         )
-        
-        logging.info('Running Manual Control Node')
+
+        logging.info("Running Manual Control Node")
 
 
 def main(args=None):

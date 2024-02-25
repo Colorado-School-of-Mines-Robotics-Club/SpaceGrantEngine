@@ -3,16 +3,16 @@
 import logging
 import math
 import subprocess
-import sys
 import threading
 import time
 
 import rclpy
 from linux_joystick import XBOX_CONSTANTS, AxisEvent, ButtonEvent, Joystick
 from rclpy.node import Node
-from ...sg_logger import SG_Logger
 
 from sgengine_messages.msg import XboxInput
+
+from ...sg_logger import SG_Logger
 
 
 class XboxControllerNode(Node, SG_Logger):
@@ -42,7 +42,7 @@ class XboxControllerNode(Node, SG_Logger):
         self._monitor_thread.daemon = True
         self._monitor_thread.start()
 
-        logging.info('Running the xboxcontroller node')
+        logging.info("Running the xboxcontroller node")
 
     def publish_inputs(
         self,
@@ -63,10 +63,12 @@ class XboxControllerNode(Node, SG_Logger):
                     js = Joystick(0)
                     break
                 except FileNotFoundError:
-                    logging.warning('Controller not connected. Retrying in 5 seconds...')
+                    logging.warning(
+                        "Controller not connected. Retrying in 5 seconds..."
+                    )
                     time.sleep(5)
 
-            logging.info('Controller connected!')
+            logging.info("Controller connected!")
 
             while True:
                 event = None
@@ -87,7 +89,7 @@ class XboxControllerNode(Node, SG_Logger):
                 elif isinstance(event, ButtonEvent) and event.value is True:
                     if event.id == XBOX_CONSTANTS.START_BUTTON_ID:
                         if not self._launched_auton:
-                            logging.info('Auton start received')
+                            logging.info("Auton start received")
                             command_list = [
                                 "bash",
                                 "-c",
@@ -96,14 +98,18 @@ class XboxControllerNode(Node, SG_Logger):
                             self._auton_process = subprocess.Popen(command_list)
                             self._launched_auton = True
                         else:
-                            logging.info('Auton start received, but auton already launched!')
+                            logging.info(
+                                "Auton start received, but auton already launched!"
+                            )
                     if event.id == XBOX_CONSTANTS.BACK_BUTTON_ID:
                         if self._launched_auton:
-                            logging.info('Auton stop received')
+                            logging.info("Auton stop received")
                             self._auton_process.terminate()
                             self._launched_auton = False
                         else:
-                            logging.warning('Auton stop received, but auton not launched!')
+                            logging.warning(
+                                "Auton stop received, but auton not launched!"
+                            )
 
 
 def main(args=None):
