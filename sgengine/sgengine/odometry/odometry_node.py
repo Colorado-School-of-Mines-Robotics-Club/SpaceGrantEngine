@@ -93,7 +93,7 @@ class OdometryCam:
         disparity = self._crop_to_valid_primary_region(self._disparity)
         left = self._crop_to_valid_primary_region(self._left)
         print(im3d.shape, disparity.shape, left.shape)
-        return im3d, disparity, left.astype(np.uint8)
+        return im3d, disparity.astype(np.uint8), left.astype(np.uint8)
 
     def start(self, block):
         self._cam.start(blocking=False)
