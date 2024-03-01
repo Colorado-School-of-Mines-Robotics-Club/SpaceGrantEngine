@@ -6,7 +6,7 @@ from oakutils.blobs.definitions import AbstractModel, InputType, ModelType
 from typing_extensions import Self
 
 
-class CustomU8(AbstractModel):
+class SimpleNav(AbstractModel):
     """nn.Module wrapper for a custom operation."""
 
     def __init__(self: Self) -> None:
@@ -14,17 +14,17 @@ class CustomU8(AbstractModel):
         super().__init__()
 
     @classmethod
-    def model_type(cls: type[CustomU8]) -> ModelType:
+    def model_type(cls: type[SimpleNav]) -> ModelType:
         """Type of input this model takes."""
         return ModelType.NONE
 
     @classmethod
-    def input_names(cls: type[CustomU8]) -> list[tuple[str, InputType]]:
+    def input_names(cls: type[SimpleNav]) -> list[tuple[str, InputType]]:
         """Names of the input tensors."""
         return [("input", InputType.U8)]
 
     @classmethod
-    def output_names(cls: type[CustomU8]) -> list[str]:
+    def output_names(cls: type[SimpleNav]) -> list[str]:
         """Names of the output tensors."""
         return ["output"]
 
