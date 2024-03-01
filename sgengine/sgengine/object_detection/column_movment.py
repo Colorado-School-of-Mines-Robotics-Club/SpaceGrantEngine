@@ -1,3 +1,4 @@
+import logging
 import time
 
 from openVO.oakd import OAK_Camera
@@ -5,6 +6,15 @@ from openVO.oakd import OAK_Camera
 
 def main():
     """Test main function"""
+
+    # logging setup
+    logging.basicConfig(
+        filename="/home/pi/SpaceGrantEngine/log/important_logs.log",
+        level=logging.INFO,
+        format="%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s",
+    )
+    logging.getLogger().addHandler(logging.StreamHandler())
+
     # stopped = False
 
     # def target():
@@ -43,7 +53,7 @@ def main():
         ]
 
         # Returns the direction of the depth frame
-        print(calculate_direction(single_depth_frame))
+        logging.info(calculate_direction(single_depth_frame))
         time.sleep(0.01)
         i += 1
 

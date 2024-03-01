@@ -1,4 +1,6 @@
 import cv2
+import logging
+
 import numpy as np
 import rclpy
 import time
@@ -12,6 +14,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 
 from sgengine_messages.msg import RPYXYZ
+
+from ..sg_logger import SG_Logger
 
 
 class OdometryCam:
@@ -110,11 +114,12 @@ class OdometryCam:
         return self._rgb
 
 
-class OdometryNode(Node):
+class OdometryNode(Node, SG_Logger):
     """Node for running visual odometry"""
 
     def __init__(self) -> None:
         Node.__init__(self, "odometer")
+        SG_Logger.__init__(self)
 
         self._cam = OdometryCam()
         self._odom = OAK_Odometer(
@@ -142,7 +147,7 @@ class OdometryNode(Node):
         self._cam.stop()
 
     def _run(self) -> None:
-        print("Running the odometry node")
+        logging.info("Running the odometry node")
         while not self._stopped:
             self._odom.update()
             self._pose = self._odom.current_pose()

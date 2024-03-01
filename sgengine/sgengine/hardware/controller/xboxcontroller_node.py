@@ -1,8 +1,8 @@
 # thanks stack overflow : https://stackoverflow.com/questions/46506850/how-can-i-get-input-from-an-xbox-one-controller-in-python
 
+import logging
 import math
 import subprocess
-import sys
 import threading
 import time
 
@@ -12,8 +12,10 @@ from rclpy.node import Node
 
 from sgengine_messages.msg import XboxInput
 
+from ...sg_logger import SG_Logger
 
-class XboxControllerNode(Node):
+
+class XboxControllerNode(Node, SG_Logger):
     """Node for handling input from an Xbox Controller"""
 
     MAX_JOY_VAL = math.pow(2, 15)
@@ -21,6 +23,8 @@ class XboxControllerNode(Node):
     def __init__(self) -> None:
         # ros stuff
         Node.__init__(self, "xboxcontroller")
+        SG_Logger.__init__(self)
+
         self._publisher = self.create_publisher(
             XboxInput, "xbox_controller/all_inputs", 10
         )
@@ -38,7 +42,7 @@ class XboxControllerNode(Node):
         self._monitor_thread.daemon = True
         self._monitor_thread.start()
 
-        print("Running the xboxcontroller node")
+        logging.info("Running the xboxcontroller node")
 
     def publish_inputs(
         self,
@@ -59,10 +63,12 @@ class XboxControllerNode(Node):
                     js = Joystick(0)
                     break
                 except FileNotFoundError:
-                    print("Controller not connected. Retrying in 5 seconds...")
+                    logging.warning(
+                        "Controller not connected. Retrying in 5 seconds..."
+                    )
                     time.sleep(5)
 
-            print("Controller connected!")
+            logging.info("Controller connected!")
 
             while True:
                 event = None
@@ -83,8 +89,7 @@ class XboxControllerNode(Node):
                 elif isinstance(event, ButtonEvent) and event.value is True:
                     if event.id == XBOX_CONSTANTS.START_BUTTON_ID:
                         if not self._launched_auton:
-                            print("Auton start received")
-                            # fill command list in later with real stuff
+                            logging.info("Auton start received")
                             command_list = [
                                 "bash",
                                 "-c",
@@ -93,19 +98,17 @@ class XboxControllerNode(Node):
                             self._auton_process = subprocess.Popen(command_list)
                             self._launched_auton = True
                         else:
-                            print(
-                                "Auton start received, but auton already launched!",
-                                file=sys.stderr,
+                            logging.info(
+                                "Auton start received, but auton already launched!"
                             )
                     if event.id == XBOX_CONSTANTS.BACK_BUTTON_ID:
                         if self._launched_auton:
-                            print("Auton stop received")
+                            logging.info("Auton stop received")
                             self._auton_process.terminate()
                             self._launched_auton = False
                         else:
-                            print(
-                                "Auton stop received, but auton not launched!",
-                                file=sys.stderr,
+                            logging.warning(
+                                "Auton stop received, but auton not launched!"
                             )
 
 
