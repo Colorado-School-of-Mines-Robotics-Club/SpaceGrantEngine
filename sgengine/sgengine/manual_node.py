@@ -1,14 +1,18 @@
+import logging
+
 import rclpy
 from rclpy.node import Node
+from sg_logger import SG_Logger
 
 from sgengine_messages.msg import TwoFloat, XboxInput
 
 
-class ManualNode(Node):
+class ManualNode(Node, SG_Logger):
     """Node for handling manual robot control"""
 
     def __init__(self) -> None:
         Node.__init__(self, "manual_control")
+        SG_Logger.__init__(self)
 
         self.publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
 
@@ -22,7 +26,7 @@ class ManualNode(Node):
             XboxInput, "xbox_controller/all_inputs", input_callback, 10
         )
 
-        print("Running Manual Control Node")
+        logging.info("Running Manual Control Node")
 
 
 def main(args=None):
