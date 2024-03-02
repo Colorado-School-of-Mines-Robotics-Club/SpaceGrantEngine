@@ -46,19 +46,20 @@ class PathCam(Node, SG_Logger):
 
     def _nn_callback(self, nndata: dai.NNData) -> None:
         logging.debug("New data packet in PathCam")
-        raw = get_nn_data(nndata, reshape_to=(1, 1))
+        raw = get_nn_data(nndata)
         val = raw[0]
         self._update_heading(val)
 
     def _update_heading(self, heading: int) -> None:
-        logging.debug(f"Updating heading with: {heading}")
-        self._buffer.append(heading[0])
+        logging.debug(f"{time.perf_counter()} Updating heading with: {heading}")
+        self._buffer.append(heading)
         # avg is between 0 and 4 floating point
         avg = float(np.mean(list(self._buffer)))
 
         move_cmd = TwoFloat()
-        move_cmd.second = 0.5  # always use full speed
-        move_cmd.first = (avg / 4.0) - 1.0  # between -1 and 1
+        offset = (avg - 2.0) / 2.0
+        move_cmd.first = offset
+        move_cmd.second = -offset
         self._publisher.publish(move_cmd)
 
     def _run(self):
