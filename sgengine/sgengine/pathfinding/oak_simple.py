@@ -41,6 +41,7 @@ class PathCam(Node, SG_Logger):
         self._cam.add_callback("nn", self._nn_callback)
         self._stopped = False
 
+        self._cam.start(blocking=False)
         self._run()
 
     def _nn_callback(self, nndata: dai.NNData) -> None:
