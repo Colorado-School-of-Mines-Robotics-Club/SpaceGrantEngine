@@ -1,9 +1,8 @@
-import cv2
 import logging
 
+import cv2
 import numpy as np
 import rclpy
-import time
 from cv_bridge import CvBridge
 from oakutils import ApiCamera, set_log_level
 from oakutils.nodes import (create_color_camera, create_neural_network,
