@@ -34,6 +34,7 @@ setup(
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
             "odometry        = sgengine.odometry.odometry_node:main",
             "pathfinding     = sgengine.pathfinding.pathfinding_node:main",
+            "fastpath        = sgengine.pathfinding.oak_simple:main",
         ],
     },
 )
