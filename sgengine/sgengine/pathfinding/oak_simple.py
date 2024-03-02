@@ -9,12 +9,15 @@ from oakutils.nodes import create_stereo_depth, reate_neural_network, get_nn_dat
 
 from sgengine_messages.msg import TwoFloat
 
+from ..sg_logger import SG_Logger
 
-class PathCam(Node):
-    """Node for handling depth-based obstancle avoidance"""
+
+class PathCam(Node, SG_Logger):
+    """Cam for handling depth-based obstancle avoidance"""
 
     def __init__(self) -> None:
-        Node.__init__(self, "pathfinding")
+        Node.__init__(self, "path_cam")
+        SG_Logger.__init__(self)
         self._cam = ApiCamera(
             color_size=(1920, 1080),
             mono_size=(640, 400),
@@ -34,9 +37,19 @@ class PathCam(Node):
             nn,
         ]
         self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
-        self._cam.add_callback("nn", detect_callback)
-    
-    def _update_heading(self, heading: np.ndarray) -> None:
+        self._cam.add_callback("nn", self._nn_callback)
+        self._stopped = False
+
+        self._run()
+
+    def _nn_callback(self, nndata: dai.NNData) -> None:
+        logging.debug("New data packet in PathCam")
+        raw = get_nn_data(nndata, reshape_to=(1, 1))
+        val = raw[0]
+        self._update_heading(val)
+
+    def _update_heading(self, heading: int) -> None:
+        logging.debug(f"Updating heading with: {heading}")
         self._buffer.append(heading[0])
         # avg is between 0 and 4 floating point
         avg = float(np.mean(list(self._buffer)))
@@ -46,40 +59,10 @@ class PathCam(Node):
         move_cmd.first = (avg / 4.0) - 1.0  # between -1 and 1
         self._publisher.publish(move_cmd)
 
-
-class OdometryNode(Node):
-    """Node for running visual odometry"""
-
-    def __init__(self) -> None:
-        Node.__init__(self, "odometer")
-
-        self._cam = OdometryCam()
-        self._odom = OAK_Odometer(
-            self._cam,
-            nfeatures=500,
-        )
-        self._cam.start(block=True)
-
-        self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
-
-        self._pose = None
-
-        self._stopped = False
-
-        # atexit.register(self._stop)
-
-        self._run()
-
-    def _stop(self) -> None:
-        self._stopped = True
-        self._cam.stop()
-
-    def _run(self) -> None:
-        print("Running the pathfinding node")
+    def _run(self):
         while not self._stopped:
-            
-
-        self._cam.stop()
+            logging.debug("PathCam new iteration")
+            time.sleep(1)
 
 
 def main(args=None):
