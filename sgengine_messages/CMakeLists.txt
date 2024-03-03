@@ -26,6 +26,7 @@ endif()
 find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Dict.msg"
+  "msg/MoveCommand.msg"
   "msg/TwoFloat.msg"
   "msg/RPYXYZ.msg"
   "msg/XboxInput.msg"

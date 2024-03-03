@@ -10,10 +10,9 @@ from oakutils import ApiCamera
 from oakutils.nodes import (create_neural_network, create_stereo_depth,
                             create_xout, get_nn_data)
 from rclpy.node import Node
+from std_msgs.msg import Float32
 
-from sgengine_messages.msg import TwoFloat
-
-from ..sg_logger import SG_Logger
+from ...sg_logger import SG_Logger
 
 
 class PathCam(Node, SG_Logger):
@@ -28,7 +27,7 @@ class PathCam(Node, SG_Logger):
             primary_mono_left=True,
         )
         self._calibration = self._cam.calibration
-        self._buffer: deque[int] = deque(maxlen=30)
+        self._buffer: deque[int] = deque(maxlen=10)
 
         depth, left, right = create_stereo_depth(self._cam.pipeline)
         nn = create_neural_network(
@@ -37,7 +36,7 @@ class PathCam(Node, SG_Logger):
         xout_nn = create_xout(self._cam.pipeline, nn.out, "nn")
 
         self._nodes = [depth, left, right, nn, xout_nn]
-        self._publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
+        self._publisher = self.create_publisher(Float32, "oak/heading", 10)
         self._cam.add_callback("nn", self._nn_callback)
         self._stopped = False
 
@@ -56,11 +55,10 @@ class PathCam(Node, SG_Logger):
         # avg is between 0 and 4 floating point
         avg = float(np.mean(list(self._buffer)))
 
-        move_cmd = TwoFloat()
-        offset = (avg - 2.0) / 2.0
-        move_cmd.first = offset
-        move_cmd.second = -offset
-        self._publisher.publish(move_cmd)
+        # 90 is straight, 0 is hard left, 180 is hard right
+        target_heading = Float32()
+        target_heading.data = (avg / 2.0) - 1.0
+        self._publisher.publish(target_heading)
 
     def _run(self):
         while not self._stopped:

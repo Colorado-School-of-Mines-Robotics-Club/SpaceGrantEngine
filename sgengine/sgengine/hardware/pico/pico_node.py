@@ -5,7 +5,7 @@ import rclpy
 from rclpy.node import Node
 from ros2node.api import get_node_names
 
-from sgengine_messages.msg import TwoFloat
+from sgengine_messages.msg import MoveCommand
 
 from ...sg_logger import SG_Logger
 from .pico_comms import PicoComms
@@ -19,13 +19,11 @@ class PicoNode(Node, PicoComms, SG_Logger):
         PicoComms.__init__(self)
         SG_Logger.__init__(self)
 
-        def move_callback(msg: TwoFloat) -> None:
-            PicoComms.send_move_command(
-                self, int(msg.first * 255), int(msg.second * 255)
-            )
+        def move_callback(msg: MoveCommand) -> None:
+            PicoComms.send_move_command(self, int(msg.left * 255), int(msg.right * 255))
 
         self.subscription = self.create_subscription(
-            TwoFloat, "pico/move_command", move_callback, 10
+            MoveCommand, "pico/move_command", move_callback, 10
         )
 
         logging.info("Running PicoNode")

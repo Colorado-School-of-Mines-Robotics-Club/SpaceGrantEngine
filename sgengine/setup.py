@@ -30,11 +30,11 @@ setup(
     entry_points={
         "console_scripts": [
             "manual          = sgengine.manual_node:main",
+            "auto            = sgengine.autonomous_node:main",
             "pico            = sgengine.hardware.pico.pico_node:main",
+            "oak             = sgengine.hardware.oak.oak_pathfinding:main",
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
             "odometry        = sgengine.odometry.odometry_node:main",
-            "pathfinding     = sgengine.pathfinding.pathfinding_node:main",
-            "fastpath        = sgengine.pathfinding.oak_simple:main",
         ],
     },
 )
