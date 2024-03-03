@@ -63,8 +63,8 @@ install_pip_packages(
         "numpy<1.25.0",
         "scipy",
         "depthai",
-        "opencv-contrib-python==4.8.0.74",
-        "oakutils>=1.3.1",
+        "opencv-contrib-python",
+        "oakutils>=1.4.3",
         "linux-joystick-py",
         "setuptools==59.6.*",
     ]
