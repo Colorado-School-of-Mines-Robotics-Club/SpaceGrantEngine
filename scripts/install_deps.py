@@ -58,9 +58,7 @@ subprocess.check_call(["pip3", "install", "pip", "--upgrade"])
 
 install_pip_packages(
     [
-        "black",
-        "isort",
-        "ruff",
+        "ruff==0.3.0",
         "pyserial",
         "numpy<1.25.0",
         "scipy",

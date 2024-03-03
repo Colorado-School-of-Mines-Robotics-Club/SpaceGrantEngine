@@ -1,10 +1,10 @@
 {
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true
   },
   "ruff.lint.args": ["./sgengine/sgengine"],
-  "black-formatter.args": [
+  "ruff.format.args": [
     "./sgengine/sgengine"
   ],
   "cmake.configureOnOpen": false,

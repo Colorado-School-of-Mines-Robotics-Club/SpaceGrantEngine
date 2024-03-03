@@ -7,8 +7,12 @@ import depthai as dai
 import numpy as np
 import rclpy
 from oakutils import ApiCamera
-from oakutils.nodes import (create_neural_network, create_stereo_depth,
-                            create_xout, get_nn_data)
+from oakutils.nodes import (
+    create_neural_network,
+    create_stereo_depth,
+    create_xout,
+    get_nn_data,
+)
 from rclpy.node import Node
 from std_msgs.msg import Float32
 

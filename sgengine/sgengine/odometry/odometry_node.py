@@ -5,8 +5,13 @@ import numpy as np
 import rclpy
 from cv_bridge import CvBridge
 from oakutils import ApiCamera, set_log_level
-from oakutils.nodes import (create_color_camera, create_neural_network,
-                            create_stereo_depth, create_xout, get_nn_frame)
+from oakutils.nodes import (
+    create_color_camera,
+    create_neural_network,
+    create_stereo_depth,
+    create_xout,
+    get_nn_frame,
+)
 from openVO import rot2RPY
 from openVO.oakd import OAK_Odometer
 from rclpy.node import Node

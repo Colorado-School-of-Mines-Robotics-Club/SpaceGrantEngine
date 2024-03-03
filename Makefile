@@ -25,17 +25,15 @@ test:
 fmt:
 	source /opt/ros/humble/setup.bash && \
 	source install/setup.bash && \
-	python3 -m black ./sgengine/sgengine && \
-	python3 -m isort ./sgengine/sgengine && \
-	python3 -m ruff --fix ./sgengine/sgengine
+	python3 -m ruff format ./sgengine/sgengine
+	python3 -m ruff check --fix ./sgengine/sgengine
 	@echo "FORMATTING COMPLETE"
 
 check_fmt:
 	source /opt/ros/humble/setup.bash && \
 	source install/setup.bash && \
-	python3 -m black --check ./sgengine/sgengine && \
-	python3 -m isort --check ./sgengine/sgengine && \
-	python3 -m ruff ./sgengine/sgengine
+	python3 -m ruff format --diff ./sgengine/sgengine
+	python3 -m ruff check ./sgengine/sgengine
 	@echo "FORMATTING CHECK PASSED"
 
 help:
