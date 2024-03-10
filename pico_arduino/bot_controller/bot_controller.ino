@@ -4,6 +4,7 @@ Bot bot;
 
 int left_speed = 0;
 int right_speed = 0;
+time_t time_since_command = now();
 
 void setup() {
   
@@ -27,13 +28,21 @@ void loop() {
       left_speed = left_speed_str.toInt();
       right_speed = right_speed_str.toInt();
 
+      // update the time 
+      time_since_command = now();
+
       // debug
       Serial.println("left: " + (String) left_speed + " | right: " + (String) right_speed);
     }
   }
 
-  // drive
-  bot.drive(left_speed, right_speed);
+  // the bot stops driving if is hasn't recieved a command in a second
+  if(time_since_command - now() > 1){
+    bot.drive(0,0);
+  }else{
+    //otherwise, drive regularly
+    bot.drive(left_speed, right_speed);
+  }
 
   // test_drive();
   
