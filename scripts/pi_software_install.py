@@ -91,6 +91,8 @@ if step_selected("Install extra tools"):
     terminal_menu = create_selection_menu(
         title="Helpful tools to install...",
         entries=[
+            "openssh-server",
+            "vim",
             "htop",
             "net-tools",
             "wget",
@@ -129,9 +131,7 @@ if step_selected("Configure device comms"):
             'echo \'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"\' | tee /etc/udev/rules.d/80-movidius.rules',
         ]
     )
-    subprocess.call(
-        ["bash", "-c", "udevadm control --reload-rules && udevadm trigger"]
-    )
+    subprocess.call(["bash", "-c", "udevadm control --reload-rules && udevadm trigger"])
 
 if step_selected("Raise usb current limit"):
     config_path = "/boot/firmware/config.txt"
@@ -150,7 +150,9 @@ if step_selected("Raise usb current limit"):
                 file.write(target)
                 file.close
     else:
-        print(f"WARNING: {config_path} does not exist. If this is not a RPi, then ignore this message")
+        print(
+            f"WARNING: {config_path} does not exist. If this is not a RPi, then ignore this message"
+        )
 
 subprocess.check_call(["apt", "autoremove", "-y"])
 
