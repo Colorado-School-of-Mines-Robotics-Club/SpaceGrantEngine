@@ -62,6 +62,7 @@ install_pip_packages(
         "pyserial",
         "numpy<1.25.0",
         "scipy",
+        "scikit-learn",
         "depthai",
         "opencv-contrib-python",
         "oakutils>=1.4.3",
