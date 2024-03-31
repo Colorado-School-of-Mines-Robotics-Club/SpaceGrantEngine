@@ -6,6 +6,10 @@ from pathlib import Path
 import depthai as dai
 import numpy as np
 import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+from collections import deque
+
 from oakutils import ApiCamera
 from oakutils.nodes import (
     create_neural_network,
@@ -33,7 +37,7 @@ class PathCam(Node, SG_Logger):
         self._calibration = self._cam.calibration
         self._buffer: deque[int] = deque(maxlen=10)
 
-        depth, left, right = create_stereo_depth(self._cam.pipeline)
+        depth, left, right = create_stereo_depth(self._cam.pipeline, fps=25)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
         )
