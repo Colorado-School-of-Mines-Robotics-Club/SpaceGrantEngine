@@ -1,7 +1,6 @@
 import logging
 import time
 
-import pickle
 import cv2
 import numpy as np
 import rclpy
@@ -33,9 +32,9 @@ class OdometryNode(Node, SG_Logger):
         self._left = None
         self._disparity = None
         self._im3d = None
-        self._calibration_subscription = self.create_subscription(
-            Image, "/oak/calibration_data", self._update_calibration, 10
-        )
+        # self._calibration_subscription = self.create_subscription(
+        #     TYPE, "/oak/calibration_data", self._update_calibration, 10
+        # )
         self._left_subscription = self.create_subscription(
             Image, "/oak/left_image", self._update_left, 10
         )
@@ -52,7 +51,7 @@ class OdometryNode(Node, SG_Logger):
         self._run()
     
     def _update_calibration(self, calibration):
-        self._calibration = pickle.loads(calibration)
+        self._calibration = calibration
 
     def _update_left(self, frame):
         self._left = frame.getCvFrame()
