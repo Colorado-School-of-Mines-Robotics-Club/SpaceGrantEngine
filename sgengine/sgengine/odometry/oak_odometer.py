@@ -38,6 +38,8 @@ def bilinear_interpolate_pixels(img, x, y):
     if not (p11 is None or np.isinf(p11).any()):
         num += r_x * r_y * p11
         den += r_x * r_y
+    if den == 0.0:
+        return num
     return num / den
 
 

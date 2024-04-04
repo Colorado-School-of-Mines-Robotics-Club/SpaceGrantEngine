@@ -49,7 +49,7 @@ class OdometryNode(Node, SG_Logger):
 
         logging.info("Running the odometry node")
         self._run()
-    
+
     def _update_calibration(self, calibration):
         self._calibration = calibration
 
@@ -95,11 +95,7 @@ class OdometryNode(Node, SG_Logger):
                 time.sleep(0.25)
                 continue
             im3d, disparity, rect = self._compute_im3d()
-            # ZeroDivisionError possible in bilinear_interpolate_pixels function, makes the data choppy
-            try:
-                self._odom.update(im3d, disparity, rect)
-            except ZeroDivisionError:
-                continue
+            self._odom.update(im3d, disparity, rect)
             self._pose = self._odom.current_pose()
 
             pose = RPYXYZ()
