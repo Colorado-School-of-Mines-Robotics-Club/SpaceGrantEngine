@@ -61,6 +61,7 @@ install_pip_packages(
         "ruff==0.3.0",
         "pyserial",
         "numpy<1.25.0",
+        "numba",
         "scipy",
         "depthai",
         "opencv-contrib-python",
@@ -69,8 +70,5 @@ install_pip_packages(
         "setuptools==59.6.*",
     ]
 )
-
-subprocess.run(["bash","-c","mkdir -p ./extern/ && cd ./extern/ && git clone https://github.com/justincdavis/openVO"])
-install_pip_packages(["./extern/openVO"], check_return_code=False)
 
 install_pip_packages("RPi.GPIO", check_return_code=False)

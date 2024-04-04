@@ -6,10 +6,6 @@ from pathlib import Path
 import depthai as dai
 import numpy as np
 import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-from collections import deque
-
 from oakutils import ApiCamera
 from oakutils.nodes import (
     create_neural_network,
