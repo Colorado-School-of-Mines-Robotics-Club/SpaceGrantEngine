@@ -11,6 +11,7 @@ clean:
 	rm -rf ./install
 	rm -rf ./build
 	rm -rf ./log
+	rm -rf ./tmp
 	@echo "CLEAN COMPLETE"
 
 check: check_fmt test

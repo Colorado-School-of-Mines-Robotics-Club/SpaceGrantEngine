@@ -17,6 +17,8 @@
   <depend>uvloop</depend>
   <depend>flask</depend>
   <depend>scikit-learn</depend>
+  
+  <depend>sgengine_messages</depend>
 
   <export>
     <build_type>ament_python</build_type>
