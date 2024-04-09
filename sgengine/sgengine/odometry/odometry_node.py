@@ -1,7 +1,8 @@
 import logging
-import time
 import pickle
+import time
 from pathlib import Path
+from threading import Thread
 
 import cv2
 import numpy as np
@@ -35,7 +36,7 @@ class OdometryNode(Node, SG_Logger):
         self._disparity = None
         self._im3d = None
 
-        calibration_file = Path("data") / "calibration.pkl"
+        calibration_file = Path("tmp") / "calibration.pkl"
         while True:
             if calibration_file.exists():
                 break
@@ -45,10 +46,10 @@ class OdometryNode(Node, SG_Logger):
             self._calibration = pickle.load(f)
 
         self._left_subscription = self.create_subscription(
-            Image, "/oak/left_image", self._update_left, 10
+            Image, "oak/left_image", self._update_left, 10
         )
         self._disparity_subscription = self.create_subscription(
-            Image, "/oak/disparity_image", self._update_disparity, 10
+            Image, "oak/disparity_image", self._update_disparity, 10
         )
 
         self._pose = None
@@ -57,16 +58,17 @@ class OdometryNode(Node, SG_Logger):
         self._pose_publisher = self.create_publisher(RPYXYZ, "/odom/rpy_xyz", 10)
 
         logging.info("Running the odometry node")
-        self._run()
+        self._thread = Thread(target=self._run, daemon=True)
+        self._thread.start()
 
     def _update_calibration(self, calibration):
         self._calibration = calibration
 
-    def _update_left(self, frame):
-        self._left = frame.getCvFrame()
+    def _update_left(self, frame: Image):
+        self._left = self._bridge.imgmsg_to_cv2(frame)
 
-    def _update_disparity(self, frame):
-        self._disparity = frame.getCvFrame()
+    def _update_disparity(self, frame: Image):
+        self._disparity = self._bridge.imgmsg_to_cv2(frame)
         self._im3d = cv2.reprojectImageTo3D(
             self._disparity, self._calibration.stereo.Q_cv2
         )
@@ -101,7 +103,17 @@ class OdometryNode(Node, SG_Logger):
                 or self._im3d is None
                 or self._calibration is None
             ):
-                time.sleep(0.25)
+                logging.info("Waiting for:")
+                if self._left is None:
+                    logging.info("Left")
+                if self._disparity is None:
+                    logging.info("Disparity")
+                if self._im3d is None:
+                    logging.info("Im3d")
+                if self._calibration is None:
+                    logging.info("Calibration")
+                logging.info("")
+                time.sleep(0.5)
                 continue
             im3d, disparity, rect = self._compute_im3d()
             self._odom.update(im3d, disparity, rect)

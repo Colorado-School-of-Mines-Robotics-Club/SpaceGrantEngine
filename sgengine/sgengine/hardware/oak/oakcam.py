@@ -1,12 +1,13 @@
 import logging
+import pickle
 import time
 from collections import deque
 from pathlib import Path
-import pickle
 
 import depthai as dai
 import numpy as np
 import rclpy
+from cv_bridge import CvBridge
 from oakutils import ApiCamera
 from oakutils.nodes import (
     create_neural_network,
@@ -15,9 +16,8 @@ from oakutils.nodes import (
     get_nn_data,
 )
 from rclpy.node import Node
-from std_msgs.msg import Float32
-from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from std_msgs.msg import Float32
 
 from ...sg_logger import SG_Logger
 
@@ -26,7 +26,7 @@ class OakCam(Node, SG_Logger):
     """Cam for handling depth-based obstancle avoidance"""
 
     def __init__(self) -> None:
-        Node.__init__(self, "path_cam")
+        Node.__init__(self, "oak")
         SG_Logger.__init__(self)
         self._cam = ApiCamera(
             color_size=(1920, 1080),
@@ -36,7 +36,8 @@ class OakCam(Node, SG_Logger):
         self._calibration = self._cam.calibration
 
         # write the calibration data to a file (MUST NOT CONTAIN OPEN3D OBJECTS)
-        calibration_file = Path("data") / "calibration.pkl"
+        calibration_file = Path("tmp") / "calibration.pkl"
+        Path("tmp").mkdir(parents=True, exist_ok=True)
         with calibration_file.open("wb") as f:
             pickle.dump(self._calibration, f, pickle.HIGHEST_PROTOCOL)
 
@@ -52,12 +53,24 @@ class OakCam(Node, SG_Logger):
         # create xout links for the data streams we want to publish
         xout_nn = create_xout(self._cam.pipeline, nn.out, "nn")
         xout_rectleft = create_xout(self._cam.pipeline, depth.rectifiedLeft, "rectleft")
-        xout_rectright = create_xout(self._cam.pipeline, depth.rectifiedRight, "rectright")
+        xout_rectright = create_xout(
+            self._cam.pipeline, depth.rectifiedRight, "rectright"
+        )
         xout_depth = create_xout(self._cam.pipeline, depth.depth, "depth")
         xout_disparity = create_xout(self._cam.pipeline, depth.disparity, "disparity")
 
         # save the nodes
-        self._nodes = [depth, left, right, nn, xout_nn, xout_rectleft, xout_rectright, xout_depth, xout_disparity]
+        self._nodes = [
+            depth,
+            left,
+            right,
+            nn,
+            xout_nn,
+            xout_rectleft,
+            xout_rectright,
+            xout_depth,
+            xout_disparity,
+        ]
 
         # create any output publishers
         self._publisher = self.create_publisher(Float32, "oak/simple_heading", 10)
@@ -77,7 +90,7 @@ class OakCam(Node, SG_Logger):
         self._stopped = False
 
         self._cam.start(blocking=False)
-        self._run()
+        logging.info("Running the oak node")
 
     def _nn_callback(self, nndata: dai.NNData) -> None:
         logging.debug("New data packet in OakCam")
@@ -116,18 +129,13 @@ class OakCam(Node, SG_Logger):
         target_heading.data = (avg / 2.0) - 1.0
         self._publisher.publish(target_heading)
 
-    def _run(self):
-        while not self._stopped:
-            logging.debug("OakCam new iteration")
-            time.sleep(1)
-
 
 def main(args=None):
     """
-    Main function which exclusively launches the pathfinding node
+    Main function which exclusively launches the oak camera node
     """
     rclpy.init(args=args)
-    pathfinding = OakCam()
-    rclpy.spin(pathfinding)
-    pathfinding.destroy_node()
+    cam = OakCam()
+    rclpy.spin(cam)
+    cam.destroy_node()
     rclpy.shutdown()

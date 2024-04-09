@@ -61,6 +61,7 @@ install_pip_packages(
         "ruff==0.3.0",
         "pyserial",
         "numpy<1.25.0",
+        "scikit-learn",
         "numba",
         "scipy",
         "depthai",
