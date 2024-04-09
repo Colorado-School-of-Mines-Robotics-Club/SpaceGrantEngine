@@ -12,6 +12,7 @@
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>depthai</depend>
+  <depend>depth_image_proc</depend>
   <depend>numpy</depend>
   <depend>opencv-python</depend>
   <depend>uvloop</depend>

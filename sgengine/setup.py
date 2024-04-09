@@ -36,7 +36,6 @@ setup(
             "oak             = sgengine.hardware.oak.oakcam:main",
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
             "odometry        = sgengine.odometry.odometry_node:main",
-            "pathfinding     = sgengine.pathfinding.pathfinding_node:main",
         ],
     },
 )

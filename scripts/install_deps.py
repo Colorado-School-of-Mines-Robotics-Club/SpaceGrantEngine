@@ -25,6 +25,9 @@ install_apt_packages(["nano", "wget", "curl"])
 install_apt_packages(
     [
         f"ros-{ros_distro}-depthai",
+        f"ros-{ros_distro}-image-pipeline",
+        "libpcl-dev",
+        f"ros-{ros_distro}-pcl-conversions",
         "python3-cv-bridge",
         "python3-pip",
         "usbutils",
