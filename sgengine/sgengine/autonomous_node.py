@@ -17,7 +17,7 @@ class AutonomousNode(Node, SG_Logger):
         SG_Logger.__init__(self)
 
         self._heading_subscription = self.create_subscription(
-            Float32, "oak/heading", self.process_heading, 10
+            Float32, "oak/simple_heading", self.process_heading, 10
         )
         self._pico_publisher = self.create_publisher(
             MoveCommand, "pico/move_command", 10
