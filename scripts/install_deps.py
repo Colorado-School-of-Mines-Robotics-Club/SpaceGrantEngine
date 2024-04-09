@@ -65,7 +65,7 @@ install_pip_packages(
         "scipy",
         "depthai",
         "opencv-contrib-python",
-        "oakutils>=1.4.3",
+        "oakutils>=1.5.0",
         "linux-joystick-py",
         "setuptools==59.6.*",
     ]
