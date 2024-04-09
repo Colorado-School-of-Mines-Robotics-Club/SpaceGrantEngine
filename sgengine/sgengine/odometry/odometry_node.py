@@ -1,5 +1,7 @@
 import logging
 import time
+import pickle
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -32,9 +34,16 @@ class OdometryNode(Node, SG_Logger):
         self._left = None
         self._disparity = None
         self._im3d = None
-        # self._calibration_subscription = self.create_subscription(
-        #     TYPE, "/oak/calibration_data", self._update_calibration, 10
-        # )
+
+        calibration_file = Path("data") / "calibration.pkl"
+        while True:
+            if calibration_file.exists():
+                break
+            logging.warning("Calibration file not found, waiting for calibration data")
+            time.sleep(0.5)
+        with calibration_file.open("rb") as f:
+            self._calibration = pickle.load(f)
+
         self._left_subscription = self.create_subscription(
             Image, "/oak/left_image", self._update_left, 10
         )
