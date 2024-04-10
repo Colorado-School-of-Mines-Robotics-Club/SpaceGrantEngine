@@ -31,6 +31,7 @@ install_apt_packages(
         f"ros-{ros_distro}-pcl-conversions",
         "python3-cv-bridge",
         "python3-pip",
+        "python3-ament-clang-format",
         "usbutils",
         "udev",
     ]
