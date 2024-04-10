@@ -4,6 +4,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/common/transforms.h>
+#include <pcl/filters/passthrough.h>
 
 #include "pathfinding.hpp"
 
@@ -17,25 +19,39 @@ PathfindingNode::PathfindingNode()
 }
 
 void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2& msg) {
-  // Convert ROS2 PointCloud2 message to PCL PointCloud
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2());
-  pcl_conversions::toPCL(msg, *cloud);
+  // Convert to PCL
+  pcl::PCLPointCloud2::Ptr original_cloud(new pcl::PCLPointCloud2());
+  pcl_conversions::toPCL(msg, *original_cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::fromPCLPointCloud2(*original_cloud, *pcl_cloud);
 
-  // Perform downsampling using VoxelGrid
-  pcl::PCLPointCloud2::Ptr cloud_filtered(new pcl::PCLPointCloud2());
-  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-  sor.setInputCloud(cloud);
-  sor.setLeafSize(0.1f, 0.1f, 0.1f);  // Leaf size parameters
-  sor.filter(*cloud_filtered);
+  // Downsample points
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_filtered(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::VoxelGrid<pcl::PointXYZ> voxel_sor;
+  voxel_sor.setInputCloud(pcl_cloud);
+  voxel_sor.setLeafSize(0.03f, 0.03f, 0.03f);
+  voxel_sor.filter(*voxel_filtered);
 
-  counter += 1;
-  if (counter % 20 != 0) {
-    return;
-  }
+  // Rotate points to correct orrientation
+  double rotation_angle = M_PI * 1.5;
+  Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+  transform.rotate(Eigen::AngleAxisf(rotation_angle, Eigen::Vector3f::UnitX()));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::transformPointCloud(*voxel_filtered, *transformed_cloud, transform);
 
-  // Convert back to ROS2 message and publish
+  // Convert to strip
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_strip(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PassThrough<pcl::PointXYZ> strip_pass;
+  strip_pass.setInputCloud(transformed_cloud);
+  strip_pass.setFilterFieldName("z");
+  strip_pass.setFilterLimits(0.0, 0.35); // Set the allowable height range
+  strip_pass.filter(*cloud_strip);
+
+  // Convert back to PointCloud2 msg and publish
+  pcl::PCLPointCloud2::Ptr output_cloud(new pcl::PCLPointCloud2());
+  pcl::toPCLPointCloud2(*cloud_strip, *output_cloud);
   sensor_msgs::msg::PointCloud2 output;
-  pcl_conversions::fromPCL(*cloud_filtered, output);
+  pcl_conversions::fromPCL(*output_cloud, output);
   output.header.frame_id = "down_pcl";
   down_sampled_point_cloud_publisher_->publish(output);
 }
