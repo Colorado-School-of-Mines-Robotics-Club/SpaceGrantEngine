@@ -9,7 +9,9 @@ import numpy as np
 import rclpy
 from cv_bridge import CvBridge
 from oakutils import ApiCamera
+from oakutils.aruco import ArucoStream
 from oakutils.nodes import (
+    create_color_camera,
     create_neural_network,
     create_stereo_depth,
     create_xout,
@@ -18,6 +20,8 @@ from oakutils.nodes import (
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
+
+from sgengine_messages.msg import Aruco, ArucoArray
 
 from ...sg_logger import SG_Logger
 
@@ -34,6 +38,7 @@ class OakCam(Node, SG_Logger):
             primary_mono_left=True,
         )
         self._calibration = self._cam.calibration
+        self._arucostream = ArucoStream(calibration=self._calibration.rgb)
 
         # write the calibration data to a file (MUST NOT CONTAIN OPEN3D OBJECTS)
         calibration_file = Path("tmp") / "calibration.pkl"
@@ -45,6 +50,7 @@ class OakCam(Node, SG_Logger):
 
         self._bridge = CvBridge()
 
+        color = create_color_camera(self._cam.pipeline, fps=10)
         depth, left, right = create_stereo_depth(self._cam.pipeline, fps=25)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
@@ -61,6 +67,7 @@ class OakCam(Node, SG_Logger):
 
         # save the nodes
         self._nodes = [
+            color,
             depth,
             left,
             right,
@@ -74,13 +81,18 @@ class OakCam(Node, SG_Logger):
 
         # create any output publishers
         self._publisher = self.create_publisher(Float32, "oak/simple_heading", 10)
+        self._colorpub = self.create_publisher(Image, "oak/color_image", 10)
         self._leftpub = self.create_publisher(Image, "oak/left_image", 10)
         self._rightpub = self.create_publisher(Image, "oak/right_image", 10)
         self._depthpub = self.create_publisher(Image, "oak/depth_image", 10)
         self._disparitypub = self.create_publisher(Image, "oak/disparity_image", 10)
 
+        # aruco publishers
+        self._aruco_posepub = self.create_publisher(ArucoArray, "oak/aruco", 10)
+
         # add the callbacks
         self._cam.add_callback("nn", self._nn_callback)
+        self._cam.add_callback("color", self._color_callback)
         self._cam.add_callback("rectleft", self._left_callback)
         self._cam.add_callback("rectright", self._right_callback)
         self._cam.add_callback("depth", self._depth_callback)
@@ -97,6 +109,50 @@ class OakCam(Node, SG_Logger):
         raw = get_nn_data(nndata)
         val = raw[0]
         self._update_heading(val)
+
+    def _aruco_callback(self, img: np.ndarray) -> None:
+        logging.debug("New aruco data in OakCam")
+        markers = self._arucostream.find(img, rectified=False)
+        if len(markers) == 0:
+            return
+        
+        ros_markers = ArucoArray()
+
+        for marker in markers:
+            m_id, transform, rvec, tvec, corners = marker
+
+            distance = np.linalg.norm(tvec)
+            rotation_matrix = transform[:3, :3]
+            r11, r12, r13 = rotation_matrix[0]
+            r21, r22, r23 = rotation_matrix[1]
+            r31, r32, r33 = rotation_matrix[2]
+
+            # Calculate the scalar component
+            qw = np.sqrt(1 + r11 + r22 + r33) / 2
+            qx = (r32 - r23) / (4 * qw)
+            qy = (r13 - r31) / (4 * qw)
+            qz = (r21 - r12) / (4 * qw)
+
+            aruco_marker = Aruco()
+            aruco_marker.marker.translation.x = tvec[0]
+            aruco_marker.marker.translation.y = tvec[1]
+            aruco_marker.marker.translation.z = tvec[2]
+            aruco_marker.marker.rotation.w = qw
+            aruco_marker.marker.rotation.x = qx
+            aruco_marker.marker.rotation.y = qy
+            aruco_marker.marker.rotation.z = qz
+            aruco_marker.distance.data = distance
+            aruco_marker.id.data = m_id
+
+            ros_markers.markers.append(aruco_marker)
+
+        self._aruco_posepub.publish(ros_markers)
+
+    def _color_callback(self, frame: dai.ImgFrame) -> None:
+        logging.debug("New color image in OakCam")
+        img = frame.getCvFrame()
+        self._colorpub.publish(self._bridge.cv2_to_imgmsg(img))
+        self._aruco_callback(img)
 
     def _left_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New left image in OakCam")
