@@ -14,8 +14,10 @@ PathFinderNode::PathFinderNode() : Node("obstacle_map_node")
   obstacle_map_subscription_ = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
     "obstacle_map", 10,
     std::bind(&PathFinderNode::obstacle_map_callback, this, std::placeholders::_1));
+  target_point_publisher_ =
+    this->create_publisher<visualization_msgs::msg::Marker>("target_point", 10);
 
-  std::cout << "Running Grid Path Finder Node" << std::endl;
+  RCLCPP_INFO(this->get_logger(), "Running Grid Path Finder Node");
 }
 
 void PathFinderNode::odom_callback(const sgengine_messages::msg::RPYXYZ & msg)
@@ -71,7 +73,46 @@ std::vector<std::pair<int, int>> find_path_bfs(
 
 void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & msg)
 {
+  if (robot_position == std::nullopt) {
+    return;
+  }
+  std::pair<int, int> start_point(msg.info.origin.position.x, 0);
+  std::pair<float, float> target_position = std::pair<float, float>(0.0, 1.0);
+  std::pair<int, int> target_cell;
   // End point may be outside of the grid, need to find closest point in the grid
+  target_cell.first = std::max(
+    (uint32_t)0,
+    std::min(
+      msg.info.width,
+      (uint32_t)(target_position.first / msg.info.resolution + msg.info.origin.position.x)));
+  target_cell.second = std::max(
+    (uint32_t)0,
+    std::min(
+      msg.info.height,
+      (uint32_t)(target_position.second / msg.info.resolution + msg.info.origin.position.y)));
+
+  visualization_msgs::msg::Marker marker;
+  marker.header.frame_id = "obstacle_map";  // Change according to your frame_id
+  marker.header.stamp = rclcpp::Clock().now();
+  marker.ns = "marker_namespace";
+  marker.id = 0;
+  marker.type = visualization_msgs::msg::Marker::SPHERE;  // Use SPHERE as the shape of the point
+  marker.action = visualization_msgs::msg::Marker::ADD;
+  marker.pose.position.x = target_position.first;
+  marker.pose.position.y = target_position.second;
+  marker.pose.position.z = 0.5;
+  marker.pose.orientation.x = 0.0;
+  marker.pose.orientation.y = 0.0;
+  marker.pose.orientation.z = 0.0;
+  marker.pose.orientation.w = 1.0;
+  marker.scale.x = 0.1;  // Size of the marker
+  marker.scale.y = 0.1;
+  marker.scale.z = 0.1;
+  marker.color.a = 1.0;  // Don't forget to set the alpha!
+  marker.color.r = 0.0;
+  marker.color.g = 1.0;
+  marker.color.b = 0.0;
+  target_point_publisher_->publish(marker);
 }
 
 int main(int argc, char * argv[])

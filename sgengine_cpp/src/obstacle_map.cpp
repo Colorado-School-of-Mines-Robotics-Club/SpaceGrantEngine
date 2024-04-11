@@ -23,7 +23,7 @@ ObstacleMapNode::ObstacleMapNode() : Node("obstacle_map_node")
   down_sampled_point_cloud_publisher_ =
     this->create_publisher<sensor_msgs::msg::PointCloud2>("downsampled_point_cloud", 10);
 
-  std::cout << "Running Obstacle Map Node" << std::endl;
+  RCLCPP_INFO(this->get_logger(), "Running Obstacle Map Node");
 }
 
 void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 & msg)
@@ -133,7 +133,7 @@ void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   pcl::toPCLPointCloud2(*cloud_strip, *output_cloud);
   sensor_msgs::msg::PointCloud2 output;
   pcl_conversions::fromPCL(*output_cloud, output);
-  output.header.frame_id = "downsampled_pcl";
+  output.header.frame_id = "obstacle_map";
   down_sampled_point_cloud_publisher_->publish(output);
 }
 

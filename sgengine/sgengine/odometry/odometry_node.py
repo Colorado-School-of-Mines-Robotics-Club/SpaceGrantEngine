@@ -1,4 +1,5 @@
 import logging
+import os
 import pickle
 import time
 from pathlib import Path
@@ -18,6 +19,15 @@ from sgengine_messages.msg import RPYXYZ
 from ..sg_logger import SG_Logger
 from .oak_odometer import OAK_Odometer
 from .rot2RPY import rot2RPY
+
+
+class ThreadWithException(Thread):
+    def run(self):
+        try:
+            super().run()
+        except Exception as e:
+            print(f"Exception in thread {self.name}: {e}")
+            os._exit(1)
 
 
 class OdometryNode(Node, SG_Logger):
@@ -58,7 +68,7 @@ class OdometryNode(Node, SG_Logger):
         self._pose_publisher = self.create_publisher(RPYXYZ, "odom/rpy_xyz", 10)
 
         logging.info("Running the odometry node")
-        self._thread = Thread(target=self._run, daemon=True)
+        self._thread = ThreadWithException(target=self._run, daemon=True)
         self._thread.start()
 
     def _update_calibration(self, calibration):
@@ -103,16 +113,16 @@ class OdometryNode(Node, SG_Logger):
                 or self._im3d is None
                 or self._calibration is None
             ):
-                logging.info("Waiting for:")
+                logging.debug("Waiting for:")
                 if self._left is None:
-                    logging.info("Left")
+                    logging.debug("Left")
                 if self._disparity is None:
-                    logging.info("Disparity")
+                    logging.debug("Disparity")
                 if self._im3d is None:
-                    logging.info("Im3d")
+                    logging.debug("Im3d")
                 if self._calibration is None:
-                    logging.info("Calibration")
-                logging.info("")
+                    logging.debug("Calibration")
+                logging.debug("")
                 time.sleep(0.5)
                 continue
             im3d, disparity, rect = self._compute_im3d()
@@ -144,7 +154,7 @@ class OdometryNode(Node, SG_Logger):
             pose.y = float(y)
             pose.z = float(z)
 
-            logging.info(f"Pose: r: {r}, p: {p}, y: {y}, x: {x}, y: {y}, z: {z}")
+            logging.debug(f"Pose: r: {r}, p: {p}, y: {y}, x: {x}, y: {y}, z: {z}")
 
             self._pose_publisher.publish(pose)
 

@@ -17,6 +17,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(pcl_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
 
@@ -26,7 +27,7 @@ add_executable(obstacle_map src/obstacle_map.cpp)
 ament_target_dependencies(obstacle_map rclcpp std_msgs nav_msgs sensor_msgs pcl_ros pcl_conversions)
 
 add_executable(grid_path_finder src/grid_path_finder.cpp)
-ament_target_dependencies(grid_path_finder rclcpp std_msgs nav_msgs sgengine_messages)
+ament_target_dependencies(grid_path_finder rclcpp std_msgs nav_msgs visualization_msgs sgengine_messages)
 
 install(TARGETS
   obstacle_map grid_path_finder
