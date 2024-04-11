@@ -55,7 +55,7 @@ class OdometryNode(Node, SG_Logger):
         self._pose = None
         self._stopped = False
         self._bridge = CvBridge()
-        self._pose_publisher = self.create_publisher(RPYXYZ, "/odom/rpy_xyz", 10)
+        self._pose_publisher = self.create_publisher(RPYXYZ, "odom/rpy_xyz", 10)
 
         logging.info("Running the odometry node")
         self._thread = Thread(target=self._run, daemon=True)

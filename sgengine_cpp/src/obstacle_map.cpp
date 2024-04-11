@@ -1,4 +1,4 @@
-#include "pathfinding.hpp"
+#include "obstacle_map.hpp"
 
 #include <pcl/common/transforms.h>
 #include <pcl/filters/passthrough.h>
@@ -14,17 +14,19 @@
 
 using std::placeholders::_1;
 
-PathfindingNode::PathfindingNode() : Node("pathfinding_node")
+ObstacleMapNode::ObstacleMapNode() : Node("obstacle_map_node")
 {
   point_cloud_subscription_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
     "full_point_cloud", rclcpp::SensorDataQoS(),
-    std::bind(&PathfindingNode::point_cloud_callback, this, std::placeholders::_1));
+    std::bind(&ObstacleMapNode::point_cloud_callback, this, std::placeholders::_1));
   cost_map_publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("obstacle_map", 10);
   down_sampled_point_cloud_publisher_ =
     this->create_publisher<sensor_msgs::msg::PointCloud2>("downsampled_point_cloud", 10);
+
+  std::cout << "Running Obstacle Map Node" << std::endl;
 }
 
-void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 & msg)
+void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 & msg)
 {
   // Convert to PCL
   pcl::PCLPointCloud2::Ptr original_cloud(new pcl::PCLPointCloud2());
@@ -54,17 +56,24 @@ void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   sor.setStddevMulThresh(1.0);  // Set the standard deviation multiplier threshold
   sor.filter(*outliers_filtered);
 
+  // Filter distance
+  pcl::PointCloud<pcl::PointXYZ>::Ptr distance_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PassThrough<pcl::PointXYZ> distance_strip_pass;
+  distance_strip_pass.setInputCloud(outliers_filtered);
+  distance_strip_pass.setFilterFieldName("y");
+  distance_strip_pass.setFilterLimits(0.5, 3.0);  // Set the allowable distance range
+  distance_strip_pass.filter(*distance_filtered);
+
   // Convert to strip
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_strip(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PassThrough<pcl::PointXYZ> strip_pass;
-  strip_pass.setInputCloud(outliers_filtered);
-  strip_pass.setFilterFieldName("z");
-  strip_pass.setFilterLimits(0.0, 0.6);  // Set the allowable height range
-  strip_pass.filter(*cloud_strip);
+  pcl::PassThrough<pcl::PointXYZ> height_strip_pass;
+  height_strip_pass.setInputCloud(distance_filtered);
+  height_strip_pass.setFilterFieldName("z");
+  height_strip_pass.setFilterLimits(0.0, 0.6);  // Set the allowable height range
+  height_strip_pass.filter(*cloud_strip);
 
   // Translate to 2D grid
   const float resolution = 0.03;
-  const float min_distance = 0.5;
 
   std::map<int32_t, std::map<int32_t, uint32_t>> grid_counter;
 
@@ -73,9 +82,6 @@ void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   int32_t min_y = 0;
   int32_t max_y = 0;
   for (const pcl::PointXYZ & point : cloud_strip->points) {
-    if (point.y < min_distance) {
-      continue;
-    }
     int32_t x_index = static_cast<int32_t>(point.x / resolution);
     int32_t y_index = static_cast<int32_t>(point.y / resolution);
 
@@ -90,7 +96,7 @@ void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   // Translate to OccupancyGrid type
   auto grid = nav_msgs::msg::OccupancyGrid();
   grid.header.stamp = this->get_clock()->now();
-  grid.header.frame_id = "cost_map";
+  grid.header.frame_id = "obstacle_map";
 
   grid.info.resolution = resolution;     // meters/cell
   grid.info.width = max_x - min_x + 1;   // cells
@@ -127,14 +133,14 @@ void PathfindingNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   pcl::toPCLPointCloud2(*cloud_strip, *output_cloud);
   sensor_msgs::msg::PointCloud2 output;
   pcl_conversions::fromPCL(*output_cloud, output);
-  output.header.frame_id = "down_pcl";
+  output.header.frame_id = "downsampled_pcl";
   down_sampled_point_cloud_publisher_->publish(output);
 }
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<PathfindingNode>());
+  rclcpp::spin(std::make_shared<ObstacleMapNode>());
   rclcpp::shutdown();
   return 0;
 }

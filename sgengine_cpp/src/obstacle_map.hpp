@@ -4,10 +4,10 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
-class PathfindingNode : public rclcpp::Node
+class ObstacleMapNode : public rclcpp::Node
 {
 public:
-  PathfindingNode();
+  ObstacleMapNode();
 
 private:
   void point_cloud_callback(const sensor_msgs::msg::PointCloud2 & msg);
