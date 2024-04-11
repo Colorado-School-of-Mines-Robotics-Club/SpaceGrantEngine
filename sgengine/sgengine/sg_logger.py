@@ -12,4 +12,4 @@ class SG_Logger:
             format="%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s",
             filemode="a",
         )
-        logging.getLogger("main_logger").addHandler(logging.StreamHandler())
+        logging.getLogger().addHandler(logging.StreamHandler())
