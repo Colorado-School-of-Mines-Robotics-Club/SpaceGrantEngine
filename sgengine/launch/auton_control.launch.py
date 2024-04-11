@@ -23,8 +23,15 @@ def generate_launch_description():
             ),
             Node(
                 package="sgengine_cpp",
-                executable="pathfinding",
-                name="auton_pathfinding",
+                executable="obstacle_map",
+                name="auton_obstacle_map",
+                respawn=True,
+                respawn_delay=1,
+            ),
+            Node(
+                package="sgengine_cpp",
+                executable="grid_path_finder",
+                name="auton_grid_path_finder",
                 respawn=True,
                 respawn_delay=1,
             ),
