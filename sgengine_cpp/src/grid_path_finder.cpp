@@ -10,10 +10,12 @@ PathFinderNode::PathFinderNode() : Node("obstacle_map_node")
 {
   odom_subscription_ = this->create_subscription<sgengine_messages::msg::RPYXYZ>(
     "odom/rpy_xyz", 10, std::bind(&PathFinderNode::odom_callback, this, std::placeholders::_1));
-
   obstacle_map_subscription_ = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
     "obstacle_map", 10,
     std::bind(&PathFinderNode::obstacle_map_callback, this, std::placeholders::_1));
+  aruco_subscription_ = this->create_subscription<sgengine_messages::msg::ArucoArray>(
+    "oak/aruco", 10, std::bind(&PathFinderNode::aruco_callback, this, std::placeholders::_1));
+
   target_point_publisher_ =
     this->create_publisher<visualization_msgs::msg::Marker>("target_point", 10);
 
@@ -23,6 +25,14 @@ PathFinderNode::PathFinderNode() : Node("obstacle_map_node")
 void PathFinderNode::odom_callback(const sgengine_messages::msg::RPYXYZ & msg)
 {
   robot_position = msg;
+}
+
+void PathFinderNode::aruco_callback(const sgengine_messages::msg::ArucoArray & msg)
+{
+  if (!msg.markers.empty()) {
+    aruco_marker = msg.markers[0];
+    RCLCPP_INFO(this->get_logger(), "Found %i Aruco Markers", msg.markers.size());
+  }
 }
 
 std::vector<std::pair<int, int>> find_path_bfs(
@@ -92,11 +102,11 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
       (uint32_t)(target_position.second / msg.info.resolution + msg.info.origin.position.y)));
 
   visualization_msgs::msg::Marker marker;
-  marker.header.frame_id = "obstacle_map";  // Change according to your frame_id
+  marker.header.frame_id = "obstacle_map";
   marker.header.stamp = rclcpp::Clock().now();
   marker.ns = "marker_namespace";
   marker.id = 0;
-  marker.type = visualization_msgs::msg::Marker::SPHERE;  // Use SPHERE as the shape of the point
+  marker.type = visualization_msgs::msg::Marker::SPHERE;
   marker.action = visualization_msgs::msg::Marker::ADD;
   marker.pose.position.x = target_position.first;
   marker.pose.position.y = target_position.second;
@@ -105,10 +115,10 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
   marker.pose.orientation.y = 0.0;
   marker.pose.orientation.z = 0.0;
   marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.1;  // Size of the marker
+  marker.scale.x = 0.1;
   marker.scale.y = 0.1;
   marker.scale.z = 0.1;
-  marker.color.a = 1.0;  // Don't forget to set the alpha!
+  marker.color.a = 1.0;
   marker.color.r = 0.0;
   marker.color.g = 1.0;
   marker.color.b = 0.0;
