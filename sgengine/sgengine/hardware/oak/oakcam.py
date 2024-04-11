@@ -50,7 +50,7 @@ class OakCam(Node, SG_Logger):
 
         self._bridge = CvBridge()
 
-        color = create_color_camera(self._cam.pipeline, fps=10)
+        color = create_color_camera(self._cam.pipeline, fps=10, preview_size=(640, 480))
         depth, left, right = create_stereo_depth(self._cam.pipeline, fps=25)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
@@ -58,6 +58,7 @@ class OakCam(Node, SG_Logger):
 
         # create xout links for the data streams we want to publish
         xout_nn = create_xout(self._cam.pipeline, nn.out, "nn")
+        xout_color = create_xout(self._cam.pipeline, color.preview, "color")
         xout_rectleft = create_xout(self._cam.pipeline, depth.rectifiedLeft, "rectleft")
         xout_rectright = create_xout(
             self._cam.pipeline, depth.rectifiedRight, "rectright"
@@ -73,6 +74,7 @@ class OakCam(Node, SG_Logger):
             right,
             nn,
             xout_nn,
+            xout_color,
             xout_rectleft,
             xout_rectright,
             xout_depth,
@@ -115,7 +117,7 @@ class OakCam(Node, SG_Logger):
         markers = self._arucostream.find(img, rectified=False)
         if len(markers) == 0:
             return
-        
+
         ros_markers = ArucoArray()
 
         for marker in markers:
@@ -141,8 +143,8 @@ class OakCam(Node, SG_Logger):
             aruco_marker.marker.rotation.x = qx
             aruco_marker.marker.rotation.y = qy
             aruco_marker.marker.rotation.z = qz
-            aruco_marker.distance.data = distance
-            aruco_marker.id.data = m_id
+            aruco_marker.distance = distance
+            aruco_marker.id = int(m_id)
 
             ros_markers.markers.append(aruco_marker)
 

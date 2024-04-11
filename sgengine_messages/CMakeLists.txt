@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(geometry_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -25,12 +26,15 @@ endif()
 
 find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Aruco.msg"
+  "msg/ArucoArray.msg"
   "msg/Dict.msg"
   "msg/MoveCommand.msg"
   "msg/TwoFloat.msg"
   "msg/RPYXYZ.msg"
   "msg/XboxInput.msg"
+  DEPENDENCIES geometry_msgs
 )
-ament_export_dependencies(rosidl_default_runtime)
+ament_export_dependencies(rosidl_default_runtime geometry_msgs)
 
 ament_package()
