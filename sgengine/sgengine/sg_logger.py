@@ -10,5 +10,6 @@ class SG_Logger:
             filename=os.getenv("SG_LOG_PATH", "log/sg_logs.log"),
             level=logging.INFO,
             format="%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s",
+            filemode="a",
         )
-        logging.getLogger().addHandler(logging.StreamHandler())
+        logging.getLogger("main_logger").addHandler(logging.StreamHandler())
