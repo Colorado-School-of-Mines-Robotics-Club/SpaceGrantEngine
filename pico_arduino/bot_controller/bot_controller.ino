@@ -10,12 +10,18 @@ int right_speed = 0;
 unsigned long previous_timer = 0;
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ENABLE_PIN, INPUT);
+  while (digitalRead(ENABLE_PIN) != HIGH) {
+    delay(500);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
 
   Serial.begin(115200);
   Serial.setTimeout(1000);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(ENABLE_PIN, INPUT);
 
   delay(1000);
 }
@@ -39,7 +45,7 @@ void loop() {
     arduino::String right_speed_str = Serial.readStringUntil('\0');
     previous_timer = millis();
     // parse the string
-    if (left_speed_str.length() > 0 && right_speed_str.length() > 0 && left_speed_str.length() <= 3 && right_speed_str.length() <= 3) {
+    if (left_speed_str.length() > 0 && right_speed_str.length() > 0 && left_speed_str.length() <= 5 && right_speed_str.length() <= 5) {
       left_speed = left_speed_str.toInt();
       right_speed = right_speed_str.toInt();
 
