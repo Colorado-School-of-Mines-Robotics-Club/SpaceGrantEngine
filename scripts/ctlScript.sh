@@ -14,5 +14,4 @@ source /opt/ros/humble/setup.bash
 cd $WORKSPACE
 make
 source $WORKSPACE/install/setup.bash
-cd $WORKSPACE/launch
-ros2 launch manual_control.launch.py
+ros2 launch sgengine manual_control.launch.py

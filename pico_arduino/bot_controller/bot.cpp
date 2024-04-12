@@ -1,5 +1,5 @@
-#include "Bot.h"
-#include "piReader.h"
+#include "bot.h"
+// #include "piReader.h"
 
 Bot::Bot() {
   // make sure motors aren't spinning
@@ -15,9 +15,6 @@ Bot::Bot() {
 
   left_speed = 0;
   right_speed = 0;
-
-  // start communications with the RPi
-  SerialInstructions piInstructions;
 }
 
 // drive the left and right motors at different speeds.
