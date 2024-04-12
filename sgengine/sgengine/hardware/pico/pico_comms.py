@@ -17,7 +17,7 @@ except RuntimeError as e:
 class PicoComms(SG_Logger):
     """Class to manage serial communication with Picos"""
 
-    def __init__(self, serial_port="/dev/ttyACM0", enable_pin=21, baud=9600):
+    def __init__(self, serial_port="/dev/ttyACM0", enable_pin=21, baud=115200):
         """Creates a cummunication line to send instructions to the pi pico"""
         SG_Logger.__init__(self)
 
@@ -25,10 +25,11 @@ class PicoComms(SG_Logger):
         self._serial_line = serial.Serial(
             port=serial_port,
             baudrate=baud,
-            parity=serial.PARITY_ODD,
+            parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=0.1,
+            timeout=0.5,
+            write_timeout=0.5,
         )
         # enable pin
         self._enable_pin = enable_pin
@@ -51,4 +52,7 @@ class PicoComms(SG_Logger):
         encoded = msg.encode()
         logging.debug(f"PicoComms sending {encoded}")
         GPIO.output(self._enable_pin, 1)
-        self._serial_line.write(encoded)
+        try:
+            self._serial_line.write(encoded)
+        except serial.SerialTimeoutException:
+            logging.warn("Serial timeout!")

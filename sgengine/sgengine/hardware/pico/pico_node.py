@@ -27,7 +27,6 @@ class PicoNode(Node, PicoComms, SG_Logger):
             leftval, rightval = int(msg.left * 255), int(msg.right * 255)
             leftval = max(-254, min(leftval, 255))
             rightval = max(-254, min(rightval, 255))
-            logging.debug(f"{self._last_time} Received: {leftval}, {rightval}")
             self.send_move_command(leftval, rightval)
 
         self._subscription = self.create_subscription(
