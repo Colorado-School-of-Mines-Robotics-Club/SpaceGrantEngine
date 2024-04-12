@@ -22,7 +22,8 @@ void setup() {
 
 void loop() {
   // update instructions
-  if (digitalRead(ENABLE_PIN) == HIGH && Serial.available()) {
+  bool enabled = digitalRead(ENABLE_PIN) == HIGH;
+  if (enabled && Serial.available()) {
     // char input;
     // Serial.readBytes(&input, 1);
     // read the string
@@ -46,7 +47,7 @@ void loop() {
     }
   }
 
-  if (millis() - previous_input_time > 1000) {
+  if (!enabled || millis() - previous_input_time > 1000) {
     bot.drive(0, 0);
   }
 }
