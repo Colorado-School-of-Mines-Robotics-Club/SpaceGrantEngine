@@ -5,12 +5,6 @@ Bot bot;
 int left_speed = 0;
 int right_speed = 0;
 
-char input_buffer[10];
-
-void clear_input_buffer() {
-  memset(&input_buffer, 0, 10);
-}
-
 void setup() {
   
   Serial.begin(9600);
@@ -23,8 +17,6 @@ void setup() {
 void loop() {
   // update instructions
   if (Serial.available()) {
-    // char input;
-    // Serial.readBytes(&input, 1);
     // read the string
     arduino::String left_speed_str = Serial.readStringUntil(',');
     arduino::String right_speed_str = Serial.readStringUntil('\0');

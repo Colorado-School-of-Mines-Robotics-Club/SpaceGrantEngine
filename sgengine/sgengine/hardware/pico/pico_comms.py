@@ -28,7 +28,7 @@ class PicoComms(SG_Logger):
             parity=serial.PARITY_ODD,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=1,
+            timeout=0.1,
         )
         # enable pin
         self._enable_pin = enable_pin
@@ -44,7 +44,7 @@ class PicoComms(SG_Logger):
 
     def send_move_command(self, left: int, right: int):
         """sends an instruction consisting of a left and right motor speed to pico"""
-        self.send_str_direct(str(left) + "," + str(right) + "/")
+        self.send_str_direct(str(left) + "," + str(right) + "\0")
 
     def send_str_direct(self, msg: str) -> None:
         """Directly sends string message to pico"""

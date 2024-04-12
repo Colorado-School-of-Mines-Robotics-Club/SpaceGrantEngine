@@ -24,14 +24,20 @@ class PicoNode(Node, PicoComms, SG_Logger):
 
         def move_callback(msg: MoveCommand) -> None:
             self._last_time = time.time()
-            self.send_move_command(int(msg.left * 255), int(msg.right * 255))
+            leftval, rightval = int(msg.left * 255), int(msg.right * 255)
+            leftval = max(-254, min(leftval, 255))
+            rightval = max(-254, min(rightval, 255))
+            logging.debug(f"{self._last_time} Received: {leftval}, {rightval}")
+            self.send_move_command(leftval, rightval)
 
         self._subscription = self.create_subscription(
             MoveCommand, "pico/move_command", move_callback, 10
         )
 
         def timer_callback() -> None:
+            logging.debug("Checking pico timeout")
             if time.time() - self._last_time > 1.0:
+                logging.debug("Pico has timed out")
                 self.set_enable_pin(False)
 
         self._timer = self.create_timer(0.1, timer_callback)
