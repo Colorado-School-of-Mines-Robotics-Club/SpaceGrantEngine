@@ -2,9 +2,10 @@
 
 import logging
 import math
+import os
 import subprocess
-import threading
 import time
+from threading import Thread
 
 import rclpy
 from linux_joystick import XBOX_CONSTANTS, AxisEvent, ButtonEvent, Joystick
@@ -13,6 +14,15 @@ from rclpy.node import Node
 from sgengine_messages.msg import XboxInput
 
 from ...sg_logger import SG_Logger
+
+
+class ThreadWithException(Thread):
+    def run(self):
+        try:
+            super().run()
+        except Exception as e:
+            print(f"Exception in thread {self.name}: {e}")
+            os._exit(1)
 
 
 class XboxControllerNode(Node, SG_Logger):
@@ -36,10 +46,9 @@ class XboxControllerNode(Node, SG_Logger):
         self._left_stick_y = 0.0
         self._right_stick_y = 0.0
 
-        self._monitor_thread = threading.Thread(
-            target=self._monitor_controller, args=()
+        self._monitor_thread = ThreadWithException(
+            target=self._monitor_controller, daemon=True
         )
-        self._monitor_thread.daemon = True
         self._monitor_thread.start()
 
         logging.info("Running the xboxcontroller node")
