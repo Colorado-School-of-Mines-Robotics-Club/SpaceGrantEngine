@@ -1,5 +1,6 @@
 import logging
 import sys
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -19,12 +20,21 @@ class PicoNode(Node, PicoComms, SG_Logger):
         PicoComms.__init__(self)
         SG_Logger.__init__(self)
 
-        def move_callback(msg: MoveCommand) -> None:
-            PicoComms.send_move_command(self, int(msg.left * 255), int(msg.right * 255))
+        self._last_time = time.time()
 
-        self.subscription = self.create_subscription(
+        def move_callback(msg: MoveCommand) -> None:
+            self._last_time = time.time()
+            self.send_move_command(int(msg.left * 255), int(msg.right * 255))
+
+        self._subscription = self.create_subscription(
             MoveCommand, "pico/move_command", move_callback, 10
         )
+
+        def timer_callback() -> None:
+            if time.time() - self._last_time > 1.0:
+                self.set_enable_pin(False)
+
+        self._timer = self.create_timer(0.1, timer_callback)
 
         logging.info("Running PicoNode")
 
