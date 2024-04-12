@@ -35,7 +35,7 @@ class PicoComms(SG_Logger):
         self._enable_pin = enable_pin
         self._interrupt_pin = enable_pin
         GPIO.setup(enable_pin, GPIO.OUT)
-        GPIO.output(enable_pin, 1)
+        GPIO.output(enable_pin, GPIO.HIGH)
 
     def send_move_command(self, left: int, right: int):
         """sends an instruction consisting of a left and right motor speed to pico"""
