@@ -67,6 +67,7 @@ terminal_menu = create_selection_menu(
         "Configure ROS2",
         "Remove unnecessary desktop packages",
         "Configure device comms",
+        "Raise usb current limit",
         "Disable scan after apt install",
         "Disable unattended-upgrades service",
     ],
@@ -90,6 +91,8 @@ if step_selected("Install extra tools"):
     terminal_menu = create_selection_menu(
         title="Helpful tools to install...",
         entries=[
+            "openssh-server",
+            "vim",
             "htop",
             "net-tools",
             "wget",
@@ -128,9 +131,29 @@ if step_selected("Configure device comms"):
             'echo \'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"\' | tee /etc/udev/rules.d/80-movidius.rules',
         ]
     )
-    subprocess.check_call(
-        ["bash", "-c", "udevadm control --reload-rules && udevadm trigger"]
-    )
+    subprocess.call(["bash", "-c", "udevadm control --reload-rules && udevadm trigger"])
+
+if step_selected("Raise usb current limit"):
+    config_path = "/boot/firmware/config.txt"
+    if os.path.exists(config_path):
+        do_write = True
+        target = "max_usb_current=1"
+        with open(config_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                line = line.strip()
+                if not line.startswith("#") and line.count(target) > 0:
+                    do_write = False
+            file.close()
+        if do_write:
+            with open(config_path, "a") as file:
+                file.write(target)
+                file.close
+    else:
+        print(
+            f"WARNING: {config_path} does not exist. If this is not a RPi, then ignore this message"
+        )
+
 subprocess.check_call(["apt", "autoremove", "-y"])
 
 install_apt_packages(helpful_tools)

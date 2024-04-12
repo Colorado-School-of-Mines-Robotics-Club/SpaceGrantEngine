@@ -9,9 +9,7 @@
                 "ms-vscode.cpptools",
                 "twxs.cmake",
                 "tamasfe.even-better-toml",
-                "GitHub.vscode-github-actions",
-                "ms-python.black-formatter",
-                "ms-python.isort"
+                "GitHub.vscode-github-actions"
             ]
         }
     },

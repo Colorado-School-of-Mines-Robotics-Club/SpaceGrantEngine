@@ -25,8 +25,13 @@ install_apt_packages(["nano", "wget", "curl"])
 install_apt_packages(
     [
         f"ros-{ros_distro}-depthai",
+        f"ros-{ros_distro}-image-pipeline",
+        "libpcl-dev",
+        f"ros-{ros_distro}-pcl-ros",
+        f"ros-{ros_distro}-pcl-conversions",
         "python3-cv-bridge",
         "python3-pip",
+        "python3-ament-clang-format",
         "usbutils",
         "udev",
     ]
@@ -58,21 +63,19 @@ subprocess.check_call(["pip3", "install", "pip", "--upgrade"])
 
 install_pip_packages(
     [
-        "black",
-        "isort",
-        "ruff",
+        "ruff==0.3.0",
         "pyserial",
         "numpy<1.25.0",
+        "scikit-learn",
+        "numba",
         "scipy",
+        "scikit-learn",
         "depthai",
-        "opencv-contrib-python==4.8.0.74",
-        "oakutils>=1.3.1",
+        "opencv-contrib-python",
+        "oakutils>=1.5.0",
         "linux-joystick-py",
         "setuptools==59.6.*",
     ]
 )
-
-subprocess.run(["bash","-c","mkdir -p ./extern/ && cd ./extern/ && git clone https://github.com/justincdavis/openVO"])
-install_pip_packages(["./extern/openVO"], check_return_code=False)
 
 install_pip_packages("RPi.GPIO", check_return_code=False)

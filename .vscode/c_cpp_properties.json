@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/opt/ros/humble/include/**",
+                "/usr/include/**",
+                "${workspaceFolder}/sgengine_cpp/include/sgengine_cpp",
+                "${workspaceFolder}/install/sgengine_messages/include/sgengine_messages"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

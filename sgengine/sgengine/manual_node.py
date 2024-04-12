@@ -2,9 +2,10 @@ import logging
 
 import rclpy
 from rclpy.node import Node
-from sg_logger import SG_Logger
 
-from sgengine_messages.msg import TwoFloat, XboxInput
+from sgengine_messages.msg import MoveCommand, XboxInput
+
+from .sg_logger import SG_Logger
 
 
 class ManualNode(Node, SG_Logger):
@@ -14,12 +15,12 @@ class ManualNode(Node, SG_Logger):
         Node.__init__(self, "manual_control")
         SG_Logger.__init__(self)
 
-        self.publisher = self.create_publisher(TwoFloat, "pico/move_command", 10)
+        self.publisher = self.create_publisher(MoveCommand, "pico/move_command", 10)
 
         def input_callback(xbox_input: XboxInput) -> None:
-            pico_command = TwoFloat()
-            pico_command.first = -xbox_input.left_joystick_y
-            pico_command.second = -xbox_input.right_joystick_y
+            pico_command = MoveCommand()
+            pico_command.left = max(-1.0, min(1.0, -xbox_input.left_joystick_y))
+            pico_command.right = max(-1.0, min(1.0, -xbox_input.right_joystick_y))
             self.publisher.publish(pico_command)
 
         self.subscription = self.create_subscription(

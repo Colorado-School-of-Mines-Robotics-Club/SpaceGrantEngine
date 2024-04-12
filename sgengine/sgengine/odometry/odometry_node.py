@@ -1,17 +1,33 @@
 import logging
+import os
+import pickle
+import time
+from pathlib import Path
+from threading import Thread
 
+import cv2
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
-from oakutils import LegacyCamera
-from openVO import rot2RPY
-from openVO.oakd import OAK_Odometer
+from oakutils import set_log_level
+from oakutils.calibration import CalibrationData
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 
 from sgengine_messages.msg import RPYXYZ
 
 from ..sg_logger import SG_Logger
+from .oak_odometer import OAK_Odometer
+from .rot2RPY import rot2RPY
+
+
+class ThreadWithException(Thread):
+    def run(self):
+        try:
+            super().run()
+        except Exception as e:
+            print(f"Exception in thread {self.name}: {e}")
+            os._exit(1)
 
 
 class OdometryNode(Node, SG_Logger):
@@ -21,35 +37,96 @@ class OdometryNode(Node, SG_Logger):
         Node.__init__(self, "odometer")
         SG_Logger.__init__(self)
 
-        self._cam = LegacyCamera()
         self._odom = OAK_Odometer(
-            self._cam,
             nfeatures=500,
         )
-        self._cam.start(block=True)
 
-        self._pose_publisher = self.create_publisher(RPYXYZ, "/odom/rpy_xyz", 10)
-        self._depth_publisher = self.create_publisher(Image, "/odom/depth", 10)
-        self._rgb_publisher = self.create_publisher(Image, "/odom/rgb", 10)
+        self._calibration: CalibrationData = None
+        self._left = None
+        self._disparity = None
+        self._im3d = None
+
+        calibration_file = Path("tmp") / "calibration.pkl"
+        while True:
+            if calibration_file.exists():
+                break
+            logging.warning("Calibration file not found, waiting for calibration data")
+            time.sleep(0.5)
+        with calibration_file.open("rb") as f:
+            self._calibration = pickle.load(f)
+
+        self._left_subscription = self.create_subscription(
+            Image, "oak/left_image", self._update_left, 10
+        )
+        self._disparity_subscription = self.create_subscription(
+            Image, "oak/disparity_image", self._update_disparity, 10
+        )
 
         self._pose = None
-
         self._stopped = False
-
-        # atexit.register(self._stop)
-
         self._bridge = CvBridge()
+        self._pose_publisher = self.create_publisher(RPYXYZ, "odom/rpy_xyz", 10)
 
-        self._run()
+        logging.info("Running the odometry node")
+        self._thread = ThreadWithException(target=self._run, daemon=True)
+        self._thread.start()
 
-    def _stop(self) -> None:
-        self._stopped = True
-        self._cam.stop()
+    def _update_calibration(self, calibration):
+        self._calibration = calibration
+
+    def _update_left(self, frame: Image):
+        self._left = self._bridge.imgmsg_to_cv2(frame)
+
+    def _update_disparity(self, frame: Image):
+        self._disparity = self._bridge.imgmsg_to_cv2(frame)
+        self._im3d = cv2.reprojectImageTo3D(
+            self._disparity, self._calibration.stereo.Q_cv2
+        )
+
+    def _crop_to_valid_primary_region(self, img: np.ndarray) -> np.ndarray:
+        if self._calibration.primary is None:
+            err_msg = "Primary calibration is not available."
+            raise RuntimeError(err_msg)
+        if self._calibration.primary.valid_region is None:
+            err_msg = "Primary valid region is not available."
+            raise RuntimeError(err_msg)
+        return img[
+            self._calibration.primary.valid_region[
+                1
+            ] : self._calibration.primary.valid_region[3],
+            self._calibration.primary.valid_region[
+                0
+            ] : self._calibration.primary.valid_region[2],
+        ]
+
+    def _compute_im3d(self):
+        im3d = self._crop_to_valid_primary_region(self._im3d)
+        disparity = self._crop_to_valid_primary_region(self._disparity)
+        left = self._crop_to_valid_primary_region(self._left)
+        return im3d, disparity.astype(np.uint8), left.astype(np.uint8)
 
     def _run(self) -> None:
-        logging.info("Running the odometry node")
         while not self._stopped:
-            self._odom.update()
+            if (
+                self._left is None
+                or self._disparity is None
+                or self._im3d is None
+                or self._calibration is None
+            ):
+                logging.debug("Waiting for:")
+                if self._left is None:
+                    logging.debug("Left")
+                if self._disparity is None:
+                    logging.debug("Disparity")
+                if self._im3d is None:
+                    logging.debug("Im3d")
+                if self._calibration is None:
+                    logging.debug("Calibration")
+                logging.debug("")
+                time.sleep(0.5)
+                continue
+            im3d, disparity, rect = self._compute_im3d()
+            self._odom.update(im3d, disparity, rect)
             self._pose = self._odom.current_pose()
 
             pose = RPYXYZ()
@@ -77,11 +154,10 @@ class OdometryNode(Node, SG_Logger):
             pose.y = float(y)
             pose.z = float(z)
 
-            depth_img = self._bridge.cv2_to_imgmsg(self._cam.depth)
-            rgb_img = self._bridge.cv2_to_imgmsg(self._cam.rgb)
+            logging.debug(f"Pose: r: {r}, p: {p}, y: {y}, x: {x}, y: {y}, z: {z}")
+
             self._pose_publisher.publish(pose)
-            self._depth_publisher.publish(depth_img)
-            self._rgb_publisher.publish(rgb_img)
+
         self._cam.stop()
 
 
@@ -89,6 +165,7 @@ def main(args=None):
     """
     Main function which exclusively launches the Odometer node
     """
+    set_log_level("DEBUG")
     rclpy.init(args=args)
     odometer = OdometryNode()
     rclpy.spin(odometer)

@@ -4,6 +4,7 @@ from setuptools._deprecation_warning import SetuptoolsDeprecationWarning
 import os
 from glob import glob
 import warnings
+
 warnings.filterwarnings("ignore", category=EasyInstallDeprecationWarning)
 warnings.filterwarnings("ignore", category=SetuptoolsDeprecationWarning)
 
@@ -17,8 +18,8 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
-        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
-        (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
+        (os.path.join("share", package_name, "launch"), glob("launch/*.launch.py")),
+        (os.path.join("share", package_name, "config"), glob("config/*.yaml")),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
@@ -30,10 +31,11 @@ setup(
     entry_points={
         "console_scripts": [
             "manual          = sgengine.manual_node:main",
+            "auto            = sgengine.autonomous_node:main",
             "pico            = sgengine.hardware.pico.pico_node:main",
+            "oak             = sgengine.hardware.oak.oakcam:main",
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
             "odometry        = sgengine.odometry.odometry_node:main",
-            "pathfinding     = sgengine.pathfinding.pathfinding_node:main",
         ],
     },
 )
