@@ -23,11 +23,14 @@ void setup() {
 void loop() {
   bool enabled = digitalRead(ENABLE_PIN) == LOW;
   if (!enabled || millis() - previous_timer > 1000) {
+    Serial.print("Skipping with enabled at ");
+    Serial.println(String(enabled));
     left_speed = 0;
     right_speed = 0;
     while (Serial.available() > 0) {
         Serial.read(); // Read and discard the incoming byte
     }
+    delay(5);
   }
   // update instructions
   if (enabled && Serial.available()) {

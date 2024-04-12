@@ -33,14 +33,6 @@ class PicoNode(Node, PicoComms, SG_Logger):
             MoveCommand, "pico/move_command", move_callback, 10
         )
 
-        def timer_callback() -> None:
-            logging.debug("Checking pico timeout")
-            if time.time() - self._last_time > 1.0:
-                logging.debug("Pico has timed out")
-                self.set_enable_pin(False)
-
-        self._timer = self.create_timer(0.1, timer_callback)
-
         logging.info("Running PicoNode")
 
 

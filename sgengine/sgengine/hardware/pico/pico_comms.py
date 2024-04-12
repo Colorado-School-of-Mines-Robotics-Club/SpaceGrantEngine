@@ -35,13 +35,7 @@ class PicoComms(SG_Logger):
         self._enable_pin = enable_pin
         self._interrupt_pin = enable_pin
         GPIO.setup(enable_pin, GPIO.OUT)
-        GPIO.output(enable_pin, 0)
-
-    def set_enable_pin(self, enabled: bool):
-        if enabled:
-            GPIO.output(self._enable_pin, 1)
-        else:
-            GPIO.output(self._enable_pin, 0)
+        GPIO.output(enable_pin, 1)
 
     def send_move_command(self, left: int, right: int):
         """sends an instruction consisting of a left and right motor speed to pico"""
@@ -51,7 +45,6 @@ class PicoComms(SG_Logger):
         """Directly sends string message to pico"""
         encoded = msg.encode()
         logging.debug(f"PicoComms sending {encoded}")
-        GPIO.output(self._enable_pin, 1)
         try:
             self._serial_line.write(encoded)
         except serial.SerialTimeoutException:
