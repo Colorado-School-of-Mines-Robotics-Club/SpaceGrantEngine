@@ -50,7 +50,7 @@ class OakCam(Node, SG_Logger):
 
         self._bridge = CvBridge()
 
-        color = create_color_camera(self._cam.pipeline, fps=5, preview_size=(640, 480))
+        color = create_color_camera(self._cam.pipeline, fps=5, preview_size=(640, 400))
         depth, left, right = create_stereo_depth(self._cam.pipeline, fps=5)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
@@ -84,6 +84,9 @@ class OakCam(Node, SG_Logger):
         # create any output publishers
         self._publisher = self.create_publisher(Float32, "oak/simple_heading", 10)
         self._colorpub = self.create_publisher(Image, "oak/color_image", 10)
+        self._color_info_pub = self.create_publisher(
+            CameraInfo, "oak/color_camera_info", 10
+        )
         self._leftpub = self.create_publisher(Image, "oak/left_image", 10)
         self._left_info_pub = self.create_publisher(
             CameraInfo, "oak/left_camera_info", 10
@@ -162,7 +165,50 @@ class OakCam(Node, SG_Logger):
     def _color_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New color image in OakCam")
         img = frame.getCvFrame()
-        self._colorpub.publish(self._bridge.cv2_to_imgmsg(img))
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        color_image_msg = self._bridge.cv2_to_imgmsg(img, encoding="rgb8")
+        color_image_msg.header.frame_id = "camera_link"
+        self._colorpub.publish(color_image_msg)
+
+        self._last_color_pub_stamp = color_image_msg.header.stamp
+
+        camera_info_msg = CameraInfo()
+        camera_info_msg.header = color_image_msg.header
+        camera_info_msg.header.stamp = color_image_msg.header.stamp
+
+        camera_info_msg.height = self._calibration.rgb.size[1]
+        camera_info_msg.width = self._calibration.rgb.size[0]
+
+        camera_info_msg.distortion_model = "plumb_bob"
+        camera_info_msg.d = self._calibration.rgb.D.flatten().tolist()
+
+        camera_info_msg.k = [0.0] * 9
+        camera_info_msg.k[0] = self._calibration.rgb.fx
+        camera_info_msg.k[2] = self._calibration.rgb.cx
+        camera_info_msg.k[4] = self._calibration.rgb.fy
+        camera_info_msg.k[5] = self._calibration.rgb.cy
+        camera_info_msg.k[8] = 1.0
+
+        # camera_info_msg.r = self._calibration.rgb.R.flatten().tolist()
+
+        camera_info_msg.p = [0.0] * 12
+        camera_info_msg.p[0] = self._calibration.rgb.fx
+        camera_info_msg.p[2] = self._calibration.rgb.cx
+        camera_info_msg.p[5] = self._calibration.rgb.fy
+        camera_info_msg.p[6] = self._calibration.rgb.cy
+        camera_info_msg.p[10] = 1.0
+
+        # camera_info_msg.binning_x = 0
+        # camera_info_msg.binning_y = 0
+
+        # camera_info_msg.roi.x_offset = 0
+        # camera_info_msg.roi.y_offset = 0
+        # camera_info_msg.roi.height = 0
+        # camera_info_msg.roi.width = 0
+        # camera_info_msg.roi.do_rectify = False
+
+        self._color_info_pub.publish(camera_info_msg)
+
         self._aruco_callback(img)
 
     def _left_callback(self, frame: dai.ImgFrame) -> None:
@@ -257,11 +303,12 @@ class OakCam(Node, SG_Logger):
         logging.debug("New depth image in OakCam")
         img = frame.getCvFrame()
         depth_image_msg = self._bridge.cv2_to_imgmsg(img)
+        depth_image_msg.header.stamp = self._last_color_pub_stamp
         self._depthpub.publish(depth_image_msg)
 
         camera_info_msg = CameraInfo()
         camera_info_msg.header = depth_image_msg.header
-        camera_info_msg.header.stamp = depth_image_msg.header.stamp
+        camera_info_msg.header.stamp = self._last_color_pub_stamp
 
         camera_info_msg.height = self._calibration.stereo.left.size[1]
         camera_info_msg.width = self._calibration.stereo.left.size[0]

@@ -44,25 +44,20 @@ def generate_launch_description():
             ),
             Node(
                 package="rtabmap_odom",
-                executable="stereo_odometry",
-                name="stereo_odometry",
+                executable="rgbd_odometry",
                 output="screen",
                 parameters=[
-                    {"approx_sync": True},
-                    {"queue_size": 10},
-                    {"frame_id": "camera_link"},
-                    {"odom_frame_id": "odom"},
-                    {"subscribe_stereo": True},
-                    {"left_image_topic": "oak/left_image"},
-                    {"right_image_topic": "oak/right_image"},
-                    {"left_camera_info_topic": "oak/left_camera_info"},
-                    {"right_camera_info_topic": "oak/right_camera_info"},
+                    {
+                        "frame_id": "camera_link",
+                        "subscribe_depth": True,
+                        "subscribe_odom_info": True,
+                        "approx_sync": False,
+                    }
                 ],
                 remappings=[
-                    ("left/image_rect", "oak/left_image"),
-                    ("right/image_rect", "oak/right_image"),
-                    ("left/camera_info", "oak/left_camera_info"),
-                    ("right/camera_info", "oak/right_camera_info"),
+                    ("rgb/image", "oak/color_image"),
+                    ("rgb/camera_info", "oak/color_camera_info"),
+                    ("depth/image", "oak/depth_image"),
                 ],
             ),
             # Node(
