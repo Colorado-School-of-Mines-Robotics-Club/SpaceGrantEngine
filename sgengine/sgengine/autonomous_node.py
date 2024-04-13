@@ -3,6 +3,7 @@ import logging
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32
+from geometry_msgs.msg import MarkerArray
 
 from sgengine_messages.msg import MoveCommand
 
@@ -17,7 +18,7 @@ class AutonomousNode(Node, SG_Logger):
         SG_Logger.__init__(self)
 
         self._heading_subscription = self.create_subscription(
-            Float32, "oak/simple_heading", self.process_heading, 10
+            MarkerArray, "path_to_target_markers", self._path_callback, 10
         )
         self._pico_publisher = self.create_publisher(
             MoveCommand, "pico/move_command", 10
@@ -25,18 +26,19 @@ class AutonomousNode(Node, SG_Logger):
 
         logging.info("Running Auto Control Node")
 
-    def process_heading(self, msg: Float32) -> None:
-        target_heading = msg.data
-        logging.info(target_heading)
-        target_speed = 0.25
+    def _path_callback(self, msg: MarkerArray) -> None:
+        # target_heading = msg.data
+        # logging.info(target_heading)
+        # target_speed = 0.25
 
-        left_speed = max(min(target_speed + target_heading / 4.0, 5.0), 0.0)
-        right_speed = max(min(target_speed - target_heading / 4.0, 5.0), 0.0)
+        # left_speed = max(min(target_speed + target_heading / 4.0, 5.0), 0.0)
+        # right_speed = max(min(target_speed - target_heading / 4.0, 5.0), 0.0)
 
-        move_command = MoveCommand()
-        move_command.left = left_speed
-        move_command.right = right_speed
-        self._pico_publisher.publish(move_command)
+        # move_command = MoveCommand()
+        # move_command.left = left_speed
+        # move_command.right = right_speed
+        # self._pico_publisher.publish(move_command)
+        pass
 
 
 def main(args=None):

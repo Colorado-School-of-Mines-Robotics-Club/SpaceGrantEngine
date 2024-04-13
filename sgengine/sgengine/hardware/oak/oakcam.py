@@ -53,12 +53,8 @@ class OakCam(Node, SG_Logger):
 
         color = create_color_camera(self._cam.pipeline, fps=5)
         depth, left, right = create_stereo_depth(self._cam.pipeline, fps=5)
-        nn = create_neural_network(
-            self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
-        )
 
         # create xout links for the data streams we want to publish
-        xout_nn = create_xout(self._cam.pipeline, nn.out, "nn")
         xout_color = create_xout(self._cam.pipeline, color.preview, "color")
         xout_rectleft = create_xout(self._cam.pipeline, depth.rectifiedLeft, "rectleft")
         xout_rectright = create_xout(
@@ -73,8 +69,6 @@ class OakCam(Node, SG_Logger):
             depth,
             left,
             right,
-            nn,
-            xout_nn,
             xout_color,
             xout_rectleft,
             xout_rectright,
@@ -83,7 +77,6 @@ class OakCam(Node, SG_Logger):
         ]
 
         # create any output publishers
-        self._publisher = self.create_publisher(Float32, "oak/simple_heading", 10)
         self._colorpub = self.create_publisher(Image, "oak/color_image", 10)
         self._color_info_pub = self.create_publisher(
             CameraInfo, "oak/color_camera_info", 10
@@ -106,7 +99,6 @@ class OakCam(Node, SG_Logger):
         self._aruco_posepub = self.create_publisher(ArucoArray, "oak/aruco", 10)
 
         # add the callbacks
-        self._cam.add_callback("nn", self._nn_callback)
         self._cam.add_callback("color", self._color_callback)
         self._cam.add_callback("rectleft", self._left_callback)
         self._cam.add_callback("rectright", self._right_callback)
@@ -118,12 +110,6 @@ class OakCam(Node, SG_Logger):
 
         self._cam.start(blocking=False)
         logging.info("Running the oak node")
-
-    def _nn_callback(self, nndata: dai.NNData) -> None:
-        logging.debug("New data packet in OakCam")
-        raw = get_nn_data(nndata)
-        val = raw[0]
-        self._update_heading(val)
 
     def _aruco_callback(self, img: np.ndarray) -> None:
         logging.debug("New aruco data in OakCam")
