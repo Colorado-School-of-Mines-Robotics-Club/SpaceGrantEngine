@@ -9,6 +9,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #include <map>
+#include <opencv2/opencv.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -24,6 +25,40 @@ ObstacleMapNode::ObstacleMapNode() : Node("obstacle_map_node")
     this->create_publisher<sensor_msgs::msg::PointCloud2>("downsampled_point_cloud", 10);
 
   RCLCPP_INFO(this->get_logger(), "Running Obstacle Map Node");
+}
+
+cv::Mat occupancyGridToMat(const nav_msgs::msg::OccupancyGrid & grid)
+{
+  cv::Mat mat(
+    grid.info.height, grid.info.width, CV_8UC1);  // Ensure 8-bit unsigned single-channel matrix
+
+  for (unsigned int y = 0; y < grid.info.height; y++) {
+    for (unsigned int x = 0; x < grid.info.width; x++) {
+      int i = x + y * grid.info.width;  // Correct index in linear array
+      int8_t grid_value = grid.data[i];
+      uint8_t mat_value = (grid_value == -1) ? 255 : static_cast<uint8_t>(grid_value);
+      mat.at<uint8_t>(y, x) = mat_value;
+    }
+  }
+  return mat;
+}
+
+void applyGaussianBlur(
+  cv::Mat & input, cv::Mat & output, int kernel_size, double sigmaX, double sigmaY)
+{
+  if (kernel_size % 2 == 0) kernel_size++;  // Kernel size must be odd
+  cv::GaussianBlur(input, output, cv::Size(kernel_size, kernel_size), sigmaX, sigmaY);
+}
+
+void matToOccupancyGrid(const cv::Mat & mat, nav_msgs::msg::OccupancyGrid & grid)
+{
+  for (unsigned int y = 0; y < grid.info.height; y++) {
+    for (unsigned int x = 0; x < grid.info.width; x++) {
+      int i = x + y * grid.info.width;
+      uint8_t value = mat.at<uint8_t>(y, x);
+      grid.data[i] = value;  // Assign back to the grid, handling unknowns if necessary
+    }
+  }
 }
 
 void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 & msg)
@@ -103,7 +138,7 @@ void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
   grid.info.height = max_y - min_y + 1;  // cells
 
   // Origin of the map [m, m, rad]. This is the real-world pose of the cell (0,0) in the map.
-  grid.info.origin.position.x = -(float)(grid_counter[0].find(0)->first - min_x) * resolution;
+  grid.info.origin.position.x = -(double)(grid_counter[0].find(0)->first - min_x) * resolution;
   grid.info.origin.position.y = 0.0;
   grid.info.origin.position.z = 0.0;
   grid.info.origin.orientation.w = 1.0;
@@ -124,6 +159,15 @@ void ObstacleMapNode::point_cloud_callback(const sensor_msgs::msg::PointCloud2 &
         grid.data[i] = 100;
       }
     }
+  }
+
+  cv::Mat original = occupancyGridToMat(grid);
+  cv::Mat blurred;
+  applyGaussianBlur(original, blurred, 10, 2.0, 2.0);
+  matToOccupancyGrid(blurred, grid);
+
+  for (auto & cell : grid.data) {
+    if (cell > 0) cell = 25;
   }
 
   cost_map_publisher_->publish(grid);

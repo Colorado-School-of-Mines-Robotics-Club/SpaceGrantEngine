@@ -6,7 +6,8 @@
                 "/opt/ros/humble/include/**",
                 "/usr/include/**",
                 "${workspaceFolder}/sgengine_cpp/include/sgengine_cpp",
-                "${workspaceFolder}/install/sgengine_messages/include/sgengine_messages"
+                "${workspaceFolder}/install/sgengine_messages/include/sgengine_messages",
+                "/usr/include/opencv4"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
