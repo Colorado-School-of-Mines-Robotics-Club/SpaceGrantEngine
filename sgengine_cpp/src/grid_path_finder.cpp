@@ -1,5 +1,6 @@
 #include "grid_path_finder.hpp"
 
+#include <cmath>
 #include <map>
 #include <queue>
 #include <rclcpp/rclcpp.hpp>
@@ -25,6 +26,29 @@ PathFinderNode::PathFinderNode() : Node("obstacle_map_node")
   RCLCPP_INFO(this->get_logger(), "Running Grid Path Finder Node");
 }
 
+// Function to create a rotation matrix from roll, pitch, and yaw
+Eigen::Matrix3d calc_rotation_matrix(double roll, double pitch, double yaw)
+{
+  // Precompute cosine and sine of angles
+  double cy = std::cos(yaw);
+  double sy = std::sin(yaw);
+  double cp = std::cos(pitch);
+  double sp = std::sin(pitch);
+  double cr = std::cos(roll);
+  double sr = std::sin(roll);
+
+  Eigen::Matrix3d Rz;
+  Rz << cy, -sy, 0, sy, cy, 0, 0, 0, 1;
+
+  Eigen::Matrix3d Ry;
+  Ry << cp, 0, sp, 0, 1, 0, -sp, 0, cp;
+
+  Eigen::Matrix3d Rx;
+  Rx << 1, 0, 0, 0, cr, -sr, 0, sr, cr;
+
+  return Rz * Ry * Rx;  // Matrix multiplication
+}
+
 void PathFinderNode::odom_callback(const sgengine_messages::msg::RPYXYZ & msg)
 {
   if (
@@ -33,6 +57,9 @@ void PathFinderNode::odom_callback(const sgengine_messages::msg::RPYXYZ & msg)
     odom_position = msg;
     RCLCPP_INFO(
       this->get_logger(), "Odom: %f, %f, %f", odom_position->x, odom_position->y, odom_position->z);
+
+    rotation_matrix_ =
+      calc_rotation_matrix(odom_position->roll, odom_position->pitch, odom_position->yaw);
   }
 }
 
@@ -121,8 +148,14 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
   // std::pair<float, float> target_position = std::pair<float, float>(
   //   aruco_marker->marker.translation.x - offset_from_last_marker_detection.first,
   //   aruco_marker->marker.translation.y - offset_from_last_marker_detection.second);
-  // std::pair<float, float> target_position = std::pair<float, float>(odom_position->x, odom_position->y);
-  std::pair<float, float> target_position = std::pair<float, float>(0.0, 1.0);
+
+  // X & Y from odom are flipped?
+  Eigen::Vector3d translation(odom_position->x, odom_position->y, odom_position->z);
+  Eigen::Vector3d p_final(0.0, 2.0, 0);
+
+  Eigen::Vector3d p_rotated = rotation_matrix_ * p_final;
+  Eigen::Vector3d p_new = p_rotated + translation;
+  std::pair<float, float> target_position = std::pair<float, float>(p_new[0], p_new[1]);
 
   // End point may be outside of the grid, need to find closest point in the grid
   std::pair<uint32_t, uint32_t> target_cell = std::pair<uint32_t, uint32_t>(
@@ -179,7 +212,7 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
 
   // Path to end marker
   visualization_msgs::msg::MarkerArray marker_array;
-  for (int i = 0; i < target_path.size(); i++) {
+  for (int i = 0; i < (int)target_path.size(); i++) {
     auto & step = target_path[i];
     visualization_msgs::msg::Marker marker;
     marker.header.frame_id = "obstacle_map";

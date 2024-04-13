@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Eigen/Dense>
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <optional>
 #include <rclcpp/rclcpp.hpp>
@@ -29,5 +30,6 @@ private:
 
   std::optional<sgengine_messages::msg::RPYXYZ> odom_position = std::nullopt;
   std::pair<float, float> odom_offset = std::pair(0.0, 0.0);
+  Eigen::Matrix3d rotation_matrix_;
   std::optional<sgengine_messages::msg::Aruco> aruco_marker = std::nullopt;
 };
