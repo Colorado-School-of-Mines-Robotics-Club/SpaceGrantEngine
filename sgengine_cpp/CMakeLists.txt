@@ -20,11 +20,14 @@ find_package(sensor_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(pcl_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
+find_package(OpenCV REQUIRED)
+
+include_directories(include ${OpenCV_INCLUDE_DIRS})
 
 find_package(sgengine_messages REQUIRED)
 
 add_executable(obstacle_map src/obstacle_map.cpp)
-ament_target_dependencies(obstacle_map rclcpp std_msgs nav_msgs sensor_msgs pcl_ros pcl_conversions)
+ament_target_dependencies(obstacle_map rclcpp std_msgs nav_msgs sensor_msgs pcl_ros pcl_conversions OpenCV)
 
 add_executable(grid_path_finder src/grid_path_finder.cpp)
 ament_target_dependencies(grid_path_finder rclcpp std_msgs nav_msgs visualization_msgs sgengine_messages)

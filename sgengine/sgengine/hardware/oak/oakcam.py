@@ -50,8 +50,8 @@ class OakCam(Node, SG_Logger):
 
         self._bridge = CvBridge()
 
-        color = create_color_camera(self._cam.pipeline, fps=10, preview_size=(640, 480))
-        depth, left, right = create_stereo_depth(self._cam.pipeline, fps=25)
+        color = create_color_camera(self._cam.pipeline, fps=5, preview_size=(640, 480))
+        depth, left, right = create_stereo_depth(self._cam.pipeline, fps=5)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
         )

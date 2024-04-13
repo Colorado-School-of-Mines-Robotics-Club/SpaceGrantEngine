@@ -7,6 +7,7 @@
 #include <sgengine_messages/msg/aruco_array.hpp>
 #include <sgengine_messages/msg/rpyxyz.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 class PathFinderNode : public rclcpp::Node
 {
@@ -23,7 +24,10 @@ private:
   rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr obstacle_map_subscription_;
 
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr target_point_publisher_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr path_markers_publisher_;
+  rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr debug_grid_publisher_;
 
-  std::optional<sgengine_messages::msg::RPYXYZ> robot_position = std::nullopt;
+  std::optional<sgengine_messages::msg::RPYXYZ> odom_position = std::nullopt;
+  std::pair<float, float> odom_offset = std::pair(0.0, 0.0);
   std::optional<sgengine_messages::msg::Aruco> aruco_marker = std::nullopt;
 };
