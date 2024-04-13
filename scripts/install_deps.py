@@ -29,6 +29,7 @@ install_apt_packages(
         "libpcl-dev",
         f"ros-{ros_distro}-pcl-ros",
         f"ros-{ros_distro}-pcl-conversions",
+        f"ros-{ros_distro}-rtabmap-ros",
         "python3-cv-bridge",
         "python3-pip",
         "python3-ament-clang-format",

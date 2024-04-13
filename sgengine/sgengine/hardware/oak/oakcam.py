@@ -85,7 +85,13 @@ class OakCam(Node, SG_Logger):
         self._publisher = self.create_publisher(Float32, "oak/simple_heading", 10)
         self._colorpub = self.create_publisher(Image, "oak/color_image", 10)
         self._leftpub = self.create_publisher(Image, "oak/left_image", 10)
+        self._left_info_pub = self.create_publisher(
+            CameraInfo, "oak/left_camera_info", 10
+        )
         self._rightpub = self.create_publisher(Image, "oak/right_image", 10)
+        self._right_info_pub = self.create_publisher(
+            CameraInfo, "oak/right_camera_info", 10
+        )
         self._depthpub = self.create_publisher(Image, "oak/depth_image", 10)
         self._depth_info_pub = self.create_publisher(
             CameraInfo, "oak/depth_camera_info", 10
@@ -162,12 +168,90 @@ class OakCam(Node, SG_Logger):
     def _left_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New left image in OakCam")
         img = frame.getCvFrame()
-        self._leftpub.publish(self._bridge.cv2_to_imgmsg(img))
+        left_image_msg = self._bridge.cv2_to_imgmsg(img)
+        left_image_msg.header.frame_id = "camera_link"
+        self._leftpub.publish(left_image_msg)
+
+        camera_info_msg = CameraInfo()
+        camera_info_msg.header = left_image_msg.header
+        camera_info_msg.header.stamp = left_image_msg.header.stamp
+
+        camera_info_msg.height = self._calibration.stereo.left.size[1]
+        camera_info_msg.width = self._calibration.stereo.left.size[0]
+
+        camera_info_msg.distortion_model = "plumb_bob"
+        camera_info_msg.d = self._calibration.stereo.left.D.flatten().tolist()
+
+        camera_info_msg.k = [0.0] * 9
+        camera_info_msg.k[0] = self._calibration.stereo.left.fx
+        camera_info_msg.k[2] = self._calibration.stereo.left.cx
+        camera_info_msg.k[4] = self._calibration.stereo.left.fy
+        camera_info_msg.k[5] = self._calibration.stereo.left.cy
+        camera_info_msg.k[8] = 1.0
+
+        camera_info_msg.r = self._calibration.stereo.left.R.flatten().tolist()
+
+        camera_info_msg.p = [0.0] * 12
+        camera_info_msg.p[0] = self._calibration.stereo.left.fx
+        camera_info_msg.p[2] = self._calibration.stereo.left.cx
+        camera_info_msg.p[5] = self._calibration.stereo.left.fy
+        camera_info_msg.p[6] = self._calibration.stereo.left.cy
+        camera_info_msg.p[10] = 1.0
+
+        # camera_info_msg.binning_x = 0
+        # camera_info_msg.binning_y = 0
+
+        # camera_info_msg.roi.x_offset = 0
+        # camera_info_msg.roi.y_offset = 0
+        # camera_info_msg.roi.height = 0
+        # camera_info_msg.roi.width = 0
+        # camera_info_msg.roi.do_rectify = False
+
+        self._left_info_pub.publish(camera_info_msg)
 
     def _right_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New right image in OakCam")
         img = frame.getCvFrame()
-        self._rightpub.publish(self._bridge.cv2_to_imgmsg(img))
+        right_image_msg = self._bridge.cv2_to_imgmsg(img)
+        right_image_msg.header.frame_id = "camera_link"
+        self._rightpub.publish(right_image_msg)
+
+        camera_info_msg = CameraInfo()
+        camera_info_msg.header = right_image_msg.header
+        camera_info_msg.header.stamp = right_image_msg.header.stamp
+
+        camera_info_msg.height = self._calibration.stereo.right.size[1]
+        camera_info_msg.width = self._calibration.stereo.right.size[0]
+
+        camera_info_msg.distortion_model = "plumb_bob"
+        camera_info_msg.d = self._calibration.stereo.right.D.flatten().tolist()
+
+        camera_info_msg.k = [0.0] * 9
+        camera_info_msg.k[0] = self._calibration.stereo.right.fx
+        camera_info_msg.k[2] = self._calibration.stereo.right.cx
+        camera_info_msg.k[4] = self._calibration.stereo.right.fy
+        camera_info_msg.k[5] = self._calibration.stereo.right.cy
+        camera_info_msg.k[8] = 1.0
+
+        camera_info_msg.r = self._calibration.stereo.right.R.flatten().tolist()
+
+        camera_info_msg.p = [0.0] * 12
+        camera_info_msg.p[0] = self._calibration.stereo.right.fx
+        camera_info_msg.p[2] = self._calibration.stereo.right.cx
+        camera_info_msg.p[5] = self._calibration.stereo.right.fy
+        camera_info_msg.p[6] = self._calibration.stereo.right.cy
+        camera_info_msg.p[10] = 1.0
+
+        # camera_info_msg.binning_x = 0
+        # camera_info_msg.binning_y = 0
+
+        # camera_info_msg.roi.x_offset = 0
+        # camera_info_msg.roi.y_offset = 0
+        # camera_info_msg.roi.height = 0
+        # camera_info_msg.roi.width = 0
+        # camera_info_msg.roi.do_rectify = False
+
+        self._right_info_pub.publish(camera_info_msg)
 
     def _depth_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New depth image in OakCam")

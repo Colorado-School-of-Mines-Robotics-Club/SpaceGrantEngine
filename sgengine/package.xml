@@ -18,6 +18,7 @@
   <depend>uvloop</depend>
   <depend>flask</depend>
   <depend>scikit-learn</depend>
+  <depend>rtabmap_ros</depend>
   
   <depend>sgengine_messages</depend>
 

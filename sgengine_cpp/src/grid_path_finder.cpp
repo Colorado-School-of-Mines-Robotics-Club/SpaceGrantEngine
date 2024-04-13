@@ -150,7 +150,7 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
   //   aruco_marker->marker.translation.y - offset_from_last_marker_detection.second);
 
   // X & Y from odom are flipped?
-  Eigen::Vector3d translation(odom_position->x, odom_position->y, odom_position->z);
+  Eigen::Vector3d translation(odom_position->y, odom_position->x, odom_position->z);
   Eigen::Vector3d p_final(0.0, 2.0, 0);
 
   Eigen::Vector3d p_rotated = rotation_matrix_ * p_final;
