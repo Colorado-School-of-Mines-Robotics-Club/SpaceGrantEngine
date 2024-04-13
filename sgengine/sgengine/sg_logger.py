@@ -8,7 +8,7 @@ class SG_Logger:
     def __init__(self) -> None:
         logging.basicConfig(
             filename=os.getenv("SG_LOG_PATH", "log/sg_logs.log"),
-            level=logging.DEBUG,
+            level=logging.INFO,
             format="%(levelname)s:%(filename)s:%(lineno)d (@%(asctime)s) %(message)s",
             filemode="a",
         )

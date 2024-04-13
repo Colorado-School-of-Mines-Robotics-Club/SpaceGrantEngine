@@ -14,27 +14,20 @@ def generate_launch_description():
             #     respawn=True,
             #     respawn_delay=1,
             # ),
-            # Node(
-            #     package="sgengine",
-            #     executable="odometry",
-            #     name="auton_odometry",
-            #     respawn=True,
-            #     respawn_delay=1,
-            # ),
-            # Node(
-            #     package="sgengine_cpp",
-            #     executable="obstacle_map",
-            #     name="auton_obstacle_map",
-            #     respawn=True,
-            #     respawn_delay=1,
-            # ),
-            # Node(
-            #     package="sgengine_cpp",
-            #     executable="grid_path_finder",
-            #     name="auton_grid_path_finder",
-            #     respawn=True,
-            #     respawn_delay=1,
-            # ),
+            Node(
+                package="sgengine_cpp",
+                executable="obstacle_map",
+                name="auton_obstacle_map",
+                respawn=True,
+                respawn_delay=1,
+            ),
+            Node(
+                package="sgengine_cpp",
+                executable="grid_path_finder",
+                name="auton_grid_path_finder",
+                respawn=True,
+                respawn_delay=1,
+            ),
             Node(
                 package="sgengine",
                 executable="oak",
@@ -60,16 +53,16 @@ def generate_launch_description():
                     ("depth/image", "oak/depth_image"),
                 ],
             ),
-            # Node(
-            #     package="depth_image_proc",
-            #     executable="point_cloud_xyz_node",
-            #     name="auton_point_cloud_xyz_node",
-            #     remappings=[
-            #         ("/image_rect", "oak/depth_image"),
-            #         ("/camera_info", "oak/depth_camera_info"),
-            #         ("/points", "/full_point_cloud"),
-            #     ],
-            #     parameters=[{"output_frame": "camera_link"}],
-            # ),
+            Node(
+                package="depth_image_proc",
+                executable="point_cloud_xyz_node",
+                name="auton_point_cloud_xyz_node",
+                remappings=[
+                    ("/image_rect", "oak/depth_image"),
+                    ("/camera_info", "oak/depth_camera_info"),
+                    ("/points", "/full_point_cloud"),
+                ],
+                parameters=[{"output_frame": "camera_link"}],
+            ),
         ]
     )

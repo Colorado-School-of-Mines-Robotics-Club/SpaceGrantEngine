@@ -1,9 +1,10 @@
-from setuptools import setup
-from setuptools.command.easy_install import EasyInstallDeprecationWarning
-from setuptools._deprecation_warning import SetuptoolsDeprecationWarning
 import os
-from glob import glob
 import warnings
+from glob import glob
+
+from setuptools import setup
+from setuptools._deprecation_warning import SetuptoolsDeprecationWarning
+from setuptools.command.easy_install import EasyInstallDeprecationWarning
 
 warnings.filterwarnings("ignore", category=EasyInstallDeprecationWarning)
 warnings.filterwarnings("ignore", category=SetuptoolsDeprecationWarning)
@@ -35,7 +36,6 @@ setup(
             "pico            = sgengine.hardware.pico.pico_node:main",
             "oak             = sgengine.hardware.oak.oakcam:main",
             "xboxcontroller  = sgengine.hardware.controller.xboxcontroller_node:main",
-            "odometry        = sgengine.odometry.odometry_node:main",
         ],
     },
 )

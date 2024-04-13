@@ -9,8 +9,8 @@ using std::placeholders::_1;
 
 PathFinderNode::PathFinderNode() : Node("obstacle_map_node")
 {
-  odom_subscription_ = this->create_subscription<sgengine_messages::msg::RPYXYZ>(
-    "odom/rpy_xyz", 10, std::bind(&PathFinderNode::odom_callback, this, std::placeholders::_1));
+  odom_subscription_ = this->create_subscription<nav_msgs::msg::Odometry>(
+    "/odom", 10, std::bind(&PathFinderNode::odom_callback, this, std::placeholders::_1));
   obstacle_map_subscription_ = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
     "obstacle_map", 10,
     std::bind(&PathFinderNode::obstacle_map_callback, this, std::placeholders::_1));
@@ -49,18 +49,12 @@ Eigen::Matrix3d calc_rotation_matrix(double roll, double pitch, double yaw)
   return Rz * Ry * Rx;  // Matrix multiplication
 }
 
-void PathFinderNode::odom_callback(const sgengine_messages::msg::RPYXYZ & msg)
+void PathFinderNode::odom_callback(const nav_msgs::msg::Odometry & msg)
 {
-  if (
-    msg != *odom_position && msg.x != 0 && msg.y != 0 && msg.z != 0 && msg.roll != 0 &&
-    msg.pitch != 0 && msg.yaw != 0) {
-    odom_position = msg;
-    RCLCPP_INFO(
-      this->get_logger(), "Odom: %f, %f, %f", odom_position->x, odom_position->y, odom_position->z);
-
-    rotation_matrix_ =
-      calc_rotation_matrix(odom_position->roll, odom_position->pitch, odom_position->yaw);
-  }
+  odom_position = msg;
+  rotation_matrix_ = calc_rotation_matrix(
+    odom_position->pose.pose.orientation.x, odom_position->pose.pose.orientation.z,
+    odom_position->pose.pose.orientation.y);
 }
 
 void PathFinderNode::aruco_callback(const sgengine_messages::msg::ArucoArray & msg)
@@ -70,11 +64,11 @@ void PathFinderNode::aruco_callback(const sgengine_messages::msg::ArucoArray & m
     for (auto & marker : msg.markers) {
       // id of specific marker that we're using
       if (marker.id == 18) {
-        if (odom_position != std::nullopt) {
-          odom_offset.first = odom_position->x;
-          odom_offset.second = odom_position->y;
-          odom_position = std::nullopt;
-        }
+        // if (odom_position != std::nullopt) {
+        //   odom_offset.first = odom_position->x;
+        //   odom_offset.second = odom_position->y;
+        //   odom_position = std::nullopt;
+        // }
         aruco_marker = marker;
       }
     }
@@ -150,12 +144,17 @@ void PathFinderNode::obstacle_map_callback(const nav_msgs::msg::OccupancyGrid & 
   //   aruco_marker->marker.translation.y - offset_from_last_marker_detection.second);
 
   // X & Y from odom are flipped?
-  Eigen::Vector3d translation(odom_position->y, odom_position->x, odom_position->z);
-  Eigen::Vector3d p_final(0.0, 2.0, 0);
+  Eigen::Vector3d translation(
+    odom_position->pose.pose.position.x, odom_position->pose.pose.position.z,
+    odom_position->pose.pose.position.y);
+  Eigen::Vector3d p_final(0.0, 5.0, 0);
 
   Eigen::Vector3d p_rotated = rotation_matrix_ * p_final;
   Eigen::Vector3d p_new = p_rotated + translation;
   std::pair<float, float> target_position = std::pair<float, float>(p_new[0], p_new[1]);
+  // RCLCPP_INFO(this->get_logger(), "Odom trans %f, %f, %f", odom_position->pose.pose.position.x, odom_position->pose.pose.position.y, odom_position->pose.pose.position.z);
+  // RCLCPP_INFO(this->get_logger(), "Odom orient %f, %f, %f", odom_position->pose.pose.orientation.x, odom_position->pose.pose.orientation.y, odom_position->pose.pose.orientation.z);
+  // std::pair<float, float> target_position = std::pair<float, float>(0.0, 2.0);
 
   // End point may be outside of the grid, need to find closest point in the grid
   std::pair<uint32_t, uint32_t> target_cell = std::pair<uint32_t, uint32_t>(

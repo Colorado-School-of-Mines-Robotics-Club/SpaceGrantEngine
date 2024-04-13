@@ -4,6 +4,7 @@ import time
 from collections import deque
 from pathlib import Path
 
+import cv2
 import depthai as dai
 import numpy as np
 import rclpy
@@ -33,7 +34,7 @@ class OakCam(Node, SG_Logger):
         Node.__init__(self, "oak")
         SG_Logger.__init__(self)
         self._cam = ApiCamera(
-            color_size=(1920, 1080),
+            color_size=(640, 400),
             mono_size=(640, 400),
             primary_mono_left=True,
         )
@@ -50,7 +51,7 @@ class OakCam(Node, SG_Logger):
 
         self._bridge = CvBridge()
 
-        color = create_color_camera(self._cam.pipeline, fps=5, preview_size=(640, 400))
+        color = create_color_camera(self._cam.pipeline, fps=5)
         depth, left, right = create_stereo_depth(self._cam.pipeline, fps=5)
         nn = create_neural_network(
             self._cam.pipeline, depth.depth, Path("data") / "simplePathfinding.blob"
@@ -165,7 +166,7 @@ class OakCam(Node, SG_Logger):
     def _color_callback(self, frame: dai.ImgFrame) -> None:
         logging.debug("New color image in OakCam")
         img = frame.getCvFrame()
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.resize(img, (640, 400))
         color_image_msg = self._bridge.cv2_to_imgmsg(img, encoding="rgb8")
         color_image_msg.header.frame_id = "camera_link"
         self._colorpub.publish(color_image_msg)
@@ -176,8 +177,8 @@ class OakCam(Node, SG_Logger):
         camera_info_msg.header = color_image_msg.header
         camera_info_msg.header.stamp = color_image_msg.header.stamp
 
-        camera_info_msg.height = self._calibration.rgb.size[1]
-        camera_info_msg.width = self._calibration.rgb.size[0]
+        camera_info_msg.height = 400
+        camera_info_msg.width = 640
 
         camera_info_msg.distortion_model = "plumb_bob"
         camera_info_msg.d = self._calibration.rgb.D.flatten().tolist()
