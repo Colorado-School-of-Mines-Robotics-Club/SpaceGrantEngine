@@ -33,6 +33,11 @@ class AutonomousNode(Node, SG_Logger):
         left_speed = max(min(target_speed + target_heading / 4.0, 5.0), 0.0)
         right_speed = max(min(target_speed - target_heading / 4.0, 5.0), 0.0)
 
+        scaling_factor = 1.0 / max(left_speed, right_speed)
+
+        left_speed = left_speed * scaling_factor
+        right_speed = right_speed * scaling_factor
+
         move_command = MoveCommand()
         move_command.left = left_speed
         move_command.right = right_speed

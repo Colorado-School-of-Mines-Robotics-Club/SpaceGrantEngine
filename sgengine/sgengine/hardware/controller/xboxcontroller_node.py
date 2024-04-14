@@ -102,7 +102,7 @@ class XboxControllerNode(Node, SG_Logger):
                             command_list = [
                                 "bash",
                                 "-c",
-                                "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch launch/auton_control.launch.py",
+                                "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch sgengine auton_control.launch.py",
                             ]
                             self._auton_process = subprocess.Popen(command_list)
                             self._launched_auton = True
